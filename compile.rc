@@ -1,0 +1,13 @@
+[global_s]:
+compiler = "g++"
+
+[global_e]:
+sources = ["./src/caller/caller.cc", "./src/io/io.cc", "./src/os/os.c", "./src/parser/parser.cc", "./src/main/main.cc"]
+
+[release]:
+args = ["-std=c++23", "-O3", "-DNDEBUG", "-Os", "-Ofast", "-Og", "-s", "-march=native", "-masm=intel", "-flto=auto", "-funroll-all-loops"]
+output = ["-o", "./bin/runcpp"]
+
+[debug]:
+args = ["-std=c++23", "-g", "-ggdb3", "-Wall", "-Wextra", "-Wuninitialized", "-Wstrict-aliasing", "-Wshadow", "-pedantic"]
+output = ["-o", "./bin/runcpp_debug.out"]
