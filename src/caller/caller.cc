@@ -5,6 +5,7 @@ namespace runcpp
 #if defined __linux || defined __linux__ || defined linux || defined __unix || defined __unix__ || defined unix
     caller::caller(const openutils::vector_t<openutils::sstring> &arg)
     {
+        this->args = openutils::vector_t<char *>(arg.length() + 1);
         for (std::size_t i = 0; i < arg.length(); i++)
             this->args.add(const_cast<char *>(arg[i].c_str()));
         this->args.add(nullptr);
