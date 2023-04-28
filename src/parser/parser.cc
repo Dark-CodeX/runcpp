@@ -9,7 +9,7 @@ namespace runcpp
             col += lexer_curr[r].first().length();
         std::fprintf(stderr, "err: at %s:%zu:%zu %s %s\n", loc.c_str(), line_no + 1, col + 1, err_msg.c_str(), expected.c_str());
         std::fprintf(stderr, "%s\n", line.c_str());
-        std::fprintf(stderr, "%s^\n", openutils::sstring('~', col).c_str());
+        std::fprintf(stderr, "%s^\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));
         std::exit(EXIT_FAILURE);
     }
 
@@ -17,6 +17,71 @@ namespace runcpp
     {
         this->_M_content = content;
         this->_M_location = loc;
+        this->_M_curr_location = loc;
+    }
+
+    void parser::import_helper()
+    {
+        if (!this->_M_content.contains("import"))
+            return;
+        openutils::vector_t<openutils::sstring> split;
+        {
+            if (this->_M_content.contains("\r\n"))
+                split = this->_M_content.split("\r\n");
+            else
+                split = this->_M_content.split("\n");
+        }
+
+        for (std::size_t i_split = 0; i_split < split.length(); i_split++)
+        {
+            openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> lexer = split[i_split].lexer();
+            std::size_t j = 0;
+            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                j++; // ignore whitspaces
+            while (lexer[j].second() != openutils::lexer_token::NULL_END)
+            {
+                if (lexer[j].first() == "import")
+                {
+                    j++; // skip import keyword
+                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                        j++; // ignore whitspaces
+                    if (lexer[j].first() == "\"")
+                    {
+                        j++;                                             // skip "
+                        this->_M_prev_location = this->_M_curr_location; // copy prev location
+                        this->_M_curr_location.clear();                  // current location
+                        while (lexer[j].first() != "\"" && j < lexer.length())
+                            this->_M_curr_location += lexer[j++].first();
+                        j++; // skip "
+                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                            j++; // ignore whitspaces
+                        if (j != lexer.length() - 1)
+                        {
+                            this->draw_error(this->_M_curr_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
+                        }
+                        // inserting that file's location
+                        if (!io::file_exists(this->_M_curr_location))
+                        {
+                            this->draw_error(this->_M_prev_location, split[i_split], "file not found", openutils::sstring("`") + this->_M_curr_location + openutils::sstring("`"), i_split, j, lexer.raw_data());
+                        }
+                        openutils::sstring _temp_file_;
+                        _temp_file_.open(this->_M_curr_location);
+
+                        this->_M_content.replace(split[i_split], _temp_file_);
+                        // now doing recursion
+                        this->import_helper();
+                    }
+                    else
+                    {
+                        this->draw_error(this->_M_curr_location, split[i_split], "expected", "\"", i_split, j, lexer.raw_data());
+                    }
+                }
+                else
+                {
+                    break; // not import lines
+                }
+            }
+        }
     }
 
     parser &parser::perform_parsing()
@@ -28,6 +93,7 @@ namespace runcpp
         }
         else
         {
+            this->import_helper(); // resolves imports if any import file was given
             openutils::vector_t<openutils::sstring> split;
             {
                 if (this->_M_content.contains("\r\n"))
@@ -92,6 +158,10 @@ namespace runcpp
                     }
                     else if (lexer[j].first() != "if")
                     {
+                        if (label.length() == 0 || label.is_null())
+                        {
+                            this->draw_error(this->_M_location, split[i_split], "cannot define a variable without a parent target", "", i_split, j, lexer.raw_data());
+                        }
                         openutils::sstring temp_lable;                          // compiler
                         openutils::sstring temp_cmd;                            // "g++"
                         openutils::vector_t<openutils::sstring> temp_child_vec; // [-g", "-O3"]
@@ -114,12 +184,12 @@ namespace runcpp
                         // now check if there is " or [
                         if (lexer[j].first() == "\"")
                         {
-                            j++;
+                            j++; // skip "
                             temp_child_vec.erase();
                             while (lexer[j].first() != "\"" && j < lexer.length())
                                 temp_cmd += lexer[j++].first();
                             temp_child_vec.add(temp_cmd);
-                            j++;
+                            j++; // skip "
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
                                 j++; // ignore whitspaces
                             if (j != lexer.length() - 1)
@@ -182,10 +252,14 @@ namespace runcpp
                         }
                         this->_M_map[{label, include_global}].operator=(adding_vector);
                     }
-                    else
+                    else if (lexer[j].first() == "if")
                     {
                         std::cout << "IF: " << split[i_split] << "\n";
                         break;
+                    }
+                    else
+                    {
+                        this->draw_error(this->_M_location, split[i_split], "expected", "`[`, `if` or `<variable>`", i_split, j, lexer.raw_data());
                     }
                 }
             }
@@ -308,6 +382,8 @@ namespace runcpp
     {
         this->_M_content.clear();
         this->_M_location.clear();
+        this->_M_curr_location.clear();
+        this->_M_prev_location.clear();
         this->_M_map.clear();
     }
 }
