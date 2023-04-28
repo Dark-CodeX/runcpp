@@ -36,6 +36,7 @@ namespace runcpp
                     split = this->_M_content.split("\n");
             }
             openutils::sstring label; // global_s
+            bool include_global = false;
             openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> adding_vector;
 
             for (std::size_t i_split = 0; i_split < split.length(); i_split++)
@@ -49,6 +50,7 @@ namespace runcpp
                     if (lexer[j].first() == "[")
                     {
                         j++; // now skip [
+                        include_global = false;
                         label.clear();
                         adding_vector.erase();
                         while (lexer[j].first() != "]" && j < lexer.length())
@@ -61,11 +63,26 @@ namespace runcpp
                             j++;
                         }
                         j++; // skip ]
-                        if (lexer[j].first() != ":" && j < lexer.length())
+                        if (lexer[j].first() != ":" && lexer[j].first() != "X" && j < lexer.length())
                         {
-                            this->draw_error(this->_M_location, split[i_split], "expected", "`:`", i_split, j, lexer.raw_data());
+                            this->draw_error(this->_M_location, split[i_split], "expected", "`:` or `X`", i_split, j, lexer.raw_data());
                         }
-                        j++; // skip :
+                        if (lexer[j].first() == "X")
+                        {
+                            include_global = true;
+                            if (label == "global_s" || label == "global_e")
+                            {
+                                this->draw_error(this->_M_location, split[i_split], "unexpected", "`X`, global target cannot be assigned with `X`", i_split, j, lexer.raw_data());
+                            }
+                            j++; // skip X
+                            if (lexer[j].first() != ":" && j < lexer.length())
+                            {
+                                this->draw_error(this->_M_location, split[i_split], "expected", "`:`", i_split, j, lexer.raw_data());
+                            }
+                            j++; // skip :
+                        }
+                        else
+                            j++; // skip : with NOT X
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
                             j++; // ignore whitspaces
                         if (j != lexer.length() - 1)
@@ -163,7 +180,7 @@ namespace runcpp
                         {
                             this->draw_error(this->_M_location, split[i_split], "expected", "`\"` or `[`", i_split, j, lexer.raw_data());
                         }
-                        this->_M_map[label].operator=(adding_vector);
+                        this->_M_map[{label, include_global}].operator=(adding_vector);
                     }
                 }
             }
@@ -174,14 +191,17 @@ namespace runcpp
 
     bool parser::contains_key(const openutils::sstring &__key) const
     {
-        return this->_M_map.contains(__key);
+        if (!this->_M_map.contains({__key, false}))
+            if (!this->_M_map.contains({__key, true}))
+                return false;
+        return true;
     }
 
     void parser::print() const
     {
         for (const auto &[key, value] : this->_M_map)
         {
-            std::cout << "`" << key << "`\n";
+            std::cout << "`" << key.first() << "`\n";
             for (std::size_t i = 0; i < value.length(); i++)
             {
                 std::cout << "{\n\t`" << value[i].first() << "`\t\n\t{\n";
@@ -197,9 +217,11 @@ namespace runcpp
     openutils::vector_t<openutils::sstring> parser::generate_command(const openutils::sstring &key) const
     {
         openutils::vector_t<openutils::sstring> ret_val;
-        if (this->_M_map.contains("global_s") && key != "global_s")
+        if (key == "global_s")
         {
-            const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at("global_s");
+            if (!this->_M_map.contains({key, false}))
+                return ret_val;
+            const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at({key, false});
             for (std::size_t i = 0; i < temp.length(); i++)
             {
                 for (std::size_t j = 0; j < temp[i].second().length(); j++)
@@ -207,10 +229,13 @@ namespace runcpp
                     ret_val.add(temp[i].second()[j]);
                 }
             }
+            return ret_val;
         }
-        if (this->_M_map.contains(key))
+        else if (key == "global_e")
         {
-            const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at(key);
+            if (!this->_M_map.contains({key, false}))
+                return ret_val;
+            const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at({key, false});
             for (std::size_t i = 0; i < temp.length(); i++)
             {
                 for (std::size_t j = 0; j < temp[i].second().length(); j++)
@@ -218,18 +243,64 @@ namespace runcpp
                     ret_val.add(temp[i].second()[j]);
                 }
             }
+            return ret_val;
         }
-        if (this->_M_map.contains("global_e") && key != "global_e")
+        else
         {
-            const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at("global_e");
-            for (std::size_t i = 0; i < temp.length(); i++)
+            if (!this->contains_key(key))
+                return ret_val;
+            if (this->_M_map.contains({key, true}))
             {
-                for (std::size_t j = 0; j < temp[i].second().length(); j++)
+                const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at({key, true});
+                for (std::size_t i = 0; i < temp.length(); i++)
                 {
-                    ret_val.add(temp[i].second()[j]);
+                    for (std::size_t j = 0; j < temp[i].second().length(); j++)
+                    {
+                        ret_val.add(temp[i].second()[j]);
+                    }
                 }
             }
+            else
+            {
+                if (this->_M_map.contains({"global_s", false}))
+                {
+                    const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at({"global_s", false});
+                    for (std::size_t i = 0; i < temp.length(); i++)
+                    {
+                        for (std::size_t j = 0; j < temp[i].second().length(); j++)
+                        {
+                            ret_val.add(temp[i].second()[j]);
+                        }
+                    }
+                }
+                {
+                    const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at({key, false});
+                    for (std::size_t i = 0; i < temp.length(); i++)
+                    {
+                        for (std::size_t j = 0; j < temp[i].second().length(); j++)
+                        {
+                            ret_val.add(temp[i].second()[j]);
+                        }
+                    }
+                }
+                if (this->_M_map.contains({"global_e", false}))
+                {
+                    const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>> &temp = this->_M_map.at({"global_e", false});
+                    for (std::size_t i = 0; i < temp.length(); i++)
+                    {
+                        for (std::size_t j = 0; j < temp[i].second().length(); j++)
+                        {
+                            ret_val.add(temp[i].second()[j]);
+                        }
+                    }
+                }
+            }
+            return ret_val;
         }
-        return ret_val;
+    }
+
+    parser::~parser()
+    {
+        this->_M_map.clear();
     }
 }
