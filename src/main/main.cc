@@ -16,10 +16,12 @@ int main(int argc, char **argv)
             parser.perform_parsing();
             if (!parser.contains_key("global_s"))
             {
-                std::fprintf(stderr, "err: label `%s` not found.\n", "global_s");
+                std::fprintf(stderr, "err: target `%s` not found.\n", "global_s");
                 return EXIT_FAILURE;
             }
             openutils::vector_t<openutils::sstring> cmds = parser.generate_command("global_s");
+            parser.~parser();
+
             std::cout << openutils::date().to_string() << " " << openutils::time().to_string() << ":\n";
             for (std::size_t i = 0; i < cmds.length(); i++)
                 std::cout << cmds[i] << (i < cmds.length() - 1 ? " " : "\n");
@@ -146,11 +148,12 @@ int main(int argc, char **argv)
 
     if (!parser.contains_key(argv_1))
     {
-        std::fprintf(stderr, "err: label `%s` not found.\n", argv_1.c_str());
+        std::fprintf(stderr, "err: target `%s` not found.\n", argv_1.c_str());
         return EXIT_FAILURE;
     }
 
     openutils::vector_t<openutils::sstring> cmds = parser.generate_command(argv_1);
+    parser.~parser();
 
     std::cout << openutils::date().to_string() << " " << openutils::time().to_string() << ":\n";
     for (std::size_t i = 0; i < cmds.length(); i++)
