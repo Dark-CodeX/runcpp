@@ -13,4 +13,4 @@ args = ["-std=c++23", "-g", "-ggdb3", "-Wall", "-Wextra", "-Wuninitialized", "-W
 output = ["-o", "./bin/runcpp_debug.out"]
 
 [install]X:
-cmds = ["sudo", "mv", "./bin/runcpp", "/usr/bin/"]
+cmds = ["sudo", "cp", "./bin/runcpp", "/usr/bin/"]
