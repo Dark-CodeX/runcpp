@@ -90,7 +90,7 @@ namespace runcpp
                             this->draw_error(this->_M_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
                         }
                     }
-                    else if (lexer[j].first() != "#")
+                    else if (lexer[j].first() != "if")
                     {
                         openutils::sstring temp_lable;                          // compiler
                         openutils::sstring temp_cmd;                            // "g++"
@@ -181,6 +181,11 @@ namespace runcpp
                             this->draw_error(this->_M_location, split[i_split], "expected", "`\"` or `[`", i_split, j, lexer.raw_data());
                         }
                         this->_M_map[{label, include_global}].operator=(adding_vector);
+                    }
+                    else
+                    {
+                        std::cout << "IF: " << split[i_split] << "\n";
+                        break;
                     }
                 }
             }
@@ -301,6 +306,8 @@ namespace runcpp
 
     parser::~parser()
     {
+        this->_M_content.clear();
+        this->_M_location.clear();
         this->_M_map.clear();
     }
 }
