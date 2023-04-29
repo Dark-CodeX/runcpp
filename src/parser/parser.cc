@@ -39,25 +39,30 @@ namespace runcpp
         {
             openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> lexer = split[i_split].lexer();
             std::size_t j = 0;
-            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                 j++; // ignore whitspaces
             while (lexer[j].second() != openutils::lexer_token::NULL_END)
             {
                 if (lexer[j].first() == "import")
                 {
                     j++; // skip import keyword
-                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                         j++; // ignore whitspaces
                     if (lexer[j].first() == "\"")
                     {
                         j++;                                             // skip "
                         this->_M_prev_location = this->_M_curr_location; // copy prev location
                         this->_M_curr_location.clear();                  // current location
-                        while (lexer[j].first() != "\"" && j < lexer.length())
+                        while (lexer[j].first() != "\"" && lexer[j].second() != openutils::lexer_token::NULL_END)
                             this->_M_curr_location += lexer[j++].first();
                         j++; // skip "
-                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitspaces
+                        if (lexer[j].first() == "#")
+                        {
+                            while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // skip/ignore every data after that
+                        }
                         if (j != lexer.length() - 1)
                         {
                             this->draw_error(this->_M_prev_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
@@ -118,7 +123,7 @@ namespace runcpp
             {
                 openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> lexer = split[i_split].lexer();
                 std::size_t j = 0;
-                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                     j++; // ignore whitspaces
                 while (lexer[j].second() != openutils::lexer_token::NULL_END)
                 {
@@ -128,7 +133,7 @@ namespace runcpp
                         include_global = false;
                         label.clear();
                         adding_vector.erase();
-                        while (lexer[j].first() != "]" && j < lexer.length())
+                        while (lexer[j].first() != "]" && lexer[j].second() != openutils::lexer_token::NULL_END)
                         {
                             if (lexer[j].second() == openutils::lexer_token::WHITESPACE)
                             {
@@ -138,7 +143,7 @@ namespace runcpp
                             j++;
                         }
                         j++; // skip ]
-                        if (lexer[j].first() != ":" && lexer[j].first() != "X" && j < lexer.length())
+                        if (lexer[j].first() != ":" && lexer[j].first() != "X" && lexer[j].second() != openutils::lexer_token::NULL_END)
                         {
                             this->draw_error(this->_M_location, split[i_split], "expected", "`:` or `X`", i_split, j, lexer.raw_data());
                         }
@@ -150,7 +155,7 @@ namespace runcpp
                                 this->draw_error(this->_M_location, split[i_split], "unexpected", "`X`, global target cannot be assigned with `X`", i_split, j, lexer.raw_data());
                             }
                             j++; // skip X
-                            if (lexer[j].first() != ":" && j < lexer.length())
+                            if (lexer[j].first() != ":" && lexer[j].second() != openutils::lexer_token::NULL_END)
                             {
                                 this->draw_error(this->_M_location, split[i_split], "expected", "`:`", i_split, j, lexer.raw_data());
                             }
@@ -158,14 +163,19 @@ namespace runcpp
                         }
                         else
                             j++; // skip : with NOT X
-                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitspaces
+                        if (lexer[j].first() == "#")
+                        {
+                            while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // skip/ignore every data after that
+                        }
                         if (j != lexer.length() - 1)
                         {
                             this->draw_error(this->_M_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
                         }
                     }
-                    else if (lexer[j].first() != "if")
+                    else if (lexer[j].first() != "if" && lexer[j].first() != "#")
                     {
                         if (label.length() == 0 || label.is_null())
                         {
@@ -174,20 +184,20 @@ namespace runcpp
                         openutils::sstring temp_lable;                          // compiler
                         openutils::sstring temp_cmd;                            // "g++"
                         openutils::vector_t<openutils::sstring> temp_child_vec; // [-g", "-O3"]
-                        while (j < lexer.length())
+                        while (lexer[j].second() != openutils::lexer_token::NULL_END)
                         {
                             temp_lable += lexer[j++].first();
                             if (lexer[j].second() == openutils::lexer_token::WHITESPACE || lexer[j].first() == "=")
                                 break;
                         }
-                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitspaces
                         if (lexer[j].first() != "=")
                         {
                             this->draw_error(this->_M_location, split[i_split], "expected", "`=`", i_split, j, lexer.raw_data());
                         }
                         j++; // skip =
-                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitspaces
 
                         // now check if there is " or [
@@ -195,12 +205,17 @@ namespace runcpp
                         {
                             j++; // skip "
                             temp_child_vec.erase();
-                            while (lexer[j].first() != "\"" && j < lexer.length())
+                            while (lexer[j].first() != "\"" && lexer[j].second() != openutils::lexer_token::NULL_END)
                                 temp_cmd += lexer[j++].first();
                             temp_child_vec.add(temp_cmd);
                             j++; // skip "
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                                 j++; // ignore whitspaces
+                            if (lexer[j].first() == "#")
+                            {
+                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    j++; // skip/ignore every data after that
+                            }
                             if (j != lexer.length() - 1)
                             {
                                 this->draw_error(this->_M_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
@@ -210,21 +225,21 @@ namespace runcpp
                         else if (lexer[j].first() == "[")
                         {
                             j++;
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                                 j++; // ignore whitspaces
                             temp_child_vec.erase();
-                            while (lexer[j].first() != "]" && j < lexer.length())
+                            while (lexer[j].first() != "]" && lexer[j].second() != openutils::lexer_token::NULL_END)
                             {
                                 openutils::sstring temp_child_cmd;
                                 if (lexer[j].first() == "\"")
                                 {
                                     j++; // skip "
-                                    while (lexer[j].first() != "\"" && j < lexer.length())
+                                    while (lexer[j].first() != "\"" && lexer[j].second() != openutils::lexer_token::NULL_END)
                                         temp_child_cmd += lexer[j++].first();
                                     temp_child_vec.add(temp_child_cmd);
                                     j++; // skip "
                                     if (lexer[j].first() == " ")
-                                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                                             j++; // ignore whitspaces
                                     if (lexer[j].first() == "]")
                                     {
@@ -239,7 +254,7 @@ namespace runcpp
                                     {
                                         this->draw_error(this->_M_location, split[i_split], "expected", "`\"` or `]`", i_split, j, lexer.raw_data());
                                     }
-                                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                                         j++; // ignore whitspaces
                                 }
                                 else
@@ -247,8 +262,13 @@ namespace runcpp
                                     this->draw_error(this->_M_location, split[i_split], "expected", "`\"`", i_split, j, lexer.raw_data());
                                 }
                             }
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && j < lexer.length())
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                                 j++; // ignore whitspaces
+                            if (lexer[j].first() == "#")
+                            {
+                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    j++; // skip/ignore every data after that
+                            }
                             if (j != lexer.length() - 1)
                             {
                                 this->draw_error(this->_M_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
@@ -265,6 +285,11 @@ namespace runcpp
                     {
                         std::cout << "IF: " << split[i_split] << "\n";
                         break;
+                    }
+                    else if (lexer[j].first() == "#")
+                    {
+                        // got a comment whole line is ignored
+                        break; // skip that line
                     }
                     else
                     {
