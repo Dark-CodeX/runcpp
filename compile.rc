@@ -13,4 +13,7 @@ args = ["-std=c++23", "-g", "-ggdb3", "-Wall", "-Wextra", "-Wuninitialized", "-W
 output = ["-o", "./bin/runcpp_debug.out"] # different output file for debugging
 
 [install]X: # qualified with `X`, which means this target is independent of both `global_s` and `global_e`
-cmds = ["sudo", "mv", "./bin/runcpp", "/usr/bin/"] # this will need sudo previlages to move or install optimized output file
+cmds = ["sudo", "mv", "./bin/runcpp_debug.out", "/usr/bin/"] # this will need sudo previlages to move or install optimized output file
+
+[vg]X: # vg means valgrind for checking any memory issue or any memory leaks
+cmds = ["valgrind", "--leak-check=full", "--show-leak-kinds=all", "--track-origins=yes", "--verbose", "--log-file=valgrind-out.txt", "./bin/runcpp_debug.out", "debug"]
