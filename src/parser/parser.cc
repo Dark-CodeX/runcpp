@@ -7,7 +7,7 @@ namespace runcpp
         std::size_t col = 0;
         for (std::size_t r = 0; r < curr_lexer; r++)
             col += lexer_curr[r].first().length();
-        std::fprintf(stderr, "err: at %s:%zu:%zu %s %s\n", loc.c_str(), line_no + 1, col + 1, err_msg.c_str(), expected.c_str());
+        std::fprintf(stderr, "err: at %s:%zu:%zu: %s %s\n", loc.c_str(), line_no + 1, col + 1, err_msg.c_str(), expected.c_str());
         std::fprintf(stderr, "%s\n", line.c_str());
         std::fprintf(stderr, "%s^\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));
         std::exit(EXIT_FAILURE);
@@ -23,7 +23,10 @@ namespace runcpp
     void parser::import_helper()
     {
         if (!this->_M_content.contains("import"))
+        {
+            this->_M_locations_imported.clear();
             return;
+        }
         openutils::vector_t<openutils::sstring> split;
         {
             if (this->_M_content.contains("\r\n"))
@@ -57,7 +60,12 @@ namespace runcpp
                             j++; // ignore whitspaces
                         if (j != lexer.length() - 1)
                         {
-                            this->draw_error(this->_M_curr_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
+                            this->draw_error(this->_M_prev_location, split[i_split], "unexpected token", openutils::sstring("`") + lexer[j].first() + openutils::sstring("`"), i_split, j, lexer.raw_data());
+                        }
+                        // stop infinite recursion if same file is imported
+                        if (this->_M_locations_imported.contains(this->_M_curr_location))
+                        {
+                            this->draw_error(this->_M_prev_location, split[i_split], "either importing the same file itself or importing another file which imports its parent file will cause infinite recursion", "", i_split, j, lexer.raw_data());
                         }
                         // inserting that file's location
                         if (!io::file_exists(this->_M_curr_location))
@@ -68,6 +76,7 @@ namespace runcpp
                         _temp_file_.open(this->_M_curr_location);
 
                         this->_M_content.replace(split[i_split], _temp_file_);
+                        this->_M_locations_imported.insert(this->_M_curr_location);
                         // now doing recursion
                         this->import_helper();
                     }
@@ -383,6 +392,7 @@ namespace runcpp
         this->_M_content.clear();
         this->_M_location.clear();
         this->_M_curr_location.clear();
+        this->_M_locations_imported.clear();
         this->_M_prev_location.clear();
         this->_M_map.clear();
     }
