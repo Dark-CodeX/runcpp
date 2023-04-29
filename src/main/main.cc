@@ -153,7 +153,7 @@ int main(int argc, char **argv)
         }
         else
         {
-            for (std::size_t i = 3; i < argc; i++)
+            for (std::size_t i = 3; i < static_cast<std::size_t>(argc); i++)
                 vec.add(argv[i]);
         }
         return init_parser_and_caller(argv_2, vec);
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
     else
     {
         openutils::vector_t<openutils::sstring> vec(argc);
-        for (std::size_t i = 1; i < argc; i++)
+        for (std::size_t i = 1; i < static_cast<std::size_t>(argc); i++)
             vec.add(argv[i]);
         return init_parser_and_caller("./compile.rc", vec);
     }
