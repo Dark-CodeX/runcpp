@@ -1,16 +1,16 @@
-[global_s]:
+[global_s]: # global starting this will be included in 1st position of every target which is not qualified with `X`
 compiler = "g++"
 
-[global_e]:
+[global_e]: # global ending this will be included in last position of every target which is not qualified with `X`
 sources = ["./src/caller/caller.cc", "./src/io/io.cc", "./src/os/os.c", "./src/parser/parser.cc", "./src/main/main.cc"]
 
-[release]:
-args = ["-std=c++23", "-O3", "-DNDEBUG", "-Os", "-Ofast", "-Og", "-s", "-march=native", "-masm=intel", "-flto=auto", "-funroll-all-loops"]
-output = ["-o", "./bin/runcpp"]
+[release]: # release target
+args = ["-std=c++23", "-O3", "-DNDEBUG", "-Os", "-Ofast", "-Og", "-s", "-march=native", "-masm=intel", "-flto=auto", "-funroll-all-loops"] # optimization args
+output = ["-o", "./bin/runcpp"] # real and optimized output
 
-[debug]:
-args = ["-std=c++23", "-g", "-ggdb3", "-Wall", "-Wextra", "-Wuninitialized", "-Wstrict-aliasing", "-Wshadow", "-pedantic"]
-output = ["-o", "./bin/runcpp_debug.out"]
+[debug]: # debug target with debugging args
+args = ["-std=c++23", "-g", "-ggdb3", "-Wall", "-Wextra", "-Wuninitialized", "-Wstrict-aliasing", "-Wshadow", "-pedantic"] # args with debugging details
+output = ["-o", "./bin/runcpp_debug.out"] # different output file for debugging
 
-[install]X:
-cmds = ["sudo", "mv", "./bin/runcpp", "/usr/bin/"]
+[install]X: # qualified with `X`, which means this target is independent of both `global_s` and `global_e`
+cmds = ["sudo", "mv", "./bin/runcpp", "/usr/bin/"] # this will need sudo previlages to move or install optimized output file
