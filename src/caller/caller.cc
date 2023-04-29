@@ -45,6 +45,35 @@ namespace runcpp
         this->args.erase();
     }
 #else
-// windows code
+    caller::caller(const openutils::vector_t<openutils::sstring> &args)
+    {
+        for (std::size_t i = 0; i < args.length(); i++)
+        {
+            this->cmds += args[i] + (i < args.length() - 1 ? " " : "");
+        }
+    }
+
+    void caller::init()
+    {
+        ZeroMemory(&this->si, sizeof(this->si));
+        this->si.cb = sizeof(this->si);
+        ZeroMemory(&this->pi, sizeof(this->pi));
+
+        if (!CreateProcess(nullptr, (LPTSTR)(this->cmds.c_str()), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &this->si, &this->pi))
+        {
+            std::fprintf(stderr, "err: CreateProcess failed and returned error code `%lu`.\r\n", GetLastError());
+            std::exit(EXIT_FAILURE);
+        }
+
+        WaitForSingleObject(this->pi.hProcess, INFINITE);
+
+        CloseHandle(this->pi.hProcess);
+        CloseHandle(this->pi.hThread);
+    }
+
+    caller::~caller()
+    {
+        this->cmds.clear();
+    }
 #endif
 }

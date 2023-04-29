@@ -28,6 +28,15 @@ namespace runcpp
 #else
     class caller
     {
+      private:
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+        openutils::sstring cmds;
+
+      public:
+        caller(const openutils::vector_t<openutils::sstring> &args);
+        void init();
+        ~caller();
     };
 #endif
 }
