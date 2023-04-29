@@ -24,8 +24,8 @@ namespace runcpp
         parser &perform_parsing();
         bool contains_key(const openutils::sstring &__key) const;
         void print() const;
+        void clear_memory();
         openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &key) const;
-        ~parser();
     };
 }
 

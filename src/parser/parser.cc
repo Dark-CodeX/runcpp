@@ -298,7 +298,10 @@ namespace runcpp
                 }
             }
         }
-        this->_M_content.clear(); // clears not-in-use memory
+        this->_M_content.clear();       // clears not-in-use memory
+        this->_M_location.clear();      // clears not-in-use memory
+        this->_M_curr_location.clear(); // clears not-in-use memory
+        this->_M_prev_location.clear(); // clears not-in-use memory
         return *this;
     }
 
@@ -325,6 +328,11 @@ namespace runcpp
                 std::cout << "\t}\n}\n\n";
             }
         }
+    }
+
+    void parser::clear_memory()
+    {
+        this->_M_map.clear();
     }
 
     openutils::vector_t<openutils::sstring> parser::generate_command(const openutils::sstring &key) const
@@ -410,15 +418,5 @@ namespace runcpp
             }
             return ret_val;
         }
-    }
-
-    parser::~parser()
-    {
-        this->_M_content.clear();
-        this->_M_location.clear();
-        this->_M_curr_location.clear();
-        this->_M_locations_imported.clear();
-        this->_M_prev_location.clear();
-        this->_M_map.clear();
     }
 }

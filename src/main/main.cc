@@ -27,7 +27,7 @@ static inline int init_parser_and_caller(const openutils::sstring &file_loc, con
         {
             commands.add(parser.generate_command(keys[i]));
         }
-        parser.~parser(); // memory reduced
+        parser.clear_memory();
 
         for (std::size_t i = 0; i < commands.length(); i++)
         {
