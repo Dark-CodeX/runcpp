@@ -9,3 +9,13 @@ Another noteworthy aspect of runcpp is its cross-platform compatibility. Whether
 Moreover, runcpp boasts a user-friendly syntax that is both simple to understand and maintain. It features an intuitive set of commands that allow users to easily manage and generate executable files from their source files. To further enhance its accessibility, runcpp is accompanied by a comprehensive set of documentation that provides detailed information on its syntax, as well as its various features and capabilities.
 
 Overall, runcpp is a powerful and sophisticated tool that can streamline your build process and help you generate executable files with ease. Its advanced features, cross-platform compatibility, and user-friendly syntax make it an invaluable asset to any developer looking to optimize their workflow and simplify their code generation process.
+
+## Features
+- [X] Comments
+- [X] Import another file
+- [X] Better syntax or logical error detection
+- [X] Cross-plaform
+- [X] Optimized and fast
+- [X] Memory safe
+- [ ] Target calling
+- [ ] If-else-elif statements
