@@ -54,7 +54,13 @@ namespace runcpp
                         this->_M_prev_location = this->_M_curr_location; // copy prev location
                         this->_M_curr_location.clear();                  // current location
                         while (lexer[j].first() != "\"" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                        {
                             this->_M_curr_location += lexer[j++].first();
+                            if (j == lexer.length() - 1)
+                            {
+                                this->draw_error(this->_M_location, split[i_split], "expected", "\"", i_split, j, lexer.raw_data());
+                            }
+                        }
                         j++; // skip "
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitspaces
@@ -206,7 +212,13 @@ namespace runcpp
                             j++; // skip "
                             temp_child_vec.erase();
                             while (lexer[j].first() != "\"" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                            {
                                 temp_cmd += lexer[j++].first();
+                                if (j == lexer.length() - 1)
+                                {
+                                    this->draw_error(this->_M_location, split[i_split], "expected", "\"", i_split, j, lexer.raw_data());
+                                }
+                            }
                             temp_child_vec.add(temp_cmd);
                             j++; // skip "
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -235,7 +247,13 @@ namespace runcpp
                                 {
                                     j++; // skip "
                                     while (lexer[j].first() != "\"" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    {
                                         temp_child_cmd += lexer[j++].first();
+                                        if (j == lexer.length() - 1)
+                                        {
+                                            this->draw_error(this->_M_location, split[i_split], "expected", "\"", i_split, j, lexer.raw_data());
+                                        }
+                                    }
                                     temp_child_vec.add(temp_child_cmd);
                                     j++; // skip "
                                     if (lexer[j].first() == " ")
