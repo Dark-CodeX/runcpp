@@ -4,11 +4,12 @@
 static const char *help = "Usage: runcpp [target]\n"
                           "Options:\n"
                           "    --help        Shows this message and exit.\n"
-                          "    --libs        Show libraries used and exit.\n"
-                          "    --version     Show current version and exit.\n"
+                          "    --libs        Shows libraries used and exit.\n"
+                          "    --version     Shows current version and exit.\n"
                           "    --file        Reads FILE as a `compile.rc` file.\n"
                           "    --gen         Generates a `compile.rc` file for C/C++ by taking user input.\n"
-                          "    --generate    Does same job as `--gen` flag.\n";
+                          "    --generate    Does same job as `--gen` flag.\n"
+                          "    --verbose     Shows the data structure in which input file is parsed and stored.\n";
 
 static const char *libs = "Copyright 2023 Tushar Chaurasia\n"
                               "    1. [sstring v" sstring_version "]      (https://github.com/Dark-CodeX/sstring.git)        Tushar Chaurasia\n"
