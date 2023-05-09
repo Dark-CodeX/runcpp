@@ -22,3 +22,4 @@ SpacesInSquareBrackets: false
 SpacesInParentheses: false
 FixNamespaceComments: false
 SortIncludes: false
+AccessModifierOffset: -4
