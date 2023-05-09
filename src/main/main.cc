@@ -3,6 +3,7 @@
 #include "../caller/caller.hh"
 #include <openutils/date-time/date.hh>
 #include <openutils/date-time/time.hh>
+#include <openutils/chunkio/chunkio_writer.hh>
 #include "./help/help.h"
 
 static inline int init_parser_and_caller(const openutils::sstring &file_loc, const openutils::vector_t<openutils::sstring> &keys = {"global_s"})
@@ -73,14 +74,39 @@ int main(int argc, char **argv)
     }
     else if (argv_1 == "--gen" || argv_1 == "--generate")
     {
+        if (runcpp::io::file_exists("./compile.rc"))
+        {
+            std::cout << "`./compile.rc` file already exists, would you like to overwrite it? [yn] ";
+            openutils::sstring overwrite__;
+            overwrite__.in().to_lower();
+            if (overwrite__ == "n")
+                return EXIT_SUCCESS;
+            else if (overwrite__ == "y")
+            {
+                openutils::sstring overw_file = "";
+                overw_file.save("./compile.rc");
+            }
+            else
+            {
+                std::fprintf(stderr, "err: invalid choice `%s`\n", overwrite__.c_str());
+                return EXIT_FAILURE;
+            }
+        }
+        openutils::chunkio_writer<char> writer("./compile.rc");
         openutils::sstring content, uinput;
         std::cout << "Compiler (g++): ";
         uinput.in();
         if (uinput.length() == 0)
             uinput = "g++";
-        content += openutils::sstring("[global_s]:\ncompiler = \"") + uinput + openutils::sstring("\"\n");
+        content = openutils::sstring("[global_s]:\ncompiler = \"") + uinput + openutils::sstring("\"\n");
 
+        if (!writer.append_or_save(content.c_str(), content.length()))
+        {
+            std::fprintf(stderr, "err: file `%s` could not be saved.\n", "./compile.rc");
+            return EXIT_FAILURE;
+        }
         uinput.clear();
+        content.clear();
 
         std::cout << "Arguments (-g -Wall): ";
         uinput.in();
@@ -88,14 +114,20 @@ int main(int argc, char **argv)
             uinput = "-g -Wall";
 
         openutils::vector_t<openutils::sstring> vec = uinput.split(" ");
-        content += "args = [";
+        content = "args = [";
         for (std::size_t i = 0; i < vec.length(); i++)
         {
             content.append_formatted(1024, "\"%s\"%s", vec[i].c_str(), (i < vec.length() - 1 ? ", " : ""));
         }
         content += "]\n";
 
+        if (!writer.append_or_save(content.c_str(), content.length()))
+        {
+            std::fprintf(stderr, "err: file `%s` could not be saved.\n", "./compile.rc");
+            return EXIT_FAILURE;
+        }
         uinput.clear();
+        content.clear();
 
         std::cout << "Sources (./main.cc): ";
         uinput.in();
@@ -103,14 +135,20 @@ int main(int argc, char **argv)
             uinput = "./main.cc";
 
         vec = uinput.split(" ");
-        content += "sources = [";
+        content = "sources = [";
         for (std::size_t i = 0; i < vec.length(); i++)
         {
             content.append_formatted(1024, "\"%s\"%s", vec[i].c_str(), (i < vec.length() - 1 ? ", " : ""));
         }
         content += "]\n";
 
+        if (!writer.append_or_save(content.c_str(), content.length()))
+        {
+            std::fprintf(stderr, "err: file `%s` could not be saved.\n", "./compile.rc");
+            return EXIT_FAILURE;
+        }
         uinput.clear();
+        content.clear();
 
         std::cout << "Output (./main.out): ";
         uinput.in();
@@ -119,20 +157,21 @@ int main(int argc, char **argv)
         uinput.append_start("-o ");
 
         vec = uinput.split(" ");
-        content += "output = [";
+        content = "output = [";
         for (std::size_t i = 0; i < vec.length(); i++)
         {
             content.append_formatted(1024, "\"%s\"%s", vec[i].c_str(), (i < vec.length() - 1 ? ", " : ""));
         }
         content += "]\n";
 
-        content.shrink_to_fit();
-
-        if (!content.save("./compile.rc"))
+        if (!writer.append_or_save(content.c_str(), content.length()))
         {
             std::fprintf(stderr, "err: file `%s` could not be saved.\n", "./compile.rc");
             return EXIT_FAILURE;
         }
+        uinput.clear();
+        content.clear();
+
         std::cout << "\nFile "
                   << "./compile.rc"
                   << " saved.\nYou can use `runcpp` to compile your program." << std::endl;
