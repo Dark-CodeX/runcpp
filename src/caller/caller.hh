@@ -16,11 +16,11 @@ namespace runcpp
 #if defined __linux || defined __linux__ || defined linux || defined __unix || defined __unix__ || defined unix
     class caller
     {
-      private:
+    private:
         openutils::vector_t<char *> args;
         pid_t pid;
 
-      public:
+    public:
         caller(const openutils::vector_t<openutils::sstring> &arg);
         void init();
         ~caller();
@@ -28,12 +28,12 @@ namespace runcpp
 #else
     class caller
     {
-      private:
+    private:
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
         openutils::sstring cmds;
 
-      public:
+    public:
         caller(const openutils::vector_t<openutils::sstring> &args);
         void init();
         ~caller();
