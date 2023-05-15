@@ -1,6 +1,6 @@
 #include "./os.h"
 
-const char *get_os()
+const char *get_os(void)
 {
 #if defined __linux__ || defined linux || defined __linux
     return "linux";
@@ -13,7 +13,7 @@ const char *get_os()
 #endif
 }
 
-unsigned get_os_arch()
+unsigned int get_app_arch(void)
 {
 #if defined __x86_64__ || defined __ppc64__
     return 64;
