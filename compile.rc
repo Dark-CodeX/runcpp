@@ -2,7 +2,7 @@
 compiler = "g++"
 
 [global_e]: # global ending this will be included in last position of every target which is not qualified with `X`
-sources = ["./src/caller/caller.cc", "./src/io/io.cc", "./src/os/os.c", "./src/parser/parser.cc", "./src/main/main.cc"] # source files for this project
+sources = ["./src/caller/caller.cc", "./src/io/io.cc", "./src/os/os.c", "./src/parser/parser.cc", "./src/command_line/command_line.cc", "./src/main/main.cc"] # source files for this project
 
 [release]: # release target
 args = ["-std=c++23", "-O3", "-DNDEBUG", "-Os", "-Ofast", "-Og", "-s", "-march=native", "-masm=intel", "-flto=auto", "-funroll-all-loops"] # optimization args
