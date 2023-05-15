@@ -31,11 +31,11 @@ namespace runcpp
             waitpid(this->pid, &status, 0);
             if (WIFEXITED(status) && WEXITSTATUS(status) != EXIT_SUCCESS)
             {
-                std::fprintf(stderr, "err: child process exited with status `%d`\n", WEXITSTATUS(status));
+                std::fprintf(stderr, "err: child process exited with status %d\n", WEXITSTATUS(status));
             }
             else if (WIFSIGNALED(status))
             {
-                std::fprintf(stderr, "err: child process terminated by signal `%d`\n", WTERMSIG(status));
+                std::fprintf(stderr, "err: child process terminated by signal %d\n", WTERMSIG(status));
             }
         }
     }
@@ -61,7 +61,7 @@ namespace runcpp
 
         if (!CreateProcess(nullptr, (LPTSTR)(this->cmds.c_str()), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &this->si, &this->pi))
         {
-            std::fprintf(stderr, "err: CreateProcess failed and returned error code `%lu`.\r\n", GetLastError());
+            std::fprintf(stderr, "err: CreateProcess failed and returned error code %lu.\r\n", GetLastError());
             std::exit(EXIT_FAILURE);
         }
 
