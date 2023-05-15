@@ -3,29 +3,52 @@
 
 #include <openutils/sstring/sstring.hh>
 #include <openutils/vector/vector.hh>
+#include <openutils/chunkio/chunkio_lines_reader.hh>
 #include <unordered_map>
-#include <unordered_set>
+
 #include "../io/io.hh"
-#include <iostream>
+#include "../os/os.h"
 
 namespace runcpp
 {
     class parser
     {
-    private:
-        openutils::sstring _M_content, _M_location, _M_curr_location, _M_prev_location;
-        std::unordered_set<openutils::sstring> _M_locations_imported;
-        std::unordered_map<openutils::heap_pair<openutils::sstring, bool>, openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::vector_t<openutils::sstring>>>> _M_map;
-        static void draw_error(const openutils::sstring &loc, const openutils::sstring &line, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::heap_pair<openutils::sstring, openutils::lexer_token> *lexer_curr);
-        void import_helper();
+    private:                                // variables
+        openutils::sstring M_curr_location; // current location
 
-    public:
-        parser(const openutils::sstring &content, const openutils::sstring &loc);
-        parser &perform_parsing();
+        // This variable stores the parsed data, here I am using `std::size_t` instead of `openutils::sstring` for KEY, to improve performance and reduce memory usage
+        std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> M_map;
+
+        openutils::sstring M_lable;                                                   // target's name
+        openutils::vector_t<openutils::vector_t<openutils::sstring>> M_adding_vector; // this vector stores the list of (value of a variable) in a target
+
+        std::size_t M_curr_line; // current line
+
+    private: // functions
+        static void draw_error(const openutils::sstring &loc, const openutils::sstring &line, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::heap_pair<openutils::sstring, openutils::lexer_token> *lexer_curr);
+
+        static bool import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const openutils::sstring &curr_line_content, const std::size_t &c_line);
+
+        static bool helper_parsing(parser *__parser__, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line);
+
+    public: // deleted functions
+        parser() = default;
+        parser(const parser &) = delete;
+        parser(parser &&) = delete;
+        parser &operator=(const parser &) = delete;
+        parser &operator=(parser &&) = delete;
+
+    public: // real functions
+        parser(const openutils::sstring &location);
+        bool perform_parsing(unsigned int max_lines);
+        openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &__key) const;
         bool contains_key(const openutils::sstring &__key) const;
         void print() const;
-        void clear_memory();
-        openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &key) const;
+
+        parser &operator+=(parser &&p); // for adding M_map of two parsed objects
+
+        static bool serialize(const parser &p, const openutils::sstring &location);
+        static bool deserialize(parser &p, const openutils::sstring &location);
     };
 }
 
