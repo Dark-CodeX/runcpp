@@ -6,9 +6,9 @@ static const char *help = "Usage: runcpp [target]\n"
                           "    --help        Shows this message and exit.\n"
                           "    --libs        Shows libraries used and exit.\n"
                           "    --version     Shows current version and exit.\n"
-                          "    --file        Reads FILE as a `compile.rc` file.\n"
-                          "    --gen         Generates a `compile.rc` file for C/C++ by taking user input.\n"
-                          "    --generate    Does same job as `--gen` flag.\n"
+                          "    --file        Reads FILE as a 'compile.rc' file.\n"
+                          "    --gen         Generates a 'compile.rc' file for C/C++ by taking user input.\n"
+                          "    --generate    Does same job as '--gen' flag.\n"
                           "    --verbose     Shows the data structure in which input file is parsed and stored.\n";
 
 static const char *libs = "Copyright 2023 Tushar Chaurasia\n"
