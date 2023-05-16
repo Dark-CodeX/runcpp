@@ -324,7 +324,7 @@ namespace runcpp
     {
         if (location.is_null() || location.is_empty() || io::file_exists(location) == false)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m: file '%s' was not found.\n", (location.is_empty() ? (location.is_null() ? "(null)" : location.c_str()) : location.c_str()));
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' was not found.\n", (location.is_empty() ? (location.is_null() ? "(null)" : location.c_str()) : location.c_str()));
             std::exit(EXIT_FAILURE);
         }
         this->M_curr_location = location;
@@ -350,6 +350,8 @@ namespace runcpp
 
             chunk = reader.read_next();
         }
+        // at this point we can erase useless memory
+        this->clear_memory();
         return true;
     }
 
@@ -374,6 +376,13 @@ namespace runcpp
     bool parser::contains_key(const openutils::sstring &__key) const
     {
         return this->M_map.contains(__key.hash());
+    }
+
+    void parser::clear_memory()
+    {
+        this->M_adding_vector.erase();
+        this->M_curr_location.clear();
+        this->M_lable.clear();
     }
 
     void parser::print() const
@@ -416,6 +425,10 @@ namespace runcpp
 
         bool is_app_arch_64 = (get_app_arch() == 64 ? true : false);
         std::fwrite(&is_app_arch_64, sizeof(is_app_arch_64), 1, fptr);
+
+        // "generated using runcpp, don't change manually"
+        char desc[46] = {103, 101, 110, 101, 114, 97, 116, 101, 100, 32, 117, 115, 105, 110, 103, 32, 114, 117, 110, 99, 112, 112, 44, 32, 100, 111, 110, 39, 116, 32, 99, 104, 97, 110, 103, 101, 32, 109, 97, 110, 117, 97, 108, 108, 121, 0};
+        std::fwrite(&desc, sizeof(char), 46, fptr);
 
         std::size_t umap_len = p.M_map.size();
         std::fwrite(&umap_len, sizeof(umap_len), 1, fptr);
@@ -470,6 +483,16 @@ namespace runcpp
             std::fclose(fptr);
             return false;
         }
+
+        openutils::sstring desc('\0', 46);
+        std::fread(desc.get(), sizeof(char), 46, fptr);
+        if (desc != "generated using runcpp, don't change manually")
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is corrupted file external agent.\n", location.c_str());
+            std::fclose(fptr);
+            return false;
+        }
+        desc.clear(); // clear useless memory
 
         std::size_t umap_len;
         std::fread(&umap_len, sizeof(umap_len), 1, fptr);
