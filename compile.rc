@@ -1,27 +1,24 @@
-[global_s]: # global starting this will be included in 1st position of every target which is not qualified with `X`
-compiler = "g++"
+[compiler]:
+compiler = 'g++'
 
-[global_e]: # global ending this will be included in last position of every target which is not qualified with `X`
-sources = ["./src/caller/caller.cc", "./src/io/io.cc", "./src/os/os.c", "./src/parser/parser.cc", "./src/command_line/command_line.cc", "./src/main/main.cc"] # source files for this project
+[sources]:
+src = ['./src/caller/caller.cc', './src/io/io.cc', './src/os/os.c', './src/parser/parser.cc', './src/main/main.cc']
 
-[release]: # release target
-args = ["-std=c++23", "-O3", "-DNDEBUG", "-Os", "-Ofast", "-Og", "-s", "-march=native", "-masm=intel", "-flto=auto", "-funroll-all-loops"] # optimization args
-output = ["-o", "./bin/runcpp"] # real and optimized output
+[release]:
+compiler()
+args = ['-std=c++23', '-O3', '-DNDEBUG', '-Os', '-Ofast', '-Og', '-s', '-march=native', '-masm=intel', '-flto=auto', '-funroll-all-loops']
+output = ['-o', './bin/runcpp']
 
-[debug]: # debug target with debugging args
-args = ["-std=c++23", "-g", "-ggdb3", "-Wall", "-Wextra", "-Wuninitialized", "-Wstrict-aliasing", "-Wshadow", "-pedantic"] # args with debugging details
-output = ["-o", "./bin/runcpp_debug"] # different output file for debugging
+[debug]:
+compiler()
+args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
+output = ['-o', './bin/runcpp_debug']
 
-[install]X: # qualified with `X`, which means this target is independent of both `global_s` and `global_e`
-cmds = ["sudo", "mv", "./bin/runcpp", "/usr/bin/"] # this will need sudo previlages to move or install optimized output file
+[install]:
+cmds = ['sudo', 'mv', './bin/runcpp', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
 
-[vg]X: # vg means valgrind for checking any memory issue or any memory leaks
-cmds = ["valgrind", "--leak-check=full", "--show-leak-kinds=all", "--track-origins=yes", "--verbose", "--log-file=valgrind-out.txt", "./bin/runcpp_debug", "debug", "release"]
+[vg]: # vg means valgrind for checking any memory issue or any memory leaks
+cmds = ['valgrind', '--leak-check=full', '--show-leak-kinds=all', '--track-origins=yes', '--verbose', '--log-file=valgrind-out.txt', './bin/runcpp_debug', 'debug', 'release']
 
-[vgm]X: # vgm means valgrind with `massif` for checking memory usage
-cmds = ["valgrind", "--verbose", "--log-file=valgrind-out.txt", "--tool=massif", "--massif-out-file=./massif.out.log", "./bin/runcpp_debug", "debug", "release"]
-
-[all]X: # for running all commands
-global_s() # compiler
-release() # args and output
-global_e() # source files
+[vgm]: # vgm means valgrind with `massif` for checking memory usage
+cmds = ['valgrind', '--verbose', '--log-file=valgrind-out.txt', '--tool=massif', '--massif-out-file=./massif.out.log', './bin/runcpp_debug', 'debug', 'release']
