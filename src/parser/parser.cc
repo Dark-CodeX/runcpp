@@ -12,7 +12,7 @@ namespace runcpp
         std::fprintf(stderr, "%s^\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));
     }
 
-    bool parser::import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const openutils::sstring &curr_line_content, const std::size_t &c_line)
+    bool parser::import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const openutils::sstring &curr_line_content, const std::size_t &c_line, const unsigned int &lines_to_read)
     {
         std::size_t j = 0;
         // whitespaces are trimmed
@@ -61,7 +61,7 @@ namespace runcpp
                 // 100% correct syntax and file also exists
                 // below block acts like a loop(recursion) for nested import functions
                 parser temp_parser(import_location);
-                if (!temp_parser.perform_parsing(10))
+                if (!temp_parser.perform_parsing(lines_to_read))
                     return false;
                 __parser__->operator+=(std::move(temp_parser)); // now whole file is parsed and "moved" to real map
                 return true;
@@ -75,7 +75,7 @@ namespace runcpp
         return true;
     }
 
-    bool parser::helper_parsing(parser *__parser__, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line)
+    bool parser::helper_parsing(parser *__parser__, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read)
     {
         openutils::vector_t<openutils::sstring> split = content.split("\n");
         for (std::size_t i_split = 0; i_split < split.length(); i_split++, curr_line++)
@@ -305,7 +305,7 @@ namespace runcpp
                 }
                 else if (lexer[j].first() == "import")
                 {
-                    if (!parser::import_helper(__parser__, lexer, loc, split[i_split], curr_line))
+                    if (!parser::import_helper(__parser__, lexer, loc, split[i_split], curr_line, lines_to_read))
                         return false;
                     // now import file's data has been parsed and stored, so we can skip the whole line at this point
                     break; // also, no errors were occurred
@@ -331,7 +331,7 @@ namespace runcpp
         this->M_curr_line = 0;
     }
 
-    bool parser::perform_parsing(unsigned int max_lines)
+    bool parser::perform_parsing(const unsigned int &max_lines)
     {
         openutils::chunkio_lines_reader<char> reader(this->M_curr_location.c_str(), max_lines);
 
@@ -345,7 +345,7 @@ namespace runcpp
             temp_content.change_length(chunk.second); // changing length
             reader.make_nullptr();                    // we have transferred reader's ownership to temp_content
 
-            if (!this->helper_parsing(this, this->M_lable, this->M_adding_vector, this->M_curr_location, temp_content, this->M_map, this->M_curr_line))
+            if (!this->helper_parsing(this, this->M_lable, this->M_adding_vector, this->M_curr_location, temp_content, this->M_map, this->M_curr_line, max_lines))
                 return false;
 
             chunk = reader.read_next();
