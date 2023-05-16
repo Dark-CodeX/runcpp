@@ -7,11 +7,13 @@ src = ['./src/caller/caller.cc', './src/io/io.cc', './src/os/os.c', './src/parse
 [release]:
 compiler()
 args = ['-std=c++23', '-O3', '-DNDEBUG', '-Os', '-Ofast', '-Og', '-s', '-march=native', '-masm=intel', '-flto=auto', '-funroll-all-loops']
+sources()
 output = ['-o', './bin/runcpp']
 
 [debug]:
 compiler()
 args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
+sources()
 output = ['-o', './bin/runcpp_debug']
 
 [install]:
