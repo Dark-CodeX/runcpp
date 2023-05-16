@@ -1,15 +1,8 @@
-#include <openutils/date-time/date.hh>
-#include <openutils/date-time/time.hh>
-#include <openutils/chunkio/chunkio_writer.hh>
-
-#include "./help/help.h"
 #include "../command_line/command_line.hh"
-#include "../parser/parser.hh"
-#include "../io/io.hh"
-#include "../caller/caller.hh"
-#include "../os/os.h"
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
-    return 0;
+    if (!runcpp::command_line::parse_command_line(argc, argv))
+        return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
