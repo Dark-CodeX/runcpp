@@ -4,17 +4,25 @@ compiler = 'g++'
 [sources]:
 src = ['./src/caller/caller.cc', './src/io/io.cc', './src/os/os.c', './src/parser/parser.cc', './src/main/main.cc']
 
+[arguments]:
+release_args = ['-std=c++23', '-O3', '-DNDEBUG', '-Os', '-Ofast', '-Og', '-s', '-march=native', '-masm=intel', '-flto=auto', '-funroll-all-loops']
+debug_args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
+
+[output]:
+release_output = ['-o', './bin/runcpp']
+debug_output = ['-o', './bin/runcpp_debug']
+
 [release]:
 compiler()
-args = ['-std=c++23', '-O3', '-DNDEBUG', '-Os', '-Ofast', '-Og', '-s', '-march=native', '-masm=intel', '-flto=auto', '-funroll-all-loops']
+arguments()[0]
 sources()
-output = ['-o', './bin/runcpp']
+output()[0]
 
 [debug]:
 compiler()
-args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
+arguments()[1]
 sources()
-output = ['-o', './bin/runcpp_debug']
+output()[1]
 
 [install]:
 cmds = ['sudo', 'mv', './bin/runcpp', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
