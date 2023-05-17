@@ -19,7 +19,7 @@ int main(int argc, const char **argv)
                 openutils::sstring cmds;
                 cmds.in();
                 openutils::vector_t<openutils::sstring> args_broken = cmds.to_argv(argv[0]);
-                if (args_broken[0] == "--exit" || args_broken[0] == "-e" || args_broken[0] == "--quit" || args_broken[0] == "-q")
+                if (args_broken[1] == "--exit" || args_broken[1] == "-e" || args_broken[1] == "--quit" || args_broken[1] == "-q")
                     return EXIT_SUCCESS;
                 runcpp::command_line::parse_command_line(args_broken.length(), args_broken.raw_data());
             }
