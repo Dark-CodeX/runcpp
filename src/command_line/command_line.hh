@@ -26,6 +26,8 @@ namespace runcpp
         static bool run_command_des(const openutils::sstring &file_loc, const openutils::vector_t<openutils::sstring> &args, bool __print__);
 
         static bool parse_command_line(int argc, const char **argv);
+
+        static bool parse_command_line(const std::size_t &argc, const openutils::sstring *argv);
     };
 
     bool command_line::generate_config_helper()
@@ -204,11 +206,7 @@ namespace runcpp
             }
         }
         openutils::sstring a1 = argv[1];
-        if (a1 == "--exit")
-        {
-            return true;
-        }
-        else if (a1 == "--help" || a1 == "-h")
+        if (a1 == "--help" || a1 == "-h")
         {
             std::puts(runcpp_help);
             return true;
@@ -374,6 +372,16 @@ namespace runcpp
                 targets.add(argv[i]);
             return command_line::run_command("./compile.rc", targets, false);
         }
+    }
+
+    bool command_line::parse_command_line(const std::size_t &argc, const openutils::sstring *argv)
+    {
+        openutils::vector_t<const char *> c_str_argv(argc);
+        for (std::size_t i = 0; i < argc; i++)
+        {
+            c_str_argv.add(argv[i].c_str());
+        }
+        return command_line::parse_command_line(static_cast<int>(argc), c_str_argv.raw_data());
     }
 }
 
