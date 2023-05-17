@@ -426,9 +426,10 @@ namespace runcpp
         bool is_app_arch_64 = (get_app_arch() == 64 ? true : false);
         std::fwrite(&is_app_arch_64, sizeof(is_app_arch_64), 1, fptr);
 
-        // "generated using runcpp, don't change manually"
-        unsigned desc[46] = {103, 101, 110, 101, 114, 97, 116, 101, 100, 32, 117, 115, 105, 110, 103, 32, 114, 117, 110, 99, 112, 112, 44, 32, 100, 111, 110, 39, 116, 32, 99, 104, 97, 110, 103, 101, 32, 109, 97, 110, 117, 97, 108, 108, 121, 0};
-        std::fwrite(&desc, sizeof(unsigned), 46, fptr);
+        std::size_t desc_len = 46;
+        std::fwrite(&desc_len, sizeof(desc_len), 1, fptr);
+        const char *desc = "generated using runcpp, don't change manually";
+        std::fwrite(desc, sizeof(char), desc_len, fptr);
 
         std::size_t umap_len = p.M_map.size();
         std::fwrite(&umap_len, sizeof(umap_len), 1, fptr);
@@ -469,7 +470,12 @@ namespace runcpp
         }
 
         bool is_binary_64;
-        std::fread(&is_binary_64, sizeof(is_binary_64), 1, fptr);
+        if (std::fread(&is_binary_64, sizeof(is_binary_64), 1, fptr) != 1)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fclose(fptr);
+            return false;
+        }
 
         if (is_binary_64 == true && get_app_arch() == 32) // means app is 32 bit, but bin is 64 bit
         {
@@ -484,20 +490,35 @@ namespace runcpp
             return false;
         }
 
-        unsigned *desc = static_cast<unsigned *>(std::calloc(46, sizeof(unsigned)));
-        openutils::exit_heap_fail(desc);
-        std::fread(desc, sizeof(unsigned), 46, fptr);
-        if (std::memcmp(desc, L"generated using runcpp, don't change manually", 46 * sizeof(unsigned)) != 0)
+        std::size_t desc_len;
+        if (std::fread(&desc_len, sizeof(desc_len), 1, fptr) != 1)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is corrupted file external agent.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
             std::fclose(fptr);
-            std::free(desc);
             return false;
         }
-        std::free(desc);
+        if (desc_len != 46)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fclose(fptr);
+            return false;
+        }
+        openutils::sstring desc('\0', desc_len);
+        std::fread(desc.get(), sizeof(char), desc_len, fptr);
+        if (desc != "generated using runcpp, don't change manually")
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fclose(fptr);
+            return false;
+        }
 
         std::size_t umap_len;
-        std::fread(&umap_len, sizeof(umap_len), 1, fptr);
+        if (std::fread(&umap_len, sizeof(umap_len), 1, fptr) != 1)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fclose(fptr);
+            return false;
+        }
 
         p.M_map = std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>>();
         p.M_map.reserve(umap_len);
@@ -505,32 +526,57 @@ namespace runcpp
         for (std::size_t i = 0; i < umap_len; i++)
         {
             std::size_t __key;
-            std::fread(&__key, sizeof(__key), 1, fptr);
+            if (std::fread(&__key, sizeof(__key), 1, fptr) != 1)
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                std::fclose(fptr);
+                return false;
+            }
             std::size_t outer_vec_len;
-            std::fread(&outer_vec_len, sizeof(outer_vec_len), 1, fptr);
+            if (std::fread(&outer_vec_len, sizeof(outer_vec_len), 1, fptr) != 1)
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                std::fclose(fptr);
+                return false;
+            }
 
             openutils::vector_t<openutils::vector_t<openutils::sstring>> outer_vec(outer_vec_len);
 
             for (std::size_t j = 0; j < outer_vec_len; j++)
             {
                 std::size_t inner_vec_len;
-                std::fread(&inner_vec_len, sizeof(inner_vec_len), 1, fptr);
+                if (std::fread(&inner_vec_len, sizeof(inner_vec_len), 1, fptr) != 1)
+                {
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                    std::fclose(fptr);
+                    return false;
+                }
 
                 openutils::vector_t<openutils::sstring> inner_vec(inner_vec_len);
 
                 for (std::size_t k = 0; k < inner_vec_len; k++)
                 {
                     std::size_t str_len;
-                    std::fread(&str_len, sizeof(str_len), 1, fptr);
+                    if (std::fread(&str_len, sizeof(str_len), 1, fptr) != 1)
+                    {
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                        std::fclose(fptr);
+                        return false;
+                    }
 
                     openutils::sstring str('\0', str_len);
-                    std::fread(str.get(), sizeof(char), str_len, fptr);
+                    if (std::fread(str.get(), sizeof(char), str_len, fptr) != str_len)
+                    {
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                        std::fclose(fptr);
+                        return false;
+                    }
 
                     inner_vec.add(str);
                 }
                 outer_vec.add(inner_vec);
             }
-            p.M_map[__key].operator=(outer_vec);
+            p.M_map.insert({__key, outer_vec});
         }
 
         std::fclose(fptr);
