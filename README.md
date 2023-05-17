@@ -18,4 +18,5 @@ Overall, runcpp is a powerful and sophisticated tool that can streamline your bu
 - [X] Optimized and fast
 - [X] Memory safe
 - [X] Target calling
+- [X] Get target's particular values using indexes
 - [ ] If-else-elif statements
