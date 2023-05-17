@@ -270,10 +270,70 @@ namespace runcpp
                         j++; // skip )
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitspaces
-                        if (lexer[j].first() == "#")
+                        std::size_t select_index_outer = -1, select_index_inner = -1, pos_sio, pos_sii;
+                        if (lexer[j].first() == "[")
                         {
-                            while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // skip/ignore every data after that
+                            j++; // skip [
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // ignore whitspaces
+                            if (lexer[j].second() != openutils::lexer_token::INTEGER)
+                            {
+                                parser::draw_error(loc, split[i_split], "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer.raw_data());
+                                return false;
+                            }
+                            pos_sio = j;
+                            select_index_outer = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
+                            j++;                                                       // skip the index
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // ignore whitspaces
+                            if (lexer[j].first() != "]")
+                            {
+                                parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer.raw_data());
+                                return false;
+                            }
+                            j++; // skip ]
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // ignore whitspaces
+                            if (lexer[j].first() == "[")
+                            {
+                                j++; // skip [
+                                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    j++; // ignore whitspaces
+                                if (lexer[j].second() != openutils::lexer_token::INTEGER)
+                                {
+                                    parser::draw_error(loc, split[i_split], "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer.raw_data());
+                                    return false;
+                                }
+                                pos_sii = j;
+                                select_index_inner = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
+                                j++;                                                       // skip the index
+                                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    j++; // ignore whitspaces
+                                if (lexer[j].first() != "]")
+                                {
+                                    parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer.raw_data());
+                                    return false;
+                                }
+                                j++; // skip ]
+                                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    j++; // ignore whitespaces
+                            }
+                            else
+                            {
+                                if (lexer[j].first() == "#")
+                                {
+                                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                        j++; // skip/ignore every data after that
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (lexer[j].first() == "#")
+                            {
+                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    j++; // skip/ignore every data after that
+                            }
                         }
                         if (j != lexer.length() - 1)
                         {
@@ -282,12 +342,44 @@ namespace runcpp
                         }
                         // now syntax is 100% correct, now as the target which is going to be called is already parsed so we don't need to parse it again, just append its variable's values to current lable's values serial wise
                         // also, target is 100% present as checked above
+                        // now, aftet the addition of getting target's particular value using index
+                        // we have to manage both `select_index_outer` and `select_index_inner`
                         const openutils::vector_t<openutils::vector_t<openutils::sstring>> &temp_val = parsed_data.at(var_name.hash());
-                        adding_vector.add(temp_val);
+                        if (select_index_outer != static_cast<std::size_t>(-1))
+                        {
+                            if (select_index_outer >= temp_val.length())
+                            {
+                                parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val.length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_outer), curr_line, pos_sio, lexer.raw_data());
+                                return false;
+                            }
+                            else
+                            {
+                                if (select_index_inner != static_cast<std::size_t>(-1))
+                                {
+                                    if (select_index_inner >= temp_val[select_index_outer].length())
+                                    {
+                                        parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val[select_index_outer].length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_inner), curr_line, pos_sii, lexer.raw_data());
+                                        return false;
+                                    }
+                                    else
+                                    {
+                                        adding_vector.add({temp_val[select_index_outer][select_index_inner]});
+                                    }
+                                }
+                                else
+                                {
+                                    adding_vector.add({temp_val[select_index_outer]});
+                                }
+                            }
+                        }
+                        else
+                        {
+                            adding_vector.add(temp_val);
+                        }
                     }
                     else
                     {
-                        parser::draw_error(loc, split[i_split], "expected", "`=` or `(`", curr_line, j, lexer.raw_data());
+                        parser::draw_error(loc, split[i_split], "expected", "'=' or '('", curr_line, j, lexer.raw_data());
                         return false;
                     }
                     // here we assign the values to its respective target(lable)'s hash
