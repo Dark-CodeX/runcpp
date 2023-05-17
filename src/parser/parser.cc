@@ -322,17 +322,17 @@ namespace runcpp
 
     parser::parser(const openutils::sstring &location)
     {
-        if (location.is_null() || location.is_empty() || io::file_exists(location) == false)
-        {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' was not found.\n", (location.is_empty() ? (location.is_null() ? "(null)" : location.c_str()) : location.c_str()));
-            std::exit(EXIT_FAILURE);
-        }
         this->M_curr_location = location;
         this->M_curr_line = 0;
     }
 
     bool parser::perform_parsing(const unsigned int &max_lines)
     {
+        if (this->M_curr_location.is_null() || this->M_curr_location.is_empty() || io::file_exists(this->M_curr_location) == false)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' was not found.\n", (this->M_curr_location.is_empty() ? (this->M_curr_location.is_null() ? "(null)" : this->M_curr_location.c_str()) : this->M_curr_location.c_str()));
+            return false;
+        }
         openutils::chunkio_lines_reader<char> reader(this->M_curr_location.c_str(), max_lines);
 
         std::pair<char *&, std::size_t> chunk = reader.read_next();
