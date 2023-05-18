@@ -92,24 +92,31 @@ namespace runcpp
                     adding_vector.erase();
                     lable.clear();
 
-                    while (lexer[j].first() != "]" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
                     {
                         if (lexer[j].second() == openutils::lexer_token::WHITESPACE)
                         {
                             parser::draw_error(loc, split[i_split], "unexpected", "' '", curr_line, j, lexer.raw_data());
                             return false;
                         }
+                        else if (lexer[j].first() == "]") // ends
+                            break;
+                        else if (j >= lexer.length() - 1)
+                        {
+                            parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer.raw_data());
+                            return false;
+                        }
                         lable += lexer[j].first();
                         j++;
                     }
-                    if (parsed_data.contains(lable.hash()))
+                    // now at this point where were no errors
+                    j++; // skip ]
+                    if (j >= lexer.length() - 1)
                     {
-                        // avoid duplicate targets
-                        parser::draw_error(loc, split[i_split], "target", lable.wrap("'") + " is already defined", curr_line, j, lexer.raw_data());
+                        parser::draw_error(loc, split[i_split], "expected", "':'", curr_line, j, lexer.raw_data());
                         return false;
                     }
-                    j++; // skip ]
-                    if (lexer[j].first() != ":" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                    if (lexer[j].first() != ":")
                     {
                         parser::draw_error(loc, split[i_split], "expected", "':'", curr_line, j, lexer.raw_data());
                         return false;
