@@ -28,7 +28,7 @@ namespace runcpp
         {
             j++; // skip import keyword
             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                j++; // ignore whitspaces
+                j++; // ignore whitespaces
             if (lexer[j].first() == "\"")
             {
                 j++; // skip "
@@ -45,7 +45,7 @@ namespace runcpp
                 }
                 j++; // skip "
                 while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                    j++; // ignore whitspaces
+                    j++; // ignore whitespaces
                 if (lexer[j].first() == "#")
                 {
                     while (lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -91,7 +91,7 @@ namespace runcpp
             openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> lexer = split[i_split].lexer();
             std::size_t j = 0;
             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                j++; // ignore whitspaces
+                j++; // ignore whitespaces
             while (lexer[j].second() != openutils::lexer_token::NULL_END)
             {
                 if (lexer[j].first() == "[")
@@ -131,7 +131,7 @@ namespace runcpp
                     }
                     j++; // skip :
                     while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // ignore whitspaces
+                        j++; // ignore whitespaces
                     if (lexer[j].first() == "#")
                     {
                         while (lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -158,12 +158,12 @@ namespace runcpp
                             break;
                     }
                     while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // ignore whitspaces
+                        j++; // ignore whitespaces
                     if (lexer[j].first() == "=")
                     {
                         j++; // skip =
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // ignore whitspaces
+                            j++; // ignore whitespaces
 
                         openutils::vector_t<openutils::sstring> temp_vec;
                         // now check if there is ' or [
@@ -185,7 +185,7 @@ namespace runcpp
                             temp_vec.add(temp_cmd);
                             j++; // skip '
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitspaces
+                                j++; // ignore whitespaces
                             if (lexer[j].first() == "#")
                             {
                                 while (lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -201,7 +201,7 @@ namespace runcpp
                         {
                             j++; // skip [
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitspaces
+                                j++; // ignore whitespaces
                             temp_vec.erase();
                             while (lexer[j].first() != "]" && lexer[j].second() != openutils::lexer_token::NULL_END)
                             {
@@ -222,7 +222,7 @@ namespace runcpp
                                     j++; // skip '
                                     if (lexer[j].first() == " ")
                                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                            j++; // ignore whitspaces
+                                            j++; // ignore whitespaces
                                     if (lexer[j].first() == "]")
                                     {
                                         j++;
@@ -238,7 +238,7 @@ namespace runcpp
                                         return false;
                                     }
                                     while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                        j++; // ignore whitspaces
+                                        j++; // ignore whitespaces
                                 }
                                 else
                                 {
@@ -247,7 +247,7 @@ namespace runcpp
                                 }
                             }
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitspaces
+                                j++; // ignore whitespaces
                             if (lexer[j].first() == "#")
                             {
                                 while (lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -275,7 +275,7 @@ namespace runcpp
                             return false;
                         }
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // ignore whitspaces
+                            j++; // ignore whitespaces
 
                         if (lexer[j].first() != ")")
                         {
@@ -284,13 +284,13 @@ namespace runcpp
                         }
                         j++; // skip )
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // ignore whitspaces
+                            j++; // ignore whitespaces
                         std::size_t select_index_outer = -1, select_index_inner = -1, pos_sio, pos_sii;
                         if (lexer[j].first() == "[")
                         {
                             j++; // skip [
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitspaces
+                                j++; // ignore whitespaces
                             if (lexer[j].second() != openutils::lexer_token::INTEGER)
                             {
                                 parser::draw_error(loc, split[i_split], "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer);
@@ -300,7 +300,7 @@ namespace runcpp
                             select_index_outer = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
                             j++;                                                       // skip the index
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitspaces
+                                j++; // ignore whitespaces
                             if (lexer[j].first() != "]")
                             {
                                 parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer);
@@ -308,12 +308,12 @@ namespace runcpp
                             }
                             j++; // skip ]
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitspaces
+                                j++; // ignore whitespaces
                             if (lexer[j].first() == "[")
                             {
                                 j++; // skip [
                                 while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // ignore whitspaces
+                                    j++; // ignore whitespaces
                                 if (lexer[j].second() != openutils::lexer_token::INTEGER)
                                 {
                                     parser::draw_error(loc, split[i_split], "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer);
@@ -323,7 +323,7 @@ namespace runcpp
                                 select_index_inner = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
                                 j++;                                                       // skip the index
                                 while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // ignore whitspaces
+                                    j++; // ignore whitespaces
                                 if (lexer[j].first() != "]")
                                 {
                                     parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer);
