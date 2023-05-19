@@ -2,7 +2,7 @@
 
 namespace runcpp
 {
-    void parser::draw_error(const openutils::sstring &loc, const openutils::sstring &line, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::lexer_token>> &lexer)
+    void parser::draw_error(const openutils::sstring &loc, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::lexer_token>> &lexer)
     {
         std::size_t col = 0;
         for (std::size_t r = 0; r < curr_lexer; r++)
@@ -29,7 +29,7 @@ namespace runcpp
         return false;
     }
 
-    bool parser::import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const openutils::sstring &curr_line_content, const std::size_t &c_line, const unsigned int &lines_to_read)
+    bool parser::import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const std::size_t &c_line, const unsigned int &lines_to_read)
     {
         std::size_t j = 0;
         // whitespaces are trimmed
@@ -48,7 +48,7 @@ namespace runcpp
                     import_location += lexer[j++].first();
                     if (j == lexer.length() - 1)
                     {
-                        parser::draw_error(file_loc, curr_line_content, "expected", "\"", c_line, j, lexer);
+                        parser::draw_error(file_loc, "expected", "\"", c_line, j, lexer);
                         return false;
                     }
                 }
@@ -62,17 +62,17 @@ namespace runcpp
                 }
                 if (j != lexer.length() - 1)
                 {
-                    parser::draw_error(file_loc, curr_line_content, "unexpected token", lexer[j].first().wrap("'"), c_line, j, lexer);
+                    parser::draw_error(file_loc, "unexpected token", lexer[j].first().wrap("'"), c_line, j, lexer);
                     return false;
                 }
                 if (import_location.is_null() || import_location.is_empty())
                 {
-                    parser::draw_error(file_loc, curr_line_content, "file's location", "was (null) or empty", c_line, j, lexer);
+                    parser::draw_error(file_loc, "file's location", "was (null) or empty", c_line, j, lexer);
                     return false;
                 }
                 if (!io::file_exists(import_location))
                 {
-                    parser::draw_error(file_loc, curr_line_content, "file", import_location.wrap("'") + " not found", c_line, j, lexer);
+                    parser::draw_error(file_loc, "file", import_location.wrap("'") + " not found", c_line, j, lexer);
                     return false;
                 }
                 // 100% correct syntax and file also exists
@@ -85,7 +85,7 @@ namespace runcpp
             }
             else
             {
-                parser::draw_error(file_loc, curr_line_content, "expected", "\"", c_line, j, lexer);
+                parser::draw_error(file_loc, "expected", "\"", c_line, j, lexer);
                 return false;
             }
         }
@@ -113,14 +113,14 @@ namespace runcpp
                     {
                         if (lexer[j].second() == openutils::lexer_token::WHITESPACE)
                         {
-                            parser::draw_error(loc, split[i_split], "unexpected", "' '", curr_line, j, lexer);
+                            parser::draw_error(loc, "unexpected", "' '", curr_line, j, lexer);
                             return false;
                         }
                         else if (lexer[j].first() == "]") // ends
                             break;
                         else if (j >= lexer.length() - 1)
                         {
-                            parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer);
+                            parser::draw_error(loc, "expected", "']'", curr_line, j, lexer);
                             return false;
                         }
                         lable += lexer[j].first();
@@ -130,23 +130,23 @@ namespace runcpp
                     if (parsed_data.contains(lable.hash()))
                     {
                         // avoid duplicate targets
-                        parser::draw_error(loc, split[i_split], "target", lable.wrap("'") + " is already defined", curr_line, j - 1, lexer);
+                        parser::draw_error(loc, "target", lable.wrap("'") + " is already defined", curr_line, j - 1, lexer);
                         return false;
                     }
                     if (parser::is_used_keyword(lable.hash())) // true means target is a used name
                     {
-                        parser::draw_error(loc, split[i_split], "target", lable.wrap("'") + " is a reserved name, try using another similar name instead", curr_line, j - 1, lexer);
+                        parser::draw_error(loc, "target", lable.wrap("'") + " is a reserved name, try using another similar name instead", curr_line, j - 1, lexer);
                         return false;
                     }
                     j++; // skip ]
                     if (j >= lexer.length() - 1)
                     {
-                        parser::draw_error(loc, split[i_split], "expected", "':'", curr_line, j, lexer);
+                        parser::draw_error(loc, "expected", "':'", curr_line, j, lexer);
                         return false;
                     }
                     if (lexer[j].first() != ":")
                     {
-                        parser::draw_error(loc, split[i_split], "expected", "':'", curr_line, j, lexer);
+                        parser::draw_error(loc, "expected", "':'", curr_line, j, lexer);
                         return false;
                     }
                     j++; // skip :
@@ -159,7 +159,7 @@ namespace runcpp
                     }
                     if (j != lexer.length() - 1)
                     {
-                        parser::draw_error(loc, split[i_split], "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                        parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
                         return false;
                     }
                 }
@@ -168,7 +168,7 @@ namespace runcpp
                     openutils::sstring var_name;
                     if (lable.is_empty() || lable.is_null())
                     {
-                        parser::draw_error(loc, split[i_split], "cannot define a variable without a parent target", "", curr_line, j, lexer);
+                        parser::draw_error(loc, "cannot define a variable without a parent target", "", curr_line, j, lexer);
                         return false;
                     }
                     while (lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -198,7 +198,7 @@ namespace runcpp
                                 temp_cmd += lexer[j++].first();
                                 if (j == lexer.length() - 1)
                                 {
-                                    parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
+                                    parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
                                     return false;
                                 }
                             }
@@ -213,7 +213,7 @@ namespace runcpp
                             }
                             if (j != lexer.length() - 1)
                             {
-                                parser::draw_error(loc, split[i_split], "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                                parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
                                 return false;
                             }
                         }
@@ -234,7 +234,7 @@ namespace runcpp
                                         temp_cmd += lexer[j++].first();
                                         if (j == lexer.length() - 1)
                                         {
-                                            parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
+                                            parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
                                             return false;
                                         }
                                     }
@@ -254,7 +254,7 @@ namespace runcpp
                                     }
                                     else
                                     {
-                                        parser::draw_error(loc, split[i_split], "expected", "' or ']'", curr_line, j, lexer);
+                                        parser::draw_error(loc, "expected", "' or ']'", curr_line, j, lexer);
                                         return false;
                                     }
                                     while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -262,7 +262,7 @@ namespace runcpp
                                 }
                                 else
                                 {
-                                    parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
+                                    parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
                                     return false;
                                 }
                             }
@@ -275,13 +275,13 @@ namespace runcpp
                             }
                             if (j != lexer.length() - 1)
                             {
-                                parser::draw_error(loc, split[i_split], "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                                parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
                                 return false;
                             }
                         }
                         else
                         {
-                            parser::draw_error(loc, split[i_split], "expected", "' or '['", curr_line, j, lexer);
+                            parser::draw_error(loc, "expected", "' or '['", curr_line, j, lexer);
                             return false;
                         }
                         adding_vector.add(std::move(temp_vec));
@@ -298,7 +298,7 @@ namespace runcpp
                             // this feature is helpful when there's a situation like `pkgconf --cflags --libs <name>`
                             if (lexer[j].first() != "'")
                             {
-                                parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
+                                parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
                                 return false;
                             }
                             j++; // skip '
@@ -307,7 +307,7 @@ namespace runcpp
                                 run_command += lexer[j++].first();
                                 if (j == lexer.length() - 1)
                                 {
-                                    parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
+                                    parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
                                     return false;
                                 }
                             }
@@ -317,13 +317,13 @@ namespace runcpp
                         {
                             if (!parsed_data.contains(var_name.hash()))
                             {
-                                parser::draw_error(loc, split[i_split], "target", var_name.wrap("'") + " not found", curr_line, j, lexer);
+                                parser::draw_error(loc, "target", var_name.wrap("'") + " not found", curr_line, j, lexer);
                                 return false;
                             }
                         }
                         if (lexer[j].first() != ")")
                         {
-                            parser::draw_error(loc, split[i_split], "expected", "')'", curr_line, j, lexer);
+                            parser::draw_error(loc, "expected", "')'", curr_line, j, lexer);
                             return false;
                         }
                         j++; // skip )
@@ -337,7 +337,7 @@ namespace runcpp
                                 j++; // ignore whitespaces
                             if (lexer[j].second() != openutils::lexer_token::INTEGER)
                             {
-                                parser::draw_error(loc, split[i_split], "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                                parser::draw_error(loc, "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer);
                                 return false;
                             }
                             pos_sio = j;
@@ -347,7 +347,7 @@ namespace runcpp
                                 j++; // ignore whitespaces
                             if (lexer[j].first() != "]")
                             {
-                                parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer);
+                                parser::draw_error(loc, "expected", "']'", curr_line, j, lexer);
                                 return false;
                             }
                             j++; // skip ]
@@ -360,7 +360,7 @@ namespace runcpp
                                     j++; // ignore whitespaces
                                 if (lexer[j].second() != openutils::lexer_token::INTEGER)
                                 {
-                                    parser::draw_error(loc, split[i_split], "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                                    parser::draw_error(loc, "expected an positive integer", lexer[j].first().wrap("'"), curr_line, j, lexer);
                                     return false;
                                 }
                                 pos_sii = j;
@@ -370,7 +370,7 @@ namespace runcpp
                                     j++; // ignore whitespaces
                                 if (lexer[j].first() != "]")
                                 {
-                                    parser::draw_error(loc, split[i_split], "expected", "']'", curr_line, j, lexer);
+                                    parser::draw_error(loc, "expected", "']'", curr_line, j, lexer);
                                     return false;
                                 }
                                 j++; // skip ]
@@ -396,7 +396,7 @@ namespace runcpp
                         }
                         if (j != lexer.length() - 1)
                         {
-                            parser::draw_error(loc, split[i_split], "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                            parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
                             return false;
                         }
                         if (run_command.is_null())
@@ -410,7 +410,7 @@ namespace runcpp
                             {
                                 if (select_index_outer >= temp_val.length())
                                 {
-                                    parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val.length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_outer), curr_line, pos_sio, lexer);
+                                    parser::draw_error(loc, openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val.length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_outer), curr_line, pos_sio, lexer);
                                     return false;
                                 }
                                 else
@@ -419,7 +419,7 @@ namespace runcpp
                                     {
                                         if (select_index_inner >= temp_val[select_index_outer].length())
                                         {
-                                            parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val[select_index_outer].length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_inner), curr_line, pos_sii, lexer);
+                                            parser::draw_error(loc, openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val[select_index_outer].length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_inner), curr_line, pos_sii, lexer);
                                             return false;
                                         }
                                         else
@@ -453,7 +453,7 @@ namespace runcpp
                     }
                     else
                     {
-                        parser::draw_error(loc, split[i_split], "expected", "'=' or '('", curr_line, j, lexer);
+                        parser::draw_error(loc, "expected", "'=' or '('", curr_line, j, lexer);
                         return false;
                     }
                     // here we assign the values to its respective target(lable)'s hash
@@ -471,14 +471,14 @@ namespace runcpp
                 }
                 else if (lexer[j].first() == "import")
                 {
-                    if (!parser::import_helper(__parser__, lexer, loc, split[i_split], curr_line, lines_to_read))
+                    if (!parser::import_helper(__parser__, lexer, loc, curr_line, lines_to_read))
                         return false;
                     // now import file's data has been parsed and stored, so we can skip the whole line at this point
                     break; // also, no errors were occurred
                 }
                 else
                 {
-                    parser::draw_error(loc, split[i_split], "expected", "'[', 'if', '<variable>' or 'import'", curr_line, j, lexer);
+                    parser::draw_error(loc, "expected", "'[', 'if', '<variable>' or 'import'", curr_line, j, lexer);
                     return false;
                 }
             }
