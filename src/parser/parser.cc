@@ -570,7 +570,7 @@ namespace runcpp
     {
         if (this != &p && p.M_map.size() != 0)
         {
-            for (const auto &[key, val] : p.M_map)
+            for (auto &[key, val] : p.M_map)
             {
                 this->M_map[key].add(std::move(val));
             }
