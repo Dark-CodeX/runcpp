@@ -289,11 +289,6 @@ namespace runcpp
                     else if (lexer[j].first() == "(")
                     {
                         j++; // skip (
-                        if (!parsed_data.contains(var_name.hash()))
-                        {
-                            parser::draw_error(loc, split[i_split], "target", var_name.wrap("'") + " not found", curr_line, j, lexer);
-                            return false;
-                        }
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitespaces
                         openutils::sstring run_command = nullptr;
@@ -301,7 +296,6 @@ namespace runcpp
                         {
                             // we got a command to directly run and add its output (stdout) to adding_vector
                             // this feature is helpful when there's a situation like `pkgconf --cflags --libs <name>`
-                            j++; // skip `run` keyword
                             if (lexer[j].first() != "'")
                             {
                                 parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
@@ -318,6 +312,14 @@ namespace runcpp
                                 }
                             }
                             j++; // skip '
+                        }
+                        if (run_command.is_null())
+                        {
+                            if (!parsed_data.contains(var_name.hash()))
+                            {
+                                parser::draw_error(loc, split[i_split], "target", var_name.wrap("'") + " not found", curr_line, j, lexer);
+                                return false;
+                            }
                         }
                         if (lexer[j].first() != ")")
                         {
