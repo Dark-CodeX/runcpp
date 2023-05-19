@@ -225,7 +225,7 @@ namespace runcpp
         {
             return command_line::generate_config_helper();
         }
-        else if (a1 == "--file")
+        else if (a1 == "--file" || a1 == "-f")
         {
             if (argc == 2)
             {
