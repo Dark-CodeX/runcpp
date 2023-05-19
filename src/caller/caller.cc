@@ -87,14 +87,18 @@ namespace runcpp
             return openutils::vector_t<openutils::sstring>();
         }
 
-        std::fseek(fptr, 0, SEEK_END);
-        std::size_t out_len = std::ftell(fptr);
-        std::fseek(fptr, 0, SEEK_SET);
+        openutils::sstring output;
+        char buffer[64] = {};
 
-        openutils::sstring output('\0', out_len + 1);
-        std::fread(output.get(), sizeof(char), out_len, fptr);
+        while (std::fgets(buffer, 63, fptr) != nullptr)
+            output.append(buffer);
 
-        std::fclose(fptr);
+        int ext_code = pclose(fptr);
+        if (ext_code != EXIT_SUCCESS)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", ext_code);
+            return openutils::vector_t<openutils::sstring>();
+        }
 
         return output.to_argv();
     }
