@@ -10,10 +10,10 @@ namespace runcpp
     {
     public:
         /**
-         * @return true if file exists
+         * @return true if file exists;
          * @return false if file DOES NOT exists
          */
-        static bool file_exists(const openutils::sstring &loc);
+        [[nodiscard]] static bool file_exists(const openutils::sstring &loc);
     };
 }
 #endif
