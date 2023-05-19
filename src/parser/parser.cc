@@ -341,6 +341,11 @@ namespace runcpp
                                 return false;
                             }
                             pos_sio = j;
+                            if (lexer[j].first().length() > std::numeric_limits<std::size_t>::digits10)
+                            {
+                                parser::draw_error(loc, "integer overflow", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                                return false;
+                            }
                             select_index_outer = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
                             j++;                                                       // skip the index
                             while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -364,6 +369,11 @@ namespace runcpp
                                     return false;
                                 }
                                 pos_sii = j;
+                                if (lexer[j].first().length() > std::numeric_limits<std::size_t>::digits10)
+                                {
+                                    parser::draw_error(loc, "integer overflow", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                                    return false;
+                                }
                                 select_index_inner = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
                                 j++;                                                       // skip the index
                                 while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
