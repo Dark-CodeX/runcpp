@@ -20,6 +20,15 @@ namespace runcpp
         std::fprintf(stderr, "\n%s\033[1;91m^\033[0m\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));
     }
 
+    bool parser::is_used_keyword(const std::size_t &__keyword_hash)
+    {
+        const std::size_t n = sizeof(used_keywords) / sizeof(used_keywords[0]);
+        for (std::size_t i = 0; i < n; i++)
+            if (__keyword_hash == used_keywords[i])
+                return true;
+        return false;
+    }
+
     bool parser::import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const openutils::sstring &curr_line_content, const std::size_t &c_line, const unsigned int &lines_to_read)
     {
         std::size_t j = 0;
@@ -118,6 +127,17 @@ namespace runcpp
                         j++;
                     }
                     // now at this point where were no errors
+                    if (parsed_data.contains(lable.hash()))
+                    {
+                        // avoid duplicate targets
+                        parser::draw_error(loc, split[i_split], "target", lable.wrap("'") + " is already defined", curr_line, j - 1, lexer);
+                        return false;
+                    }
+                    if (parser::is_used_keyword(lable.hash())) // true means target is a used name
+                    {
+                        parser::draw_error(loc, split[i_split], "target", lable.wrap("'") + " is a reserved name, try using another similar name instead", curr_line, j - 1, lexer);
+                        return false;
+                    }
                     j++; // skip ]
                     if (j >= lexer.length() - 1)
                     {
@@ -447,7 +467,7 @@ namespace runcpp
         openutils::sstring temp_content;
         while (chunk.first)
         {
-            if(reader.is_file_binary())
+            if (reader.is_file_binary())
             {
                 std::fprintf(stderr, "\033[1;91merr:\033[0m given file '%s' was binary, which cannot be parsed, try using '-d' flag.\n", this->M_curr_location.c_str());
                 return false;
