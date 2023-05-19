@@ -25,9 +25,9 @@ namespace runcpp
 
         [[nodiscard]] static bool run_command_des(const openutils::sstring &file_loc, const openutils::vector_t<openutils::sstring> &args, bool __print__);
 
-        [[nodiscard]] static bool parse_command_line(int argc, const char **argv);
+        static bool parse_command_line(int argc, const char **argv);
 
-        [[nodiscard]] static bool parse_command_line(const std::size_t &argc, const openutils::sstring *argv);
+        static bool parse_command_line(const std::size_t &argc, const openutils::sstring *argv);
     };
 
     bool command_line::generate_config_helper()
