@@ -284,7 +284,7 @@ namespace runcpp
                             parser::draw_error(loc, split[i_split], "expected", "' or '['", curr_line, j, lexer);
                             return false;
                         }
-                        adding_vector.add(temp_vec);
+                        adding_vector.add(std::move(temp_vec));
                     }
                     else if (lexer[j].first() == "(")
                     {
@@ -296,7 +296,29 @@ namespace runcpp
                         }
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitespaces
-
+                        openutils::sstring run_command = nullptr;
+                        if (var_name == "run")
+                        {
+                            // we got a command to directly run and add its output (stdout) to adding_vector
+                            // this feature is helpful when there's a situation like `pkgconf --cflags --libs <name>`
+                            j++; // skip `run` keyword
+                            if (lexer[j].first() != "'")
+                            {
+                                parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
+                                return false;
+                            }
+                            j++; // skip '
+                            while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                            {
+                                run_command += lexer[j++].first();
+                                if (j == lexer.length() - 1)
+                                {
+                                    parser::draw_error(loc, split[i_split], "expected", "'", curr_line, j, lexer);
+                                    return false;
+                                }
+                            }
+                            j++; // skip '
+                        }
                         if (lexer[j].first() != ")")
                         {
                             parser::draw_error(loc, split[i_split], "expected", "')'", curr_line, j, lexer);
@@ -375,41 +397,51 @@ namespace runcpp
                             parser::draw_error(loc, split[i_split], "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
                             return false;
                         }
-                        // now syntax is 100% correct, now as the target which is going to be called is already parsed so we don't need to parse it again, just append its variable's values to current lable's values serial wise
-                        // also, target is 100% present as checked above
-                        // now, aftet the addition of getting target's particular value using index
-                        // we have to manage both `select_index_outer` and `select_index_inner`
-                        const openutils::vector_t<openutils::vector_t<openutils::sstring>> &temp_val = parsed_data.at(var_name.hash());
-                        if (select_index_outer != static_cast<std::size_t>(-1))
+                        if (run_command.is_null())
                         {
-                            if (select_index_outer >= temp_val.length())
+                            // now syntax is 100% correct, now as the target which is going to be called is already parsed so we don't need to parse it again, just append its variable's values to current lable's values serial wise
+                            // also, target is 100% present as checked above
+                            // now, aftet the addition of getting target's particular value using index
+                            // we have to manage both `select_index_outer` and `select_index_inner`
+                            const openutils::vector_t<openutils::vector_t<openutils::sstring>> &temp_val = parsed_data.at(var_name.hash());
+                            if (select_index_outer != static_cast<std::size_t>(-1))
                             {
-                                parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val.length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_outer), curr_line, pos_sio, lexer);
-                                return false;
-                            }
-                            else
-                            {
-                                if (select_index_inner != static_cast<std::size_t>(-1))
+                                if (select_index_outer >= temp_val.length())
                                 {
-                                    if (select_index_inner >= temp_val[select_index_outer].length())
-                                    {
-                                        parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val[select_index_outer].length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_inner), curr_line, pos_sii, lexer);
-                                        return false;
-                                    }
-                                    else
-                                    {
-                                        adding_vector.add({temp_val[select_index_outer][select_index_inner]});
-                                    }
+                                    parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val.length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_outer), curr_line, pos_sio, lexer);
+                                    return false;
                                 }
                                 else
                                 {
-                                    adding_vector.add({temp_val[select_index_outer]});
+                                    if (select_index_inner != static_cast<std::size_t>(-1))
+                                    {
+                                        if (select_index_inner >= temp_val[select_index_outer].length())
+                                        {
+                                            parser::draw_error(loc, split[i_split], openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(temp_val[select_index_outer].length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_inner), curr_line, pos_sii, lexer);
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            adding_vector.add({temp_val[select_index_outer][select_index_inner]});
+                                        }
+                                    }
+                                    else
+                                    {
+                                        adding_vector.add({temp_val[select_index_outer]});
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                adding_vector.add(temp_val);
                             }
                         }
                         else
                         {
-                            adding_vector.add(temp_val);
+                            openutils::vector_t<openutils::sstring> commands_vector = run_command_popen(run_command);
+                            if (commands_vector.is_null() || commands_vector.is_empty())
+                                return false;
+                            adding_vector.add(std::move(commands_vector));
                         }
                     }
                     else
