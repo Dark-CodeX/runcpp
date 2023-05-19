@@ -29,11 +29,11 @@ namespace runcpp
     private: // functions
         static void draw_error(const openutils::sstring &loc, const openutils::sstring &line, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::lexer_token>> &lexer);
 
-        static bool is_used_keyword(const std::size_t &__keyword_hash);
+        [[nodiscard]] static bool is_used_keyword(const std::size_t &__keyword_hash);
 
-        static bool import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const openutils::sstring &curr_line_content, const std::size_t &c_line, const unsigned int &lines_to_read);
+        [[nodiscard]] static bool import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const openutils::sstring &curr_line_content, const std::size_t &c_line, const unsigned int &lines_to_read);
 
-        static bool helper_parsing(parser *__parser__, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read);
+        [[nodiscard]] static bool helper_parsing(parser *__parser__, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read);
 
     public: // deleted functions
         parser() = default;
@@ -44,9 +44,9 @@ namespace runcpp
 
     public: // real functions
         parser(const openutils::sstring &location);
-        bool perform_parsing(const unsigned int &max_lines);
-        openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &__key) const;
-        bool contains_key(const openutils::sstring &__key) const;
+        [[nodiscard]] bool perform_parsing(const unsigned int &max_lines);
+        [[nodiscard]] openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &__key) const;
+        [[nodiscard]] bool contains_key(const openutils::sstring &__key) const;
 
         /** @brief NOTE: this function does not clears unordered_map's data*/
         void clear_memory();
@@ -55,8 +55,8 @@ namespace runcpp
 
         parser &operator+=(parser &&p); // for adding M_map of two parsed objects
 
-        static bool serialize(const parser &p, const openutils::sstring &location);
-        static bool deserialize(parser &p, const openutils::sstring &location);
+        [[nodiscard]] static bool serialize(const parser &p, const openutils::sstring &location);
+        [[nodiscard]] static bool deserialize(parser &p, const openutils::sstring &location);
     };
 }
 
