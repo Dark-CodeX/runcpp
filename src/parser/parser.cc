@@ -438,6 +438,11 @@ namespace runcpp
                         }
                         else
                         {
+                            if (run_command.is_null() || run_command.is_empty())
+                            {
+                                std::fprintf(stderr, "\033[1;91merr:\033[0m given command was empty or (null)\n");
+                                return false;
+                            }
                             openutils::vector_t<openutils::sstring> commands_vector = run_command_popen(run_command);
                             if (commands_vector.is_null() || commands_vector.is_empty())
                                 return false;
