@@ -13,10 +13,11 @@ Overall, runcpp is a powerful and sophisticated tool that can streamline your bu
 ## Features
 - [X] Comments
 - [X] Import another file
-- [X] Better syntax or logical error detection
+- [X] Better syntax and logical error detection
 - [X] Cross-plaform
 - [X] Optimized and fast
 - [X] Memory safe
 - [X] Target calling
 - [X] Get target's particular values using indexes
+- [X] Run separate command while parsing
 - [ ] If-else-elif statements
