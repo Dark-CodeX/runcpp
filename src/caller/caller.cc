@@ -2,7 +2,38 @@
 
 namespace runcpp
 {
-#if defined __linux || defined __linux__ || defined linux || defined __unix || defined __unix__ || defined unix
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+    caller::caller(const openutils::vector_t<openutils::sstring> &args)
+    {
+        for (std::size_t i = 0; i < args.length(); i++)
+        {
+            this->cmds += args[i] + (i < args.length() - 1 ? " " : "");
+        }
+    }
+
+    void caller::init()
+    {
+        ZeroMemory(&this->si, sizeof(this->si));
+        this->si.cb = sizeof(this->si);
+        ZeroMemory(&this->pi, sizeof(this->pi));
+
+        if (!CreateProcess(nullptr, (LPTSTR)(this->cmds.c_str()), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &this->si, &this->pi))
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m CreateProcess failed and returned error code %lu.\r\n", GetLastError());
+            std::exit(EXIT_FAILURE);
+        }
+
+        WaitForSingleObject(this->pi.hProcess, INFINITE);
+
+        CloseHandle(this->pi.hProcess);
+        CloseHandle(this->pi.hThread);
+    }
+
+    caller::~caller()
+    {
+        this->cmds.clear();
+    }
+#else
     caller::caller(const openutils::vector_t<openutils::sstring> &arg)
     {
         this->args = openutils::vector_t<char *>(arg.length() + 1);
@@ -44,36 +75,27 @@ namespace runcpp
     {
         this->args.erase();
     }
-#else
-    caller::caller(const openutils::vector_t<openutils::sstring> &args)
-    {
-        for (std::size_t i = 0; i < args.length(); i++)
-        {
-            this->cmds += args[i] + (i < args.length() - 1 ? " " : "");
-        }
-    }
-
-    void caller::init()
-    {
-        ZeroMemory(&this->si, sizeof(this->si));
-        this->si.cb = sizeof(this->si);
-        ZeroMemory(&this->pi, sizeof(this->pi));
-
-        if (!CreateProcess(nullptr, (LPTSTR)(this->cmds.c_str()), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &this->si, &this->pi))
-        {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m CreateProcess failed and returned error code %lu.\r\n", GetLastError());
-            std::exit(EXIT_FAILURE);
-        }
-
-        WaitForSingleObject(this->pi.hProcess, INFINITE);
-
-        CloseHandle(this->pi.hProcess);
-        CloseHandle(this->pi.hThread);
-    }
-
-    caller::~caller()
-    {
-        this->cmds.clear();
-    }
 #endif
+
+    openutils::vector_t<openutils::sstring> run_command_popen(const openutils::sstring &cmd)
+    {
+        FILE *fptr = popen(cmd.c_str(), "r");
+
+        if (!fptr)
+        {
+            std::perror("\033[1;91merr:\033[0m popen");
+            return openutils::vector_t<openutils::sstring>();
+        }
+
+        std::fseek(fptr, 0, SEEK_END);
+        std::size_t out_len = std::ftell(fptr);
+        std::fseek(fptr, 0, SEEK_SET);
+
+        openutils::sstring output('\0', out_len + 1);
+        std::fread(output.get(), sizeof(char), out_len, fptr);
+
+        std::fclose(fptr);
+
+        return output.to_argv();
+    }
 }
