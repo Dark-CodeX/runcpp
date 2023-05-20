@@ -20,4 +20,5 @@ Overall, runcpp is a powerful and sophisticated tool that can streamline your bu
 - [X] Target calling
 - [X] Get target's particular values using indexes
 - [X] Run separate command while parsing
+- [X] Compiles on `g++`, `clang++`, `mingw` and `msvc`
 - [ ] If-else-elif statements
