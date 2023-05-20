@@ -11,10 +11,11 @@ static const char *runcpp_help = "Usage: runcpp [target]\n"
                           "    --generate    Does same job as '--gen' flag.";
 
 static const char *runcpp_libs = "Copyright 2023 Tushar Chaurasia\n"
-                          "    1. [sstring v" sstring_version "]      (https://github.com/Dark-CodeX/sstring.git)        Tushar Chaurasia\n"
-                          "    2. [vector v" vector_t_version "]       (https://github.com/Dark-CodeX/vector.git)         Tushar Chaurasia\n"
-                          "    3. [date-time v" date_time_version "]    (https://github.com/Dark-CodeX/date-time.git)      Tushar Chaurasia\n"
-                          "    4. [heap-pair v" heap_pair_version "]    (https://github.com/Dark-CodeX/heap-pair.git)      Tushar Chaurasia";
+                          "    1. [sstring v" OPENUTILS_sstring_version "]      (https://github.com/Dark-CodeX/sstring.git)        Tushar Chaurasia\n"
+                          "    2. [vector v" OPENUTILS_vector_t_version "]       (https://github.com/Dark-CodeX/vector.git)         Tushar Chaurasia\n"
+                          "    3. [date-time v" OPENUTILS_date_time_version "]    (https://github.com/Dark-CodeX/date-time.git)      Tushar Chaurasia\n"
+                          "    4. [chunkio v" OPENUTILS_chunkio_version "]      (https://github.com/Dark-CodeX/chunkio.git)        Tushar Chaurasia\n"
+                          "    5. [heap-pair v" OPENUTILS_heap_pair_version "]    (https://github.com/Dark-CodeX/heap-pair.git)      Tushar Chaurasia";
 
 static const char *runcpp_version = "v1.0";
 

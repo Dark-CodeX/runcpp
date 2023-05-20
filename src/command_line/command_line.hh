@@ -3,7 +3,6 @@
 
 #include <openutils/sstring/sstring.hh>
 #include <openutils/vector/vector.hh>
-#include <openutils/optional/optional.hh>
 #include <openutils/chunkio/chunkio_writer.hh>
 #include <openutils/date-time/date.hh>
 #include <openutils/date-time/time.hh>
