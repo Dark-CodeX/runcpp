@@ -5,6 +5,9 @@
 #include <openutils/vector/vector.hh>
 #include <openutils/chunkio/chunkio_lines_reader.hh>
 #include <unordered_map>
+#if defined _MSC_VER
+#include <string> // only to support `stoul` function on Windows (MSVC)
+#endif
 
 #include "../io/io.hh"
 #include "../os/os.h"

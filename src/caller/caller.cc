@@ -79,7 +79,12 @@ namespace runcpp
 
     openutils::vector_t<openutils::sstring> run_command_popen(const openutils::sstring &cmd)
     {
-        FILE *fptr = popen(cmd.c_str(), "r");
+        FILE *fptr;
+#if defined _MSC_VER
+        fptr = _popen(cmd.c_str(), "r"); // for msvc support
+#else
+        fptr = popen(cmd.c_str(), "r");
+#endif
 
         if (!fptr)
         {
@@ -93,7 +98,13 @@ namespace runcpp
         while (std::fgets(buffer, 63, fptr) != nullptr)
             output.append(buffer);
 
-        int ext_code = pclose(fptr);
+        int ext_code;
+#if defined _MSC_VER
+        ext_code = _pclose(fptr); // for msvc support
+#else
+        ext_code = pclose(fptr);
+#endif
+
         if (ext_code != EXIT_SUCCESS)
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", ext_code);
