@@ -29,14 +29,28 @@ namespace runcpp
 
         std::size_t M_curr_line; // current line
 
+        bool M_was_if_true;   // was condition of if true and does code under this block will execute
+        bool M_was_else_true; // if true means if's condition was false, hence run only else block's code
+
+        enum BLOCK_TYPE
+        {
+            NONE_BLOCK = 0,
+            IF_BLOCK = 1,
+            ELSE_BLOCK = 2
+        };
+
+        BLOCK_TYPE M_block; // indicates which block is code under (for config file)
+
     private: // functions
         static void draw_error(const openutils::sstring &loc, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::lexer_token>> &lexer);
 
+        [[nodiscard]] static bool evaluate_ifs(const openutils::vector_t<openutils::sstring> &lhs, const openutils::vector_t<openutils::sstring> &rhs);
+
         [[nodiscard]] static bool is_used_keyword(const std::size_t &__keyword_hash);
 
-        [[nodiscard]] static bool import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const std::size_t &c_line, const unsigned int &lines_to_read);
+        [[nodiscard]] static bool import_helper(parser *ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const std::size_t &c_line, const unsigned int &lines_to_read);
 
-        [[nodiscard]] static bool helper_parsing(parser *__parser__, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read);
+        [[nodiscard]] static bool helper_parsing(parser *ps, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read);
 
     public: // deleted functions
         parser() = default;
@@ -56,7 +70,7 @@ namespace runcpp
 
         void print() const;
 
-        parser &operator+=(parser &&p); // for adding M_map of two parsed objects
+        parser &operator+=(std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &&data); // for adding M_map of two parsed objects
 
         [[nodiscard]] static bool serialize(const parser &p, const openutils::sstring &location);
         [[nodiscard]] static bool deserialize(parser &p, const openutils::sstring &location);
