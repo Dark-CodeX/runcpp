@@ -24,7 +24,7 @@
     sources()
     output()[1]
 
-if os != 'windows'
+if os == 'linux'
     [install]:
         cmds = ['sudo', 'mv', './bin/runcpp', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
 
