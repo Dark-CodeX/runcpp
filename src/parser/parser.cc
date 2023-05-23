@@ -20,6 +20,25 @@ namespace runcpp
         std::fprintf(stderr, "\n%s\033[1;91m^\033[0m\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));
     }
 
+    bool parser::evaluate_ifs(const openutils::vector_t<openutils::sstring> &lhs, const openutils::vector_t<openutils::sstring> &rhs)
+    {
+        if (lhs.length() == 1 && rhs.length() == 1)
+        {
+            // some constant comparssion
+            const openutils::sstring &ele_lhs_0 = lhs[0];
+            const openutils::sstring &ele_rhs_0 = rhs[0];
+            if (ele_lhs_0 == "os")
+            {
+                return ele_rhs_0 == get_os();
+            }
+            else if (ele_lhs_0 == "os_arch")
+            {
+                return ele_rhs_0 == openutils::sstring::to_sstring(get_app_arch());
+            }
+        }
+        return lhs == rhs;
+    }
+
     bool parser::is_used_keyword(const std::size_t &__keyword_hash)
     {
         const std::size_t n = sizeof(used_keywords) / sizeof(used_keywords[0]);
@@ -29,7 +48,7 @@ namespace runcpp
         return false;
     }
 
-    bool parser::import_helper(parser *__parser__, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const std::size_t &c_line, const unsigned int &lines_to_read)
+    bool parser::import_helper(parser *ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const std::size_t &c_line, const unsigned int &lines_to_read)
     {
         std::size_t j = 0;
         // whitespaces are trimmed
@@ -80,7 +99,7 @@ namespace runcpp
                 parser temp_parser(import_location);
                 if (!temp_parser.perform_parsing(lines_to_read))
                     return false;
-                __parser__->operator+=(std::move(temp_parser)); // now whole file is parsed and "moved" to real map
+                ps->operator+=(std::move(temp_parser.M_map)); // now whole file is parsed and "moved" to real map
                 return true;
             }
             else
@@ -92,7 +111,7 @@ namespace runcpp
         return true;
     }
 
-    bool parser::helper_parsing(parser *__parser__, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read)
+    bool parser::helper_parsing(parser *ps, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read)
     {
         openutils::vector_t<openutils::sstring> split = content.split("\n");
         for (std::size_t i_split = 0; i_split < split.length(); i_split++, curr_line++)
@@ -105,6 +124,13 @@ namespace runcpp
             {
                 if (lexer[j].first() == "[")
                 {
+                    if (ps->M_block != parser::BLOCK_TYPE::NONE_BLOCK) // means this block code config file is under if-else
+                    {
+                        if (ps->M_block == parser::BLOCK_TYPE::IF_BLOCK && !ps->M_was_if_true)
+                            break;
+                        if (ps->M_block == parser::BLOCK_TYPE::ELSE_BLOCK && !ps->M_was_else_true)
+                            break;
+                    }
                     j++; // skip [
                     adding_vector.erase();
                     lable.clear();
@@ -163,8 +189,15 @@ namespace runcpp
                         return false;
                     }
                 }
-                else if (lexer[j].first() != "if" && lexer[j].first() != "#" && lexer[j].first() != "import")
+                else if (lexer[j].first() != "if" && lexer[j].first() != "else" && lexer[j].first() != "endif" && lexer[j].first() != "#" && lexer[j].first() != "import")
                 {
+                    if (ps->M_block != parser::BLOCK_TYPE::NONE_BLOCK) // means this block code config file is under if-else
+                    {
+                        if (ps->M_block == parser::BLOCK_TYPE::IF_BLOCK && !ps->M_was_if_true)
+                            break;
+                        if (ps->M_block == parser::BLOCK_TYPE::ELSE_BLOCK && !ps->M_was_else_true)
+                            break;
+                    }
                     openutils::sstring var_name;
                     if (lable.is_empty() || lable.is_null())
                     {
@@ -288,11 +321,16 @@ namespace runcpp
                     }
                     else if (lexer[j].first() == "(")
                     {
+                        if (var_name != "shell" && !parsed_data.contains(var_name.hash()))
+                        {
+                            parser::draw_error(loc, "target", var_name.wrap("'") + " not found", curr_line, j - 1, lexer);
+                            return false;
+                        }
                         j++; // skip (
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitespaces
-                        openutils::sstring run_command = nullptr;
-                        if (var_name == "run")
+                        openutils::sstring shell_command = nullptr;
+                        if (var_name == "shell")
                         {
                             // we got a command to directly run and add its output (stdout) to adding_vector
                             // this feature is helpful when there's a situation like `pkgconf --cflags --libs <name>`
@@ -304,7 +342,7 @@ namespace runcpp
                             j++; // skip '
                             while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
                             {
-                                run_command += lexer[j++].first();
+                                shell_command += lexer[j++].first();
                                 if (j == lexer.length() - 1)
                                 {
                                     parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
@@ -312,14 +350,6 @@ namespace runcpp
                                 }
                             }
                             j++; // skip '
-                        }
-                        if (run_command.is_null())
-                        {
-                            if (!parsed_data.contains(var_name.hash()))
-                            {
-                                parser::draw_error(loc, "target", var_name.wrap("'") + " not found", curr_line, j, lexer);
-                                return false;
-                            }
                         }
                         if (lexer[j].first() != ")")
                         {
@@ -409,7 +439,7 @@ namespace runcpp
                             parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
                             return false;
                         }
-                        if (run_command.is_null())
+                        if (shell_command.is_null())
                         {
                             // now syntax is 100% correct, now as the target which is going to be called is already parsed so we don't need to parse it again, just append its variable's values to current lable's values serial wise
                             // also, target is 100% present as checked above
@@ -450,12 +480,12 @@ namespace runcpp
                         }
                         else
                         {
-                            if (run_command.is_null() || run_command.is_empty())
+                            if (shell_command.is_null() || shell_command.is_empty())
                             {
                                 std::fprintf(stderr, "\033[1;91merr:\033[0m given command was empty or (null)\n");
                                 return false;
                             }
-                            openutils::vector_t<openutils::sstring> commands_vector = run_command_popen(run_command);
+                            openutils::vector_t<openutils::sstring> commands_vector = run_command_popen(shell_command);
                             if (commands_vector.is_null() || commands_vector.is_empty())
                                 return false;
                             adding_vector.add(std::move(commands_vector));
@@ -471,8 +501,160 @@ namespace runcpp
                 }
                 else if (lexer[j].first() == "if")
                 {
-                    std::printf("GOT IF: '%s'\n", split[i_split].c_str());
-                    break;
+                    // here was there too many bools to handle, so to avoid using them by passing every variable we are using pointer to the parser object.
+                    // i.e., ps to turn on/off the bools
+                    j++; // skip if
+                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                        j++; // ignore whitespaces
+                    openutils::sstring LHS_var;
+                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                    {
+                        LHS_var += lexer[j++].first();
+                        if (lexer[j].second() == openutils::lexer_token::WHITESPACE || lexer[j].first() == "=" || lexer[j].first() == "!")
+                            break;
+                    }
+                    if (LHS_var.is_null() || LHS_var.is_empty())
+                    {
+                        parser::draw_error(loc, "expected", "LHS", curr_line, j, lexer);
+                        return false;
+                    }
+                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                        j++; // ignore whitespaces
+                    bool is_equal_equal;
+                    if (lexer[j].first() == "=")
+                    {
+                        j++; // skip =
+                        if (lexer[j].first() != "=")
+                        {
+                            parser::draw_error(loc, "expected", "'='", curr_line, j, lexer);
+                            return false;
+                        }
+                        j++; // skip =
+                        is_equal_equal = true;
+                    }
+                    else if (lexer[j].first() == "!")
+                    {
+                        j++; // skip !
+                        if (lexer[j].first() != "=")
+                        {
+                            parser::draw_error(loc, "expected", "'='", curr_line, j, lexer);
+                            return false;
+                        }
+                        j++; // skip =
+                        is_equal_equal = false;
+                    }
+                    else
+                    {
+                        parser::draw_error(loc, "expected", "'==' or `!=`", curr_line, j, lexer);
+                        return false;
+                    }
+                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                        j++; // ignore whitespaces
+
+                    openutils::sstring RHS_var;
+
+                    if (lexer[j].first() == "'")
+                    {
+                        j++; // skip '
+                        while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                        {
+                            RHS_var += lexer[j++].first();
+                            if (j == lexer.length() - 1)
+                            {
+                                parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
+                                return false;
+                            }
+                        }
+                        j++; // skip '
+                    }
+                    else
+                    {
+                        parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
+                        return false;
+                    }
+                    if (RHS_var.is_null() || RHS_var.is_empty())
+                    {
+                        parser::draw_error(loc, "expected", "RHS", curr_line, j, lexer);
+                        return false;
+                    }
+                    if (lexer[j].first() == "#")
+                    {
+                        while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                            j++; // skip/ignore every data after that
+                    }
+                    if (j != lexer.length() - 1)
+                    {
+                        parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                        return false;
+                    }
+                    // now syntax is correct
+                    ps->M_was_if_true = (is_equal_equal == true ? parser::evaluate_ifs({LHS_var}, {RHS_var}) : !parser::evaluate_ifs({LHS_var}, {RHS_var}));
+                    ps->M_block = parser::BLOCK_TYPE::IF_BLOCK;
+                }
+                else if (lexer[j].first() == "else")
+                {
+                    if (ps->M_block == parser::BLOCK_TYPE::NONE_BLOCK)
+                    {
+                        parser::draw_error(loc, "cannot use 'else' without prior if statement", "", curr_line, j, lexer);
+                        return false;
+                    }
+                    if (ps->M_was_if_true)
+                    {
+                        // if's condition was true, hence else will NOT execute
+                        ps->M_was_else_true = false;
+                        j++; // skip else
+                        if (lexer[j].first() == "#")
+                        {
+                            while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // skip/ignore every data after that
+                        }
+                        if (j != lexer.length() - 1)
+                        {
+                            parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        j++; // skip else
+                        if (lexer[j].first() == "#")
+                        {
+                            while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // skip/ignore every data after that
+                        }
+                        if (j != lexer.length() - 1)
+                        {
+                            parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                            return false;
+                        }
+                        ps->M_was_else_true = true;
+                    }
+                    ps->M_block = parser::BLOCK_TYPE::ELSE_BLOCK;
+                }
+                else if (lexer[j].first() == "endif")
+                {
+                    if (ps->M_block != parser::BLOCK_TYPE::NONE_BLOCK)
+                    {
+                        ps->M_was_if_true = false;
+                        ps->M_was_else_true = false;
+                        ps->M_block = parser::BLOCK_TYPE::NONE_BLOCK;
+                    }
+                    else
+                    {
+                        parser::draw_error(loc, "cannot use 'endif' without prior if statement", "", curr_line, j, lexer);
+                        return false;
+                    }
+                    j++; // skip endif
+                    if (lexer[j].first() == "#")
+                    {
+                        while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                            j++; // skip/ignore every data after that
+                    }
+                    if (j != lexer.length() - 1)
+                    {
+                        parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                        return false;
+                    }
                 }
                 else if (lexer[j].first() == "#")
                 {
@@ -481,7 +663,14 @@ namespace runcpp
                 }
                 else if (lexer[j].first() == "import")
                 {
-                    if (!parser::import_helper(__parser__, lexer, loc, curr_line, lines_to_read))
+                    if (ps->M_block != parser::BLOCK_TYPE::NONE_BLOCK) // means this block code config file is under if-else
+                    {
+                        if (ps->M_block == parser::BLOCK_TYPE::IF_BLOCK && !ps->M_was_if_true)
+                            break;
+                        if (ps->M_block == parser::BLOCK_TYPE::ELSE_BLOCK && !ps->M_was_else_true)
+                            break;
+                    }
+                    if (!parser::import_helper(ps, lexer, loc, curr_line, lines_to_read))
                         return false;
                     // now import file's data has been parsed and stored, so we can skip the whole line at this point
                     break; // also, no errors were occurred
@@ -500,6 +689,10 @@ namespace runcpp
     {
         this->M_curr_location = location;
         this->M_curr_line = 0;
+
+        this->M_was_if_true = false;
+        this->M_was_else_true = false;
+        this->M_block = parser::BLOCK_TYPE::NONE_BLOCK;
     }
 
     bool parser::perform_parsing(const unsigned int &max_lines)
@@ -530,6 +723,11 @@ namespace runcpp
                 return false;
 
             chunk = reader.read_next();
+        }
+        if (this->M_block != parser::BLOCK_TYPE::NONE_BLOCK)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m expected 'endif' at EOF\n");
+            return false;
         }
         // at this point we can erase useless memory
         this->clear_memory();
@@ -573,26 +771,27 @@ namespace runcpp
             std::printf("%zu:\n", key);
             for (std::size_t i = 0; i < val.length(); i++)
             {
-                std::puts("[");
+                std::printf("[");
                 for (std::size_t j = 0; j < val[i].length(); j++)
                 {
-                    std::printf("%s%s", val[i][j].c_str(), (j < val[i].length() - 1 ? ", " : "\n"));
+                    std::printf("%s%s", val[i][j].c_str(), (j < val[i].length() - 1 ? ", " : ""));
                 }
                 std::puts("]");
             }
+            std::printf("\n"); // prints new line
         }
     }
 
-    parser &parser::operator+=(parser &&p)
+    parser &parser::operator+=(std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &&data)
     {
-        if (this != &p && p.M_map.size() != 0)
+        if (&this->M_map != &data && data.size() != 0)
         {
-            for (auto &[key, val] : p.M_map)
+            for (auto &[key, val] : data)
             {
-                this->M_map[key].add(std::move(val));
+                this->M_map[key].add(std::move(val)); // if key was DUP, its value will be appended
             }
         }
-        return *this;
+        return *this; // either both maps had same address or data's size was 0 hence no real errors
     }
 
     bool parser::serialize(const parser &p, const openutils::sstring &location)
