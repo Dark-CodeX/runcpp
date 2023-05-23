@@ -23,4 +23,5 @@ Overall, runcpp is a powerful and sophisticated tool that can streamline your bu
 - [X] Compiles on `g++`, `clang++`, `mingw` and `msvc`
 - [X] Custom writen parser and lexer
 - [X] Serialization and deserialization for faster execution of commands
-- [ ] If-else-elif statements
+- [ ] GUI Client
+- [ ] If-else statements
