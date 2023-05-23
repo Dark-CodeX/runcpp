@@ -1,0 +1,29 @@
+[r-sources]:
+    src = ['./src/caller/caller.cc', './src/io/io.cc', './src/os/os.c', './src/parser/parser.cc', './src/main/main.cc']
+
+[r-output]:
+    release_output = ['-o', '../bin/runcpp']
+    debug_output = ['-o', '../bin/runcpp_debug']
+
+[r-release]:
+    compiler()
+    arguments()[0]
+    r-sources()
+    r-output()[0]
+
+[r-debug]:
+    compiler()
+    arguments()[1]
+    r-sources()
+    r-output()[1]
+
+if os == 'linux'
+    [r-install]:
+        cmds = ['sudo', 'mv', '../bin/runcpp', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
+
+    [r-vg]: # vg means valgrind for checking any memory issue or any memory leaks
+        cmds = ['valgrind', '--leak-check=full', '--show-leak-kinds=all', '--track-origins=yes', '--verbose', '--log-file=valgrind-out.txt', '../bin/runcpp_debug', 'debug', 'release']
+
+    [r-vgm]: # vgm means valgrind with `massif` for checking memory usage
+        cmds = ['valgrind', '--verbose', '--log-file=valgrind-out.txt', '--tool=massif', '--massif-out-file=./massif.out.log', '../bin/runcpp_debug', 'debug', 'release']
+endif

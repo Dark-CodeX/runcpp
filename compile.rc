@@ -1,36 +1,9 @@
 [compiler]:
     compiler = 'g++'
 
-[sources]:
-    src = ['./runcpp/src/caller/caller.cc', './runcpp/src/io/io.cc', './runcpp/src/os/os.c', './runcpp/src/parser/parser.cc', './runcpp/src/main/main.cc']
-
 [arguments]:
     release_args = ['-std=c++23', '-O3', '-DNDEBUG', '-Os', '-Ofast', '-Og', '-s', '-march=native', '-masm=intel', '-flto=auto', '-funroll-all-loops']
     debug_args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
 
-[output]:
-    release_output = ['-o', './bin/runcpp']
-    debug_output = ['-o', './bin/runcpp_debug']
-
-[release]:
-    compiler()
-    arguments()[0]
-    sources()
-    output()[0]
-
-[debug]:
-    compiler()
-    arguments()[1]
-    sources()
-    output()[1]
-
-if os == 'linux'
-    [install]:
-        cmds = ['sudo', 'mv', './bin/runcpp', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
-
-    [vg]: # vg means valgrind for checking any memory issue or any memory leaks
-        cmds = ['valgrind', '--leak-check=full', '--show-leak-kinds=all', '--track-origins=yes', '--verbose', '--log-file=valgrind-out.txt', './bin/runcpp_debug', 'debug', 'release']
-
-    [vgm]: # vgm means valgrind with `massif` for checking memory usage
-        cmds = ['valgrind', '--verbose', '--log-file=valgrind-out.txt', '--tool=massif', '--massif-out-file=./massif.out.log', './bin/runcpp_debug', 'debug', 'release']
-endif
+import "./runcpp/compile.rc"
+import "./runcpp-format/compile.rc"

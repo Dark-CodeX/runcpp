@@ -1,0 +1,29 @@
+[rf-sources]:
+    src = ['./src/io/io.cc', './src/parser/parser.cc', './src/main/main.cc']
+
+[rf-output]:
+    release_output = ['-o', '../bin/runcpp-format']
+    debug_output = ['-o', '../bin/runcpp-format_debug']
+
+[rf-release]:
+    compiler()
+    arguments()[0]
+    rf-sources()
+    rf-output()[0]
+
+[rf-debug]:
+    compiler()
+    arguments()[1]
+    rf-sources()
+    rf-output()[1]
+
+if os == 'linux'
+    [rf-install]:
+        cmds = ['sudo', 'mv', '../bin/runcpp-format', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
+
+    [rf-vg]: # vg means valgrind for checking any memory issue or any memory leaks
+        cmds = ['valgrind', '--leak-check=full', '--show-leak-kinds=all', '--track-origins=yes', '--verbose', '--log-file=valgrind-out.txt', '../bin/runcpp-format_debug', 'debug', 'release']
+
+    [rf-vgm]: # vgm means valgrind with `massif` for checking memory usage
+        cmds = ['valgrind', '--verbose', '--log-file=valgrind-out.txt', '--tool=massif', '--massif-out-file=./massif.out.log', '../bin/runcpp-format_debug', 'debug', 'release']
+endif
