@@ -2,7 +2,7 @@
     compiler = 'g++'
 
 [sources]:
-    src = ['./src/caller/caller.cc', './src/io/io.cc', './src/os/os.c', './src/parser/parser.cc', './src/main/main.cc']
+    src = ['./runcpp/src/caller/caller.cc', './runcpp/src/io/io.cc', './runcpp/src/os/os.c', './runcpp/src/parser/parser.cc', './runcpp/src/main/main.cc']
 
 [arguments]:
     release_args = ['-std=c++23', '-O3', '-DNDEBUG', '-Os', '-Ofast', '-Og', '-s', '-march=native', '-masm=intel', '-flto=auto', '-funroll-all-loops']
