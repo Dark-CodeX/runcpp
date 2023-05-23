@@ -97,9 +97,13 @@ namespace runcpp
                 // 100% correct syntax and file also exists
                 // below block acts like a loop(recursion) for nested import functions
                 parser temp_parser(import_location);
+                temp_parser.operator+=(std::move(ps->M_map));
                 if (!temp_parser.perform_parsing(lines_to_read))
                     return false;
-                ps->operator+=(std::move(temp_parser.M_map)); // now whole file is parsed and "moved" to real map
+                ps->M_map.operator=(std::move(temp_parser.M_map));
+                // by using above way
+                // 1. we first transfer ps->map to temp_parser, so that it can parse target calls from the parent file
+                // 2. Now, for performance we are using std::move
                 return true;
             }
             else
