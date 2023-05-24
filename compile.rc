@@ -7,3 +7,15 @@
 
 import "./runcpp/compile.rc"
 import "./runcpp-format/compile.rc"
+
+# here we are using `all`, which means every command is executed like a separate process
+[all]:
+# below is for runcpp
+    r-release()
+    r-debug()
+    r-install()
+
+# below is for runcpp-format
+    rf-release()
+    rf-debug()
+    rf-install()
