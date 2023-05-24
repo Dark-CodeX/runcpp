@@ -20,6 +20,19 @@ namespace runcpp
         std::fprintf(stderr, "\n%s\033[1;91m^\033[0m\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));
     }
 
+    openutils::vector_t<openutils::sstring> parser::convert_2d_vec_to_1d(const openutils::vector_t<openutils::vector_t<openutils::sstring>> &data)
+    {
+        openutils::vector_t<openutils::sstring> _ret_val_(data.length()); // TDOD: needs optimization
+        for (std::size_t i = 0; i < data.length(); i++)
+        {
+            for (std::size_t j = 0; j < data[i].length(); j++)
+            {
+                _ret_val_.add(data[i][j]);
+            }
+        }
+        return _ret_val_;
+    }
+
     bool parser::evaluate_ifs(const openutils::vector_t<openutils::sstring> &lhs, const openutils::vector_t<openutils::sstring> &rhs)
     {
         if (lhs.length() == 1 && rhs.length() == 1)
@@ -447,7 +460,7 @@ namespace runcpp
                         {
                             // now syntax is 100% correct, now as the target which is going to be called is already parsed so we don't need to parse it again, just append its variable's values to current lable's values serial wise
                             // also, target is 100% present as checked above
-                            // now, aftet the addition of getting target's particular value using index
+                            // now, the addition of getting target's particular value using index
                             // we have to manage both `select_index_outer` and `select_index_inner`
                             const openutils::vector_t<openutils::vector_t<openutils::sstring>> &temp_val = parsed_data.at(var_name.hash());
                             if (select_index_outer != static_cast<std::size_t>(-1))
@@ -468,18 +481,24 @@ namespace runcpp
                                         }
                                         else
                                         {
+                                            // here 1D vector is adding up, hence we don't need to convert it
                                             adding_vector.add({temp_val[select_index_outer][select_index_inner]});
                                         }
                                     }
                                     else
                                     {
+                                        // here 1D vector is adding up, hence we don't need to convert it
                                         adding_vector.add({temp_val[select_index_outer]});
                                     }
                                 }
                             }
                             else
                             {
-                                adding_vector.add(temp_val);
+                                // we need to convert 2D vector to 1D, if lable name is `all`
+                                if (lable != "all")
+                                    adding_vector.add(temp_val);
+                                else
+                                    adding_vector.add(parser::convert_2d_vec_to_1d(temp_val));
                             }
                         }
                         else
@@ -492,7 +511,25 @@ namespace runcpp
                             openutils::vector_t<openutils::sstring> commands_vector = run_command_popen(shell_command);
                             if (commands_vector.is_null() || commands_vector.is_empty())
                                 return false;
-                            adding_vector.add(std::move(commands_vector));
+                            if (select_index_outer != static_cast<std::size_t>(-1))
+                            {
+                                if (select_index_outer >= commands_vector.length())
+                                {
+                                    parser::draw_error(loc, openutils::sstring("out-of-range max length was ") + openutils::sstring::to_sstring(commands_vector.length()), openutils::sstring("but the given index was ") + openutils::sstring::to_sstring(select_index_outer), curr_line, pos_sio, lexer);
+                                    return false;
+                                }
+                                if (select_index_inner != static_cast<std::size_t>(-1))
+                                {
+                                    parser::draw_error(loc, "cannot use another [], as 'shell' returns 1D array", "", curr_line, pos_sii, lexer);
+                                    return false;
+                                }
+                                adding_vector.add({commands_vector[select_index_outer]});
+                            }
+                            else
+                            {
+                                // as commands_vector is 1D vector, we don't need to check for `all` target
+                                adding_vector.add(std::move(commands_vector));
+                            }
                         }
                     }
                     else
