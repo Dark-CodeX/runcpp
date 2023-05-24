@@ -1,5 +1,5 @@
 [rf-sources]:
-    src = ['./runcpp-format/src/io/io.cc', './runcpp-format/src/parser/parser.cc', './runcpp-format/src/main/main.cc']
+    src = ['./runcpp-format/src/io/io.cc', './runcpp-format/src/formatter/formatter.cc', './runcpp-format/src/main/main.cc']
 
 [rf-output]:
     release_output = ['-o', './bin/runcpp-format']
