@@ -44,6 +44,8 @@ namespace runcpp
     private: // functions
         static void draw_error(const openutils::sstring &loc, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::lexer_token>> &lexer);
 
+        [[nodiscard]] static openutils::vector_t<openutils::sstring> convert_2d_vec_to_1d(const openutils::vector_t<openutils::vector_t<openutils::sstring>> &data);
+
         [[nodiscard]] static bool evaluate_ifs(const openutils::vector_t<openutils::sstring> &lhs, const openutils::vector_t<openutils::sstring> &rhs);
 
         [[nodiscard]] static bool is_used_keyword(const std::size_t &__keyword_hash);
