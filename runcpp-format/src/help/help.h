@@ -1,7 +1,7 @@
 #ifndef RUNCPP_FORMAT_HELP_H
 #define RUNCPP_FORMAT_HELP_H
 
-static const char *runcpp_help = "Usage: [files or options]\n"
+static const char *runcpp_format_help = "Usage: [files or options]\n"
                                  "Options:\n"
                                  "    --help, -h                Display this help message.\n"
                                  "    --libs, -l                Show the list of used libraries.\n"
