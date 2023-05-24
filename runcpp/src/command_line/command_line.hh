@@ -156,12 +156,27 @@ namespace runcpp
                 std::fprintf(stderr, "\033[1;91merr:\033[0m target '%s' was not found.\n", args[i].c_str());
                 return false;
             }
-            openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
-            std::printf("%s %s:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
-            for (std::size_t j = 0; j < cmds.length(); j++)
-                std::printf("%s%s", cmds[j].c_str(), (j < cmds.length() - 1 ? " " : "\n"));
-            caller call(cmds);
-            call.init();
+            if (args[i] != "all")
+            {
+                openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
+                std::printf("%s %s:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                for (std::size_t j = 0; j < cmds.length(); j++)
+                    std::printf("%s%s", cmds[j].c_str(), (j < cmds.length() - 1 ? " " : "\n"));
+                caller call(cmds);
+                call.init();
+            }
+            else
+            {
+                const openutils::vector_t<openutils::vector_t<openutils::sstring>> &cmds = ps.generate_commands_all();
+                for (std::size_t k = 0; k < cmds.length(); k++)
+                {
+                    std::printf("%s %s:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                    for (std::size_t j = 0; j < cmds[k].length(); j++)
+                        std::printf("%s%s", cmds[k][j].c_str(), (j < cmds[k].length() - 1 ? " " : "\n"));
+                    caller call(cmds[k]);
+                    call.init();
+                }
+            }
         }
         return true;
     }
@@ -180,12 +195,27 @@ namespace runcpp
                 std::fprintf(stderr, "\033[1;91merr:\033[0m target '%s' was not found.\n", args[i].c_str());
                 return false;
             }
-            openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
-            std::printf("%s %s:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
-            for (std::size_t j = 0; j < cmds.length(); j++)
-                std::printf("%s%s", cmds[j].c_str(), (j < cmds.length() - 1 ? " " : "\n"));
-            caller call(cmds);
-            call.init();
+            if (args[i] != "all")
+            {
+                openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
+                std::printf("%s %s:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                for (std::size_t j = 0; j < cmds.length(); j++)
+                    std::printf("%s%s", cmds[j].c_str(), (j < cmds.length() - 1 ? " " : "\n"));
+                caller call(cmds);
+                call.init();
+            }
+            else
+            {
+                const openutils::vector_t<openutils::vector_t<openutils::sstring>> &cmds = ps.generate_commands_all();
+                for (std::size_t k = 0; k < cmds.length(); k++)
+                {
+                    std::printf("%s %s:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                    for (std::size_t j = 0; j < cmds[k].length(); j++)
+                        std::printf("%s%s", cmds[k][j].c_str(), (j < cmds[k].length() - 1 ? " " : "\n"));
+                    caller call(cmds[k]);
+                    call.init();
+                }
+            }
         }
         return true;
     }
