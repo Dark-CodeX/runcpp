@@ -96,14 +96,14 @@ namespace runcpp
                 }
                 // 100% correct syntax and file also exists
                 // below block acts like a loop(recursion) for nested import functions
-                parser temp_parser(import_location);
-                temp_parser.operator+=(std::move(ps->M_map));
-                if (!temp_parser.perform_parsing(lines_to_read))
-                    return false;
-                ps->M_map.operator=(std::move(temp_parser.M_map));
                 // by using above way
                 // 1. we first transfer ps->map to temp_parser, so that it can parse target calls from the parent file
                 // 2. Now, for performance we are using std::move
+                parser temp_parser(import_location);
+                temp_parser.M_map.operator=(std::move(ps->M_map));
+                if (!temp_parser.perform_parsing(lines_to_read))
+                    return false;
+                ps->M_map.operator=(std::move(temp_parser.M_map));
                 return true;
             }
             else
@@ -756,6 +756,12 @@ namespace runcpp
         return ret_val;
     }
 
+    const openutils::vector_t<openutils::vector_t<openutils::sstring>> &parser::generate_commands_all() const
+    {
+        // its the caller's responsibility to check if `all` target exists or NOT
+        return this->M_map.at(openutils::sstring("all").hash());
+    }
+
     bool parser::contains_key(const openutils::sstring &__key) const
     {
         return this->M_map.contains(__key.hash());
@@ -784,18 +790,6 @@ namespace runcpp
             }
             std::printf("\n"); // prints new line
         }
-    }
-
-    parser &parser::operator+=(std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &&data)
-    {
-        if (&this->M_map != &data && data.size() != 0)
-        {
-            for (auto &[key, val] : data)
-            {
-                this->M_map[key].add(std::move(val)); // if key was DUP, its value will be appended
-            }
-        }
-        return *this; // either both maps had same address or data's size was 0 hence no real errors
     }
 
     bool parser::serialize(const parser &p, const openutils::sstring &location)

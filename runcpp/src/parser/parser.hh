@@ -63,14 +63,13 @@ namespace runcpp
         parser(const openutils::sstring &location);
         [[nodiscard]] bool perform_parsing(const unsigned int &max_lines);
         [[nodiscard]] openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &__key) const;
+        [[nodiscard]] const openutils::vector_t<openutils::vector_t<openutils::sstring>> &generate_commands_all() const;
         [[nodiscard]] bool contains_key(const openutils::sstring &__key) const;
 
         /** @brief NOTE: this function does not clears unordered_map's data*/
         void clear_memory();
 
         void print() const;
-
-        parser &operator+=(std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &&data); // for adding M_map of two parsed objects
 
         [[nodiscard]] static bool serialize(const parser &p, const openutils::sstring &location);
         [[nodiscard]] static bool deserialize(parser &p, const openutils::sstring &location);
