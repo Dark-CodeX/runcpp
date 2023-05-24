@@ -1,5 +1,5 @@
-#ifndef IO_HH
-#define IO_HH
+#ifndef RUNCPP_IO_HH
+#define RUNCPP_IO_HH
 
 #include <openutils/sstring/sstring.hh>
 #include <sys/stat.h>

@@ -1,5 +1,5 @@
-#ifndef HELP_HH
-#define HELP_HH
+#ifndef RUNCPP_HELP_H
+#define RUNCPP_HELP_H
 
 static const char *runcpp_help = "Usage: [options] [targets]\n"
                                  "Options:\n"

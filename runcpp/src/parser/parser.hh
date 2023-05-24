@@ -1,5 +1,5 @@
-#ifndef PARSER_HH
-#define PARSER_HH
+#ifndef RUNCPP_PARSER_HH
+#define RUNCPP_PARSER_HH
 
 #include <openutils/sstring/sstring.hh>
 #include <openutils/vector/vector.hh>

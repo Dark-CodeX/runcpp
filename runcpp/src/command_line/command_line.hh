@@ -1,5 +1,5 @@
-#ifndef COMMAND_LINE_HH
-#define COMMAND_LINE_HH
+#ifndef RUNCPP_COMMAND_LINE_HH
+#define RUNCPP_COMMAND_LINE_HH
 
 #include <openutils/sstring/sstring.hh>
 #include <openutils/vector/vector.hh>

@@ -1,14 +1,14 @@
-#ifndef CALLER_HH
-#define CALLER_HH
+#ifndef RUNCPP_CALLER_HH
+#define RUNCPP_CALLER_HH
 
 #include <openutils/vector/vector.hh>
 #include <openutils/sstring/sstring.hh>
-#if defined __linux || defined __linux__ || defined linux || defined __unix || defined __unix__ || defined unix
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+#include <windows.h>
+#else
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <unistd.h>
-#else
-#include <windows.h>
 #endif
 
 namespace runcpp
