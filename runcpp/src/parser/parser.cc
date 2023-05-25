@@ -216,16 +216,19 @@ namespace runcpp
                             break;
                     }
                     openutils::sstring var_name;
-                    if (lable.is_empty() || lable.is_null())
-                    {
-                        parser::draw_error(loc, "cannot define a variable without a parent target", "", curr_line, j, lexer);
-                        return false;
-                    }
                     while (lexer[j].second() != openutils::lexer_token::NULL_END)
                     {
                         var_name += lexer[j++].first(); // storing variable name, just for target calling
                         if (lexer[j].second() == openutils::lexer_token::WHITESPACE || lexer[j].first() == "=" || lexer[j].first() == "(")
                             break;
+                    }
+                    if (var_name != "depends") // managing some special cases
+                    {
+                        if (lable.is_empty() || lable.is_null())
+                        {
+                            parser::draw_error(loc, "cannot define a variable without a parent target", "", curr_line, j, lexer);
+                            return false;
+                        }
                     }
                     while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                         j++; // ignore whitespaces
@@ -338,7 +341,7 @@ namespace runcpp
                     }
                     else if (lexer[j].first() == "(")
                     {
-                        if (var_name != "shell" && !parsed_data.contains(var_name.hash()))
+                        if (var_name != "shell" && var_name != "depends" && !parsed_data.contains(var_name.hash()))
                         {
                             parser::draw_error(loc, "target", var_name.wrap("'") + " not found", curr_line, j - 1, lexer);
                             return false;
@@ -346,6 +349,61 @@ namespace runcpp
                         j++; // skip (
                         while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
                             j++; // ignore whitespaces
+                        if (var_name == "depends")
+                        {
+                            // checks if an app is installed or not
+                            openutils::sstring app_name = nullptr;
+                            if (lexer[j].first() != "'")
+                            {
+                                parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
+                                return false;
+                            }
+                            j++; // skip '
+                            while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                            {
+                                app_name += lexer[j++].first();
+                                if (j == lexer.length() - 1)
+                                {
+                                    parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
+                                    return false;
+                                }
+                            }
+                            j++; // skip '
+                            if (lexer[j].first() != ")")
+                            {
+                                parser::draw_error(loc, "expected", "')'", curr_line, j, lexer);
+                                return false;
+                            }
+                            j++; // skip )
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // ignore whitespaces
+                            if (lexer[j].first() == "#")
+                            {
+                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                                    j++; // skip/ignore every data after that
+                            }
+                            if (j != lexer.length() - 1)
+                            {
+                                parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
+                                return false;
+                            }
+                            if (app_name.is_null() || app_name.is_empty())
+                            {
+                                std::fprintf(stderr, "\033[1;91merr:\033[0m given app name was empty or (null)\n");
+                                return false;
+                            }
+                            // now syntax is correct
+                            // now check if app is installed or not
+                            // if app is installed print its location, else throw error
+                            openutils::sstring app_location = get_command_path_if_exists(app_name);
+                            if (app_location.is_null())
+                            {
+                                // error msg is already printed
+                                return false;
+                            }
+                            std::printf("Found '%s' at \033[1;92m'%s'\033[0m\n", app_name.c_str(), app_location.c_str());
+                            break;
+                        }
                         openutils::sstring shell_command = nullptr;
                         if (var_name == "shell")
                         {
