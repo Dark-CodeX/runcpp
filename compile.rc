@@ -1,3 +1,5 @@
+depends('g++')
+
 [compiler]:
     compiler = 'g++'
 
