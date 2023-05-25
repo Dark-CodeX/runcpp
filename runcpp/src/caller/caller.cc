@@ -116,16 +116,21 @@ namespace runcpp
 
     openutils::sstring get_command_path_if_exists(const openutils::sstring &executable_name)
     {
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+        openutils::sstring all_paths = std::getenv("%PATH%");
+#else
         openutils::sstring all_paths = std::getenv("PATH");
+#endif
         if (all_paths.is_null())
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m environment variable 'PATH' was not found.\n");
             return nullptr;
         }
-        openutils::vector_t<openutils::sstring> paths = all_paths.split(":");
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+        openutils::vector_t<openutils::sstring> paths = all_paths.split(";");
         const char *slash = "\\";
 #else
+        openutils::vector_t<openutils::sstring> paths = all_paths.split(":");
         const char *slash = "/";
 #endif
         for (std::size_t i = 0; i < paths.length(); i++)
