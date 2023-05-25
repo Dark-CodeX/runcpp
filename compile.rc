@@ -8,7 +8,7 @@ endif
     compiler = 'g++'
 
 [arguments]:
-    release_args = ['-std=c++23', '-O3', '-DNDEBUG', '-Os', '-Ofast', '-Og', '-s', '-march=native', '-masm=intel', '-flto=auto', '-funroll-all-loops']
+    release_args = ['-std=c++23', '-O3', '-DNDEBUG', '-s', '-march=native', '-mtune=native','-masm=intel', '-flto=auto']
     debug_args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
 
 import "./runcpp/compile.rc"
