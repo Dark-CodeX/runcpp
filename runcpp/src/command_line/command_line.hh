@@ -159,7 +159,7 @@ namespace runcpp
             if (args[i] != "all")
             {
                 openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
-                std::printf("\033[1;94m%s %s\033[0m:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                std::printf("\033[1;94m%s %s:\033[0m\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
                 for (std::size_t j = 0; j < cmds.length(); j++)
                     std::printf("%s%s", cmds[j].c_str(), (j < cmds.length() - 1 ? " " : "\n"));
                 caller call(cmds);
@@ -170,7 +170,7 @@ namespace runcpp
                 const openutils::vector_t<openutils::vector_t<openutils::sstring>> &cmds = ps.generate_commands_all();
                 for (std::size_t k = 0; k < cmds.length(); k++)
                 {
-                    std::printf("\033[1;94m%s %s\033[0m:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                    std::printf("\033[1;94m%s %s:\033[0m\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
                     for (std::size_t j = 0; j < cmds[k].length(); j++)
                         std::printf("%s%s", cmds[k][j].c_str(), (j < cmds[k].length() - 1 ? " " : "\n"));
                     caller call(cmds[k]);
@@ -198,7 +198,7 @@ namespace runcpp
             if (args[i] != "all")
             {
                 openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
-                std::printf("\033[1;94m%s %s\033[0m:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                std::printf("\033[1;94m%s %s:\033[0m\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
                 for (std::size_t j = 0; j < cmds.length(); j++)
                     std::printf("%s%s", cmds[j].c_str(), (j < cmds.length() - 1 ? " " : "\n"));
                 caller call(cmds);
@@ -209,7 +209,7 @@ namespace runcpp
                 const openutils::vector_t<openutils::vector_t<openutils::sstring>> &cmds = ps.generate_commands_all();
                 for (std::size_t k = 0; k < cmds.length(); k++)
                 {
-                    std::printf("\033[1;94m%s %s\033[0m:\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
+                    std::printf("\033[1;94m%s %s:\033[0m\n", openutils::date().to_string().c_str(), openutils::time().to_string().c_str());
                     for (std::size_t j = 0; j < cmds[k].length(); j++)
                         std::printf("%s%s", cmds[k][j].c_str(), (j < cmds[k].length() - 1 ? " " : "\n"));
                     caller call(cmds[k]);
