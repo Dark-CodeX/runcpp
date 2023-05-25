@@ -1,5 +1,5 @@
 if os == 'windows'
-    depends('g++.exe')
+    depends('g++.exe') # *.exe is important
 else
     depends('g++')
 endif
