@@ -1,4 +1,8 @@
-depends('g++')
+if os == 'windows'
+    depends('g++.exe')
+else
+    depends('g++')
+endif
 
 [compiler]:
     compiler = 'g++'
