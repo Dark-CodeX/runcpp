@@ -64,7 +64,7 @@ namespace runcpp
         uinput.in();
         if (uinput.length() == 0)
             uinput = "g++";
-        content = openutils::sstring("[all]:\ncompiler = '") + uinput + openutils::sstring("'\n");
+        content = openutils::sstring("[compile]:\n    compiler = '") + uinput + openutils::sstring("'\n");
 
         if (!writer.append_or_save(content.c_str(), content.length()))
         {
@@ -80,7 +80,7 @@ namespace runcpp
             uinput = "-g -Wall";
 
         openutils::vector_t<openutils::sstring> vec = uinput.split(" ");
-        content = "args = [";
+        content = "    args = [";
         for (std::size_t i = 0; i < vec.length(); i++)
         {
             content.append_formatted(1024, "'%s'%s", vec[i].c_str(), (i < vec.length() - 1 ? ", " : ""));
@@ -101,7 +101,7 @@ namespace runcpp
             uinput = "./main.cc";
 
         vec = uinput.split(" ");
-        content = "sources = [";
+        content = "    sources = [";
         for (std::size_t i = 0; i < vec.length(); i++)
         {
             content.append_formatted(1024, "'%s'%s", vec[i].c_str(), (i < vec.length() - 1 ? ", " : ""));
@@ -123,12 +123,12 @@ namespace runcpp
         uinput.append_start("-o ");
 
         vec = uinput.split(" ");
-        content = "output = [";
+        content = "    output = [";
         for (std::size_t i = 0; i < vec.length(); i++)
         {
             content.append_formatted(1024, "'%s'%s", vec[i].c_str(), (i < vec.length() - 1 ? ", " : ""));
         }
-        content += "]\n";
+        content += "]\n\n[all]:\n    compile()";
 
         if (!writer.append_or_save(content.c_str(), content.length()))
         {
@@ -138,7 +138,7 @@ namespace runcpp
         uinput.clear();
         content.clear();
 
-        std::puts("\nFile ./compile.rc saved.\nYou can use 'runcpp' to compile your program.");
+        std::puts("\nFile './compile.rc' was saved.\nYou can use 'runcpp' to compile your program.");
         return true;
     }
 
