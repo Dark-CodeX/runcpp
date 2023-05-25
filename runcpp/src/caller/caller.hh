@@ -11,6 +11,8 @@
 #include <unistd.h>
 #endif
 
+#include "../io/io.hh"
+
 namespace runcpp
 {
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
@@ -41,6 +43,8 @@ namespace runcpp
 #endif
 
     [[nodiscard]] openutils::vector_t<openutils::sstring> run_command_popen(const openutils::sstring &cmd);
+
+    [[nodiscard]] openutils::sstring get_command_path_if_exists(const openutils::sstring &executable_name);
 }
 
 #endif
