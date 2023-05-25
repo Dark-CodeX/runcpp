@@ -15,9 +15,13 @@ import "./runcpp-format/compile.rc"
 # below is for runcpp
     r-release()
     r-debug()
-    r-install()
+    if os == 'linux'
+        r-install()
+    endif
 
 # below is for runcpp-format
     rf-release()
     rf-debug()
-    rf-install()
+    if os == 'linux'
+        rf-install()
+    endif
