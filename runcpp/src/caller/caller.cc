@@ -117,7 +117,9 @@ namespace runcpp
     openutils::sstring get_command_path_if_exists(const openutils::sstring &executable_name)
     {
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
-        openutils::sstring all_paths = std::getenv("%PATH%");
+        std::size_t env_len = GetEnvironmentVariableA("PATH", nullptr, 0); // using windows api, instead of getenv()
+        openutils::sstring all_paths('\0', env_len + 1);
+        GetEnvironmentVariableA("PATH", all_paths.get(), env_len);
 #else
         openutils::sstring all_paths = std::getenv("PATH");
 #endif
@@ -135,7 +137,20 @@ namespace runcpp
 #endif
         for (std::size_t i = 0; i < paths.length(); i++)
         {
-            openutils::sstring temp_loc = paths[i] + slash + executable_name;
+            if (paths[i].is_null() || paths[i].is_empty())
+                continue;
+            openutils::sstring temp_loc;
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+            if (paths[i][paths[i].length() - 1] == '\\')
+                temp_loc = paths[i] + executable_name;
+            else
+                temp_loc = paths[i] + slash + executable_name;
+#else
+            if (paths[i][paths[i].length() - 1] == '/')
+                temp_loc = paths[i] + executable_name;
+            else
+                temp_loc = paths[i] + slash + executable_name;
+#endif
             if (io::file_exists(temp_loc))
                 return temp_loc;
         }
