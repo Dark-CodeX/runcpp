@@ -22,8 +22,11 @@ if os == 'linux'
         cmds = ['sudo', 'mv', './bin/runcpp-format', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
 
     [rf-vg]: # vg means valgrind for checking any memory issue or any memory leaks
-        cmds = ['valgrind', '--leak-check=full', '--show-leak-kinds=all', '--track-origins=yes', '--verbose', '--log-file=valgrind-out.txt', './bin/runcpp-format_debug', 'debug', 'release']
+        cmds = ['valgrind', '--leak-check=full', '--show-leak-kinds=all', '--track-origins=yes', '--verbose', '--log-file=valgrind-out.txt', './bin/runcpp-format_debug']
 
     [rf-vgm]: # vgm means valgrind with `massif` for checking memory usage
-        cmds = ['valgrind', '--verbose', '--log-file=valgrind-out.txt', '--tool=massif', '--massif-out-file=./massif.out.log', './bin/runcpp-format_debug', 'debug', 'release']
+        cmds = ['valgrind', '--verbose', '--log-file=valgrind-out.txt', '--tool=massif', '--massif-out-file=./massif.out.log', './bin/runcpp-format_debug']
+
+    [rf-vgc]: # vgc means valgrind with tool as callgrind
+        cmds = ['valgrind', '--verbose', '--log-file=valgrind-out.txt', '--tool=callgrind', '--instr-atstart=yes', '--callgrind-out-file=./callgrind.out.log', './bin/runcpp-format_debug']
 endif
