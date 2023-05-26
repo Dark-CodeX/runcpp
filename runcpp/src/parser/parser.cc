@@ -374,6 +374,11 @@ namespace runcpp
                                     return false;
                                 }
                             }
+                            if (app_name.is_null() || app_name.is_empty())
+                            {
+                                parser::draw_error(loc, "dependency program name was empty or (null)", "", curr_line, j, lexer);
+                                return false;
+                            }
                             j++; // skip '
                             if (lexer[j].first() != ")")
                             {
@@ -391,11 +396,6 @@ namespace runcpp
                             if (j != lexer.length() - 1)
                             {
                                 parser::draw_error(loc, "unexpected token", lexer[j].first().wrap("'"), curr_line, j, lexer);
-                                return false;
-                            }
-                            if (app_name.is_null() || app_name.is_empty())
-                            {
-                                std::fprintf(stderr, "\033[1;91merr:\033[0m given app name was empty or (null)\n");
                                 return false;
                             }
                             // now syntax is correct
@@ -429,6 +429,11 @@ namespace runcpp
                                     parser::draw_error(loc, "expected", "'", curr_line, j, lexer);
                                     return false;
                                 }
+                            }
+                            if (shell_command.is_null() || shell_command.is_empty())
+                            {
+                                parser::draw_error(loc, "shell command was empty or (null)", "", curr_line, j, lexer);
+                                return false;
                             }
                             j++; // skip '
                         }
@@ -567,11 +572,6 @@ namespace runcpp
                         }
                         else
                         {
-                            if (shell_command.is_null() || shell_command.is_empty())
-                            {
-                                std::fprintf(stderr, "\033[1;91merr:\033[0m given command was empty or (null)\n");
-                                return false;
-                            }
                             openutils::vector_t<openutils::sstring> commands_vector = run_command_popen(shell_command);
                             if (commands_vector.is_null() || commands_vector.is_empty())
                                 return false;
