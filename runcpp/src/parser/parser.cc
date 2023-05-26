@@ -155,7 +155,9 @@ namespace runcpp
                             break;
                     }
                     j++; // skip [
-                    adding_vector.erase();
+                    if (!adding_vector.is_null() && !adding_vector.is_empty() && !lable.is_null() && !lable.is_empty())
+                        parsed_data[lable.hash()].operator=(std::move(adding_vector));
+                    // adding_vector's data has been moved, no need to erose it
                     lable.clear();
 
                     while (lexer[j].second() != openutils::lexer_token::NULL_END)
@@ -601,8 +603,6 @@ namespace runcpp
                         parser::draw_error(loc, "expected", "'=' or '('", curr_line, j, lexer);
                         return false;
                     }
-                    // here we assign the values to its respective target(lable)'s hash
-                    parsed_data[lable.hash()].operator=(adding_vector);
                 }
                 else if (lexer[j].first() == "if")
                 {
@@ -775,6 +775,8 @@ namespace runcpp
                         if (ps->M_block == parser::BLOCK_TYPE::ELSE_BLOCK && !ps->M_was_else_true)
                             break;
                     }
+                    if (!adding_vector.is_null() && !adding_vector.is_empty() && !lable.is_null() && !lable.is_empty())
+                        parsed_data[lable.hash()].operator=(std::move(adding_vector));
                     if (!parser::import_helper(ps, lexer, loc, curr_line, lines_to_read))
                         return false;
                     // now import file's data has been parsed and stored, so we can skip the whole line at this point
@@ -829,6 +831,8 @@ namespace runcpp
 
             chunk = reader.read_next();
         }
+        if (!this->M_adding_vector.is_null() && !this->M_adding_vector.is_empty() && !this->M_lable.is_null() && !this->M_lable.is_empty())
+            this->M_map[this->M_lable.hash()].operator=(std::move(this->M_adding_vector));
         if (this->M_block != parser::BLOCK_TYPE::NONE_BLOCK)
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m expected 'endif' at EOF\n");
@@ -1051,11 +1055,11 @@ namespace runcpp
                         return false;
                     }
 
-                    inner_vec.add(str);
+                    inner_vec.add(std::move(str));
                 }
-                outer_vec.add(inner_vec);
+                outer_vec.add(std::move(inner_vec));
             }
-            p.M_map.insert({__key, outer_vec});
+            p.M_map[__key].operator=(std::move(outer_vec));
         }
 
         std::fclose(fptr);
