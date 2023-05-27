@@ -382,6 +382,8 @@ namespace runcpp
                                 return false;
                             }
                             j++; // skip '
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // ignore whitespaces
                             if (lexer[j].first() != ")")
                             {
                                 parser::draw_error(loc, "expected", "')'", curr_line, j, lexer);
@@ -438,6 +440,8 @@ namespace runcpp
                                 return false;
                             }
                             j++; // skip '
+                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
+                                j++; // ignore whitespaces
                         }
                         if (lexer[j].first() != ")")
                         {
