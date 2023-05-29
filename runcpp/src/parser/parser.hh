@@ -61,13 +61,13 @@ namespace runcpp
         [[nodiscard]] static bool helper_parsing(parser *ps, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read);
 
     public: // deleted functions
-        parser() = default;
         parser(const parser &) = delete;
         parser(parser &&) = delete;
         parser &operator=(const parser &) = delete;
         parser &operator=(parser &&) = delete;
 
     public: // real functions
+        parser() = default;
         parser(const openutils::sstring &location);
         [[nodiscard]] bool perform_parsing(const unsigned int &max_lines);
         [[nodiscard]] openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &__key) const;
