@@ -15,7 +15,6 @@
 
 #include "../caller/caller.hh"
 #include "../parser/parser.hh"
-#include "../merger/merger.hh"
 #include "../io/io.hh"
 #include "../os/os.h"
 #include "../help/help.h"
@@ -426,8 +425,10 @@ namespace runcpp
             }
             openutils::sstring a4 = argv[4]; // outfile file location
             // real work
-            merger merge(a2, a4);
-            return merge.perform_merging(10);
+            parser ps(a2);
+            if (!ps.perform_parsing(10))
+                return false;
+            return ps.merge(a4);
         }
         else
         {
