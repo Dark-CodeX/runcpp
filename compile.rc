@@ -12,7 +12,6 @@ endif
     debug_args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
 
 import "./runcpp/compile.rc"
-import "./runcpp-format/compile.rc"
 
 # here we are using `all`, which means every command is executed like a separate process
 [all]:
