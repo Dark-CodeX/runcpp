@@ -15,6 +15,7 @@
 
 #include "../caller/caller.hh"
 #include "../parser/parser.hh"
+#include "../merger/merger.hh"
 #include "../io/io.hh"
 #include "../os/os.h"
 #include "../help/help.h"
@@ -72,7 +73,7 @@ namespace runcpp
             uinput = "g++";
         content = openutils::sstring("[compile]:\n    compiler = '") + uinput + openutils::sstring("'\n");
 
-        if (!writer.append_or_save(content.c_str(), content.length()))
+        if (!writer.save_next(content.c_str(), content.length()))
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
             return false;
@@ -93,7 +94,7 @@ namespace runcpp
         }
         content += "]\n";
 
-        if (!writer.append_or_save(content.c_str(), content.length()))
+        if (!writer.save_next(content.c_str(), content.length()))
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
             return false;
@@ -114,7 +115,7 @@ namespace runcpp
         }
         content += "]\n";
 
-        if (!writer.append_or_save(content.c_str(), content.length()))
+        if (!writer.save_next(content.c_str(), content.length()))
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
             return false;
@@ -136,7 +137,7 @@ namespace runcpp
         }
         content += "]\n\n[all]:\n    compile()";
 
-        if (!writer.append_or_save(content.c_str(), content.length()))
+        if (!writer.save_next(content.c_str(), content.length()))
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
             return false;
@@ -398,6 +399,35 @@ namespace runcpp
                     targets.add(argv[i]);
                 return command_line::run_command("./compile.rc", targets, true);
             }
+        }
+        else if (a1 == "--merge" || a1 == "-m")
+        {
+            if (argc == 2)
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
+                return false;
+            }
+            openutils::sstring a2 = argv[2]; // config file location
+            if (argc == 3)
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
+                return false;
+            }
+            openutils::sstring a3 = argv[3]; // -o flag
+            if (a3 != "-o")
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m expected '-o', instead got '%s'\n", a3.c_str());
+                return false;
+            }
+            if (argc == 4)
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
+                return false;
+            }
+            openutils::sstring a4 = argv[4]; // outfile file location
+            // real work
+            merger merge(a2, a4);
+            return merge.perform_merging(10);
         }
         else
         {
