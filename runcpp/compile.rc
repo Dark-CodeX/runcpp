@@ -1,5 +1,5 @@
 [r-sources]:
-    src = ['./runcpp/src/caller/caller.cc', './runcpp/src/io/io.cc', './runcpp/src/os/os.c', './runcpp/src/parser/parser.cc', './runcpp/src/main/main.cc']
+    src = ['./runcpp/src/caller/caller.cc', './runcpp/src/io/io.cc', './runcpp/src/merger/merger.cc', './runcpp/src/os/os.c', './runcpp/src/parser/parser.cc', './runcpp/src/main/main.cc']
 
 [r-output]:
     release_output = ['-o', './bin/runcpp']
