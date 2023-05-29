@@ -25,6 +25,8 @@ static const std::size_t used_keywords[] =
         904548199, // "--print"
         688857250, // "-p"
         688857197, // "-o"
+        580836329, // "--merge"
+        688857091, // "-m"
         74350762,  // "--serialize"
         688857409, // "-s"
         550874821, // "--deserialize"
@@ -36,7 +38,7 @@ static const std::size_t used_keywords[] =
         127364900, // "--exit"
         688856667, // "-e"
         126951977, // "--quit"
-        688857303, // "-q"
+        688857303  // "-q"
 };
 
 #endif
