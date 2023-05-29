@@ -79,6 +79,8 @@ namespace runcpp
 
         void print() const;
 
+        [[nodiscard]] bool merge(const openutils::sstring &out) const;
+
         [[nodiscard]] static bool serialize(const parser &p, const openutils::sstring &location);
         [[nodiscard]] static bool deserialize(parser &p, const openutils::sstring &location);
     };

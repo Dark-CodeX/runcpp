@@ -156,7 +156,16 @@ namespace runcpp
                     }
                     j++; // skip [
                     if (!adding_vector.is_null() && !adding_vector.is_empty() && !lable.is_null() && !lable.is_empty())
-                        parsed_data[lable.hash()].operator=(std::move(adding_vector));
+                    {
+                        if (!lable.is_digit())
+                            parsed_data[lable.hash()].operator=(std::move(adding_vector));
+                        else
+                        {
+                            // treating all digit lable as hash itself
+                            std::size_t hash_temp = std::stoul(lable.c_str());
+                            parsed_data[hash_temp].operator=(std::move(adding_vector));
+                        }
+                    }
                     // adding_vector's data has been moved, no need to erose it
                     lable.clear();
 
@@ -780,7 +789,16 @@ namespace runcpp
                             break;
                     }
                     if (!adding_vector.is_null() && !adding_vector.is_empty() && !lable.is_null() && !lable.is_empty())
-                        parsed_data[lable.hash()].operator=(std::move(adding_vector));
+                    {
+                        if (!lable.is_digit())
+                            parsed_data[lable.hash()].operator=(std::move(adding_vector));
+                        else
+                        {
+                            // treating all digit lable as hash itself
+                            std::size_t hash_temp = std::stoul(lable.c_str());
+                            parsed_data[hash_temp].operator=(std::move(adding_vector));
+                        }
+                    }
                     if (!parser::import_helper(ps, lexer, loc, curr_line, lines_to_read))
                         return false;
                     // now import file's data has been parsed and stored, so we can skip the whole line at this point
@@ -836,7 +854,16 @@ namespace runcpp
             chunk = reader.read_next();
         }
         if (!this->M_adding_vector.is_null() && !this->M_adding_vector.is_empty() && !this->M_lable.is_null() && !this->M_lable.is_empty())
-            this->M_map[this->M_lable.hash()].operator=(std::move(this->M_adding_vector));
+        {
+            if (!this->M_lable.is_digit())
+                this->M_map[this->M_lable.hash()].operator=(std::move(this->M_adding_vector));
+            else
+            {
+                // treating all digit lable as hash itself
+                std::size_t hash_temp = std::stoul(this->M_lable.c_str());
+                this->M_map[hash_temp].operator=(std::move(this->M_adding_vector));
+            }
+        }
         if (this->M_block != parser::BLOCK_TYPE::NONE_BLOCK)
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m expected 'endif' at EOF\n");
@@ -899,6 +926,39 @@ namespace runcpp
             }
             std::printf("\n"); // prints new line
         }
+    }
+
+    bool parser::merge(const openutils::sstring &out) const
+    {
+        std::FILE *fptr = std::fopen(out.c_str(), "wb");
+        if (!fptr)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file '%s' for writing.\n", out.c_str());
+            return false;
+        }
+        for (const auto &[key, val] : this->M_map)
+        {
+            openutils::sstring cont = "[";
+            cont += openutils::sstring::to_sstring(key);
+            cont += "]:\n";
+            for (std::size_t i = 0; i < val.length(); i++)
+            {
+                cont += openutils::sstring::to_sstring(i) + " = [";
+                for (std::size_t j = 0; j < val[i].length(); j++)
+                {
+                    cont += val[i][j].wrap("'") + (j < val[i].length() - 1 ? ", " : "");
+                }
+                cont += "]\n";
+            }
+            if (std::fwrite(cont.c_str(), sizeof(char), cont.length(), fptr) != cont.length())
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m could not save file at '%s'\n", out.c_str());
+                std::fclose(fptr);
+                return false;
+            }
+        }
+        std::fclose(fptr);
+        return true;
     }
 
     bool parser::serialize(const parser &p, const openutils::sstring &location)
