@@ -15,8 +15,7 @@ namespace runcpp
         {
             openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> lexer = split[i_split].lexer();
             std::size_t j = 0;
-            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                j++; // ignore whitespaces
+            parser::skip_whitespaces_and_tabs(lexer, j);
             while (lexer[j].second() != openutils::lexer_token::NULL_END)
             {
                 if (lexer[j].first() == "[")
@@ -84,16 +83,10 @@ namespace runcpp
                         return false;
                     }
                     j++; // skip :
-                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // ignore whitespaces
-                    if (lexer[j].first() == "#")
+                    parser::skip_whitespaces_and_tabs(lexer, j);
+                    parser::skip_comment(lexer, j);
+                    if (!parser::validate_line_ending(ps, lexer, j))
                     {
-                        while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // skip/ignore every data after that
-                    }
-                    if (j != lexer.length() - 1)
-                    {
-                        parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                         return false;
                     }
                 }
@@ -121,13 +114,11 @@ namespace runcpp
                             return false;
                         }
                     }
-                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // ignore whitespaces
+                    parser::skip_whitespaces_and_tabs(lexer, j);
                     if (lexer[j].first() == "=")
                     {
                         j++; // skip =
-                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // ignore whitespaces
+                        parser::skip_whitespaces_and_tabs(lexer, j);
 
                         openutils::vector_t<openutils::sstring> temp_vec;
                         // now check if there is ' or [
@@ -148,24 +139,17 @@ namespace runcpp
                             }
                             temp_vec.add(temp_cmd);
                             j++; // skip '
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
-                            if (lexer[j].first() == "#")
+                            parser::skip_whitespaces_and_tabs(lexer, j);
+                            parser::skip_comment(lexer, j);
+                            if (!parser::validate_line_ending(ps, lexer, j))
                             {
-                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // skip/ignore every data after that
-                            }
-                            if (j != lexer.length() - 1)
-                            {
-                                parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                                 return false;
                             }
                         }
                         else if (lexer[j].first() == "[")
                         {
                             j++; // skip [
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
+                            parser::skip_whitespaces_and_tabs(lexer, j);
                             temp_vec.erase();
                             while (lexer[j].first() != "]" && lexer[j].second() != openutils::lexer_token::NULL_END)
                             {
@@ -185,8 +169,7 @@ namespace runcpp
                                     temp_vec.add(temp_cmd);
                                     j++; // skip '
                                     if (lexer[j].first() == " ")
-                                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                            j++; // ignore whitespaces
+                                        parser::skip_whitespaces_and_tabs(lexer, j);
                                     if (lexer[j].first() == "]")
                                     {
                                         j++;
@@ -201,8 +184,7 @@ namespace runcpp
                                         parser::draw_error(ps.M_curr_location, "expected", "' or ']'", ps.M_curr_line, j, lexer);
                                         return false;
                                     }
-                                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                        j++; // ignore whitespaces
+                                    parser::skip_whitespaces_and_tabs(lexer, j);
                                 }
                                 else
                                 {
@@ -210,16 +192,10 @@ namespace runcpp
                                     return false;
                                 }
                             }
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
-                            if (lexer[j].first() == "#")
+                            parser::skip_whitespaces_and_tabs(lexer, j);
+                            parser::skip_comment(lexer, j);
+                            if (!parser::validate_line_ending(ps, lexer, j))
                             {
-                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // skip/ignore every data after that
-                            }
-                            if (j != lexer.length() - 1)
-                            {
-                                parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                                 return false;
                             }
                         }
@@ -238,8 +214,7 @@ namespace runcpp
                             return false;
                         }
                         j++; // skip (
-                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // ignore whitespaces
+                        parser::skip_whitespaces_and_tabs(lexer, j);
                         if (var_name == "depends")
                         {
                             // checks if an app is installed or not
@@ -265,24 +240,17 @@ namespace runcpp
                                 return false;
                             }
                             j++; // skip '
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
+                            parser::skip_whitespaces_and_tabs(lexer, j);
                             if (lexer[j].first() != ")")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "')'", ps.M_curr_line, j, lexer);
                                 return false;
                             }
                             j++; // skip )
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
-                            if (lexer[j].first() == "#")
+                            parser::skip_whitespaces_and_tabs(lexer, j);
+                            parser::skip_comment(lexer, j);
+                            if (!parser::validate_line_ending(ps, lexer, j))
                             {
-                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // skip/ignore every data after that
-                            }
-                            if (j != lexer.length() - 1)
-                            {
-                                parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                                 return false;
                             }
                             // now syntax is correct
@@ -323,8 +291,7 @@ namespace runcpp
                                 return false;
                             }
                             j++; // skip '
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
+                            parser::skip_whitespaces_and_tabs(lexer, j);
                         }
                         if (lexer[j].first() != ")")
                         {
@@ -332,14 +299,12 @@ namespace runcpp
                             return false;
                         }
                         j++; // skip )
-                        while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // ignore whitespaces
+                        parser::skip_whitespaces_and_tabs(lexer, j);
                         std::size_t select_index_outer = -1, select_index_inner = -1, pos_sio, pos_sii;
                         if (lexer[j].first() == "[")
                         {
                             j++; // skip [
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
+                            parser::skip_whitespaces_and_tabs(lexer, j);
                             if (lexer[j].second() != openutils::lexer_token::INTEGER)
                             {
                                 parser::draw_error(ps.M_curr_location, "expected an positive integer", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
@@ -353,21 +318,18 @@ namespace runcpp
                             }
                             select_index_outer = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
                             j++;                                                       // skip the index
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
+                            parser::skip_whitespaces_and_tabs(lexer, j);
                             if (lexer[j].first() != "]")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "']'", ps.M_curr_line, j, lexer);
                                 return false;
                             }
                             j++; // skip ]
-                            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // ignore whitespaces
+                            parser::skip_whitespaces_and_tabs(lexer, j);
                             if (lexer[j].first() == "[")
                             {
                                 j++; // skip [
-                                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // ignore whitespaces
+                                parser::skip_whitespaces_and_tabs(lexer, j);
                                 if (lexer[j].second() != openutils::lexer_token::INTEGER)
                                 {
                                     parser::draw_error(ps.M_curr_location, "expected an positive integer", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
@@ -381,37 +343,26 @@ namespace runcpp
                                 }
                                 select_index_inner = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
                                 j++;                                                       // skip the index
-                                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // ignore whitespaces
+                                parser::skip_whitespaces_and_tabs(lexer, j);
                                 if (lexer[j].first() != "]")
                                 {
                                     parser::draw_error(ps.M_curr_location, "expected", "']'", ps.M_curr_line, j, lexer);
                                     return false;
                                 }
                                 j++; // skip ]
-                                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // ignore whitespaces
+                                parser::skip_whitespaces_and_tabs(lexer, j);
                             }
                             else
                             {
-                                if (lexer[j].first() == "#")
-                                {
-                                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                        j++; // skip/ignore every data after that
-                                }
+                                parser::skip_comment(lexer, j);
                             }
                         }
                         else
                         {
-                            if (lexer[j].first() == "#")
-                            {
-                                while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    j++; // skip/ignore every data after that
-                            }
+                            parser::skip_comment(lexer, j);
                         }
-                        if (j != lexer.length() - 1)
+                        if (!parser::validate_line_ending(ps, lexer, j))
                         {
-                            parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                             return false;
                         }
                         if (shell_command.is_null())
@@ -496,8 +447,7 @@ namespace runcpp
                     // here was there too many bools to handle, so to avoid using them by passing every variable we are using pointer to the parser object.
                     // i.e., ps to turn on/off the bools
                     j++; // skip if
-                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // ignore whitespaces
+                    parser::skip_whitespaces_and_tabs(lexer, j);
                     openutils::sstring LHS_var;
                     while (lexer[j].second() != openutils::lexer_token::NULL_END)
                     {
@@ -510,8 +460,7 @@ namespace runcpp
                         parser::draw_error(ps.M_curr_location, "expected", "LHS", ps.M_curr_line, j, lexer);
                         return false;
                     }
-                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // ignore whitespaces
+                    parser::skip_whitespaces_and_tabs(lexer, j);
                     bool is_equal_equal;
                     if (lexer[j].first() == "=")
                     {
@@ -540,8 +489,7 @@ namespace runcpp
                         parser::draw_error(ps.M_curr_location, "expected", "'==' or `!=`", ps.M_curr_line, j, lexer);
                         return false;
                     }
-                    while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // ignore whitespaces
+                    parser::skip_whitespaces_and_tabs(lexer, j);
 
                     openutils::sstring RHS_var;
 
@@ -569,14 +517,10 @@ namespace runcpp
                         parser::draw_error(ps.M_curr_location, "expected", "RHS", ps.M_curr_line, j, lexer);
                         return false;
                     }
-                    if (lexer[j].first() == "#")
+                    parser::skip_whitespaces_and_tabs(lexer, j);
+                    parser::skip_comment(lexer, j);
+                    if (!parser::validate_line_ending(ps, lexer, j))
                     {
-                        while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // skip/ignore every data after that
-                    }
-                    if (j != lexer.length() - 1)
-                    {
-                        parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                         return false;
                     }
                     // now syntax is correct
@@ -595,28 +539,20 @@ namespace runcpp
                         // if's condition was true, hence else will NOT execute
                         ps.M_was_else_true = false;
                         j++; // skip else
-                        if (lexer[j].first() == "#")
+                        parser::skip_whitespaces_and_tabs(lexer, j);
+                        parser::skip_comment(lexer, j);
+                        if (!parser::validate_line_ending(ps, lexer, j))
                         {
-                            while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // skip/ignore every data after that
-                        }
-                        if (j != lexer.length() - 1)
-                        {
-                            parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                             return false;
                         }
                     }
                     else
                     {
                         j++; // skip else
-                        if (lexer[j].first() == "#")
+                        parser::skip_whitespaces_and_tabs(lexer, j);
+                        parser::skip_comment(lexer, j);
+                        if (!parser::validate_line_ending(ps, lexer, j))
                         {
-                            while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                                j++; // skip/ignore every data after that
-                        }
-                        if (j != lexer.length() - 1)
-                        {
-                            parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                             return false;
                         }
                         ps.M_was_else_true = true;
@@ -637,14 +573,10 @@ namespace runcpp
                         return false;
                     }
                     j++; // skip endif
-                    if (lexer[j].first() == "#")
+                    parser::skip_whitespaces_and_tabs(lexer, j);
+                    parser::skip_comment(lexer, j);
+                    if (!parser::validate_line_ending(ps, lexer, j))
                     {
-                        while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                            j++; // skip/ignore every data after that
-                    }
-                    if (j != lexer.length() - 1)
-                    {
-                        parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                         return false;
                     }
                 }

@@ -15,8 +15,7 @@ namespace runcpp
         while (lexer[j].second() != openutils::lexer_token::NULL_END)
         {
             j++; // skip import keyword
-            while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                j++; // ignore whitespaces
+            parser::skip_whitespaces_and_tabs(lexer, j);
             if (lexer[j].first() == "\"")
             {
                 j++; // skip "
@@ -32,16 +31,10 @@ namespace runcpp
                     }
                 }
                 j++; // skip "
-                while (lexer[j].second() == openutils::lexer_token::WHITESPACE && lexer[j].second() != openutils::lexer_token::NULL_END)
-                    j++; // ignore whitespaces
-                if (lexer[j].first() == "#")
+                parser::skip_whitespaces_and_tabs(lexer, j);
+                parser::skip_comment(lexer, j);
+                if (!parser::validate_line_ending(ps, lexer, j))
                 {
-                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
-                        j++; // skip/ignore every data after that
-                }
-                if (j != lexer.length() - 1)
-                {
-                    parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
                     return false;
                 }
                 if (import_location.is_null() || import_location.is_empty())
