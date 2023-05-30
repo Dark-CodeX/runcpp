@@ -19,7 +19,7 @@ Overall, runcpp is a powerful and sophisticated tool that can streamline your bu
 - [X] Memory safe
 - [X] Target calling
 - [X] Get target's particular values using indexes
-- [X] Run separate command while parsing, using `shell`
+- [X] Run and parse other program's output using `shell`
 - [X] Dependency checker using `depends`
 - [X] Compiles on `g++`, `clang++`, `mingw` and `msvc`
 - [X] Custom writen lexer and parser
