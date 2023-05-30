@@ -56,9 +56,9 @@ namespace runcpp
 
         [[nodiscard]] static bool is_used_keyword(const std::size_t &__keyword_hash);
 
-        [[nodiscard]] static bool import_helper(parser *ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const openutils::sstring &file_loc, const std::size_t &c_line, const unsigned int &lines_to_read);
+        [[nodiscard]] static bool import_helper(parser &ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const unsigned int &lines_to_read);
 
-        [[nodiscard]] static bool helper_parsing(parser *ps, openutils::sstring &lable, openutils::vector_t<openutils::vector_t<openutils::sstring>> &adding_vector, openutils::sstring &loc, const openutils::sstring &content, std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> &parsed_data, std::size_t &curr_line, const unsigned int &lines_to_read);
+        [[nodiscard]] static bool helper_parsing(parser &ps, const openutils::sstring &content, const unsigned int &lines_to_read);
 
     public: // deleted functions
         parser(const parser &) = delete;
