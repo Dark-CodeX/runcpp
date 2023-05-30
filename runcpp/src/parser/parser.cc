@@ -850,7 +850,7 @@ namespace runcpp
 
             if (!this->helper_parsing(this, this->M_lable, this->M_adding_vector, this->M_curr_location, temp_content, this->M_map, this->M_curr_line, max_lines))
                 return false;
-
+            this->M_curr_line--;
             chunk = reader.read_next();
         }
         if (!this->M_adding_vector.is_null() && !this->M_adding_vector.is_empty() && !this->M_lable.is_null() && !this->M_lable.is_empty())
