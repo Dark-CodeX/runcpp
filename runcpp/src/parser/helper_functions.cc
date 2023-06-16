@@ -25,6 +25,11 @@ namespace runcpp
 
     bool parser::validate_line_ending(const parser &ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j)
     {
+        if (lexer[j].first() == "\r")
+        {
+            // added support for CRLF files
+            j++;
+        }
         if (j != lexer.length() - 1)
         {
             parser::draw_error(ps.M_curr_location, "unexpected token", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);

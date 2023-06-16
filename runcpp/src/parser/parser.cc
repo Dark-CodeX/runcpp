@@ -18,7 +18,14 @@ namespace runcpp
             parser::skip_whitespaces_and_tabs(lexer, j);
             while (lexer[j].second() != openutils::lexer_token::NULL_END)
             {
-                if (lexer[j].first() == "[")
+                if (lexer[j].first() == "\r")
+                {
+                    if (!parser::validate_line_ending(ps, lexer, j))
+                    {
+                        return false;
+                    }
+                }
+                else if (lexer[j].first() == "[")
                 {
                     if (ps.M_block != parser::BLOCK_TYPE::NONE_BLOCK) // means this block code config file is under if-else
                     {
