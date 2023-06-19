@@ -1,15 +1,15 @@
 if os == 'windows'
-    depends('g++.exe') # *.exe is important
+    depends('clang++.exe') # *.exe is important
 else
-    depends('g++')
+    depends('clang++')
 endif
 
 [compiler]:
     compiler = 'g++'
 
 [arguments]:
-    release_args = ['-std=c++23', '-O3', '-DNDEBUG', '-s', '-march=native', '-mtune=native','-masm=intel', '-flto=auto']
-    debug_args = ['-std=c++23', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
+    release_args = ['-std=c++2a', '-O3', '-DNDEBUG', '-march=native', '-mtune=native', '-masm=intel', '-flto']
+    debug_args = ['-std=c++2a', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
 
 import "./runcpp/compile.rc"
 
