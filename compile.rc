@@ -2,6 +2,7 @@ if os == 'windows'
     depends('clang++.exe') # *.exe is important
 else
     depends('clang++')
+    depends('mv')
 endif
 
 [compiler]:
