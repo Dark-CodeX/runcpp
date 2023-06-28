@@ -16,7 +16,7 @@
 #include "../caller/caller.hh"
 #include "../parser/parser.hh"
 #include "../io/io.hh"
-#include "../os/os.h"
+#include "../os/os.hh"
 #include "../help/help.h"
 
 namespace runcpp
