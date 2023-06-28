@@ -50,7 +50,7 @@ namespace runcpp
             return false;
         }
 
-        bool is_app_arch_64 = (get_app_arch() == 64 ? true : false);
+        bool is_app_arch_64 = (os::get_app_arch() == 64 ? true : false);
         std::fwrite(&is_app_arch_64, sizeof(is_app_arch_64), 1, fptr);
 
         std::size_t desc_len = 46;
@@ -104,13 +104,13 @@ namespace runcpp
             return false;
         }
 
-        if (is_binary_64 == true && get_app_arch() == 32) // means app is 32 bit, but bin is 64 bit
+        if (is_binary_64 == true && os::get_app_arch() == 32) // means app is 32 bit, but bin is 64 bit
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is 64 bit whereas, the app/os is 32 bit.\n", location.c_str());
             std::fclose(fptr);
             return false;
         }
-        if (is_binary_64 == false && get_app_arch() == 64) // means app is 64 bit, but bin is 32 bit
+        if (is_binary_64 == false && os::get_app_arch() == 64) // means app is 64 bit, but bin is 32 bit
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is 32 bit whereas, the app/os is 64 bit.\n", location.c_str());
             std::fclose(fptr);

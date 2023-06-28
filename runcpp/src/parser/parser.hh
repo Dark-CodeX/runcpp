@@ -16,7 +16,7 @@
 #endif
 
 #include "../io/io.hh"
-#include "../os/os.h"
+#include "../os/os.hh"
 #include "./used_keywords.h"
 #include "../caller/caller.hh"
 

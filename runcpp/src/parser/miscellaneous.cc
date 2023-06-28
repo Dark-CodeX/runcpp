@@ -30,11 +30,11 @@ namespace runcpp
             const openutils::sstring &ele_rhs_0 = rhs[0];
             if (ele_lhs_0 == "os")
             {
-                return ele_rhs_0 == get_os();
+                return ele_rhs_0 == os::get_os();
             }
             else if (ele_lhs_0 == "os_arch")
             {
-                return ele_rhs_0 == openutils::sstring::to_sstring(get_app_arch());
+                return ele_rhs_0 == openutils::sstring::to_sstring(os::get_app_arch());
             }
         }
         return lhs == rhs;

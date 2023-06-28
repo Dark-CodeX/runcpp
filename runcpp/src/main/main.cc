@@ -5,9 +5,18 @@
  */
 
 #include "../command_line/command_line.hh"
+#include <signal.h>
+
+void exit_handler(int signal)
+{
+    std::fprintf(stderr, "\n\033[1;91merr:\033[0m aborting all tasks and exiting with error code %d.\n", EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
+}
 
 int main(int argc, const char **argv)
 {
+    signal(SIGINT, exit_handler);
+
     if (argc == 1)
     {
         if (!runcpp::command_line::parse_command_line(argc, argv))
