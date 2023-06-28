@@ -1,12 +1,12 @@
 if os == 'windows'
-    depends('clang++.exe') # *.exe is important
+    depends('cl.exe') # *.exe is important
 else
     depends('clang++')
     depends('mv')
 endif
 
 [compiler]:
-    compiler = 'g++'
+    compiler = 'clang++'
 
 [arguments]:
     release_args = ['-std=c++2a', '-O3', '-DNDEBUG', '-march=native', '-mtune=native', '-masm=intel', '-flto']
@@ -21,3 +21,6 @@ import "./runcpp/compile.rc"
     if os == 'linux'
         install()
     endif
+
+# cl /std:c++latest /O2 /DNDEBUG /EHsc /Fo./obj/ /Fe./bin/runcpp ./runcpp/src/caller/caller.cc ./runcpp/src/io/io.cc ./runcpp/src/os/os.cc ./runcpp/src/parser/command_generator.cc ./runcpp/src/parser/draw_error.cc ./runcpp/src/parser/import_helper.cc ./runcpp/src/parser/miscellaneous.cc ./runcpp/src/parser/serialize_deserialize_merge.cc ./runcpp/src/parser/helper_functions.cc ./runcpp/src/parser/parser.cc ./runcpp/src/main/main.cc
+# cl /std:c++latest /W4 /wd4351 /wd4150 /wd4456 /TP /MDd /Fo./obj/ /Fe./bin/runcpp_debug ./runcpp/src/caller/caller.cc ./runcpp/src/io/io.cc ./runcpp/src/os/os.cc ./runcpp/src/parser/command_generator.cc ./runcpp/src/parser/draw_error.cc ./runcpp/src/parser/import_helper.cc ./runcpp/src/parser/miscellaneous.cc ./runcpp/src/parser/serialize_deserialize_merge.cc ./runcpp/src/parser/helper_functions.cc ./runcpp/src/parser/parser.cc ./runcpp/src/main/main.cc
