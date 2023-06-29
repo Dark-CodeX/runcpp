@@ -22,13 +22,17 @@ endif
     endif
 
 [setup]:
-    make_dir = ['mkdir', '-p', './bin']
+    if os != 'windows'
+        make_dir = ['mkdir', '-p', './bin']
+    endif
 
 import "./runcpp/compile.rc"
 
 # here we are using `all`, which means every command is executed like a separate process
 [all]:
-    setup()
+    if os != 'windows'
+        setup()
+    endif
     release()
     if os != 'windows'
         debug()
