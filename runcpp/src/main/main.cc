@@ -24,8 +24,10 @@ int main(int argc, const char **argv)
     signal(SIGINT, exit_handler);
     signal(SIGABRT, exit_handler);
     signal(SIGTERM, exit_handler);
+#if defined __linux__ || defined linux || defined __linux
     signal(SIGKILL, exit_handler);
     signal(SIGSTOP, exit_handler);
+#endif
     signal(SIGSEGV, segfault_handler);
 
     if (argc == 1)
