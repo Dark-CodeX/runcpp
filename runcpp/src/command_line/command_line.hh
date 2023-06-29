@@ -49,7 +49,7 @@ namespace runcpp
                 openutils::sstring overw_file = "";
                 if (!overw_file.save("./compile.rc"))
                 {
-                    std::fprintf(stderr, "\033[1;91merr:\033[0m could not overwrite the file './compile.rc'\n");
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m could not overwrite the file './compile.rc': %s\n", std::strerror(errno));
                     return false;
                 }
             }
@@ -62,7 +62,7 @@ namespace runcpp
         openutils::chunkio_writer<char> writer("./compile.rc");
         if (writer.file_created() == false)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file './compile.rc' for writing.\n");
+            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file './compile.rc' for writing: %s\n", std::strerror(errno));
             return false;
         }
         openutils::sstring content, uinput;
@@ -74,7 +74,7 @@ namespace runcpp
 
         if (!writer.save_next(content.c_str(), content.length()))
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;
         }
         uinput.clear();
@@ -95,7 +95,7 @@ namespace runcpp
 
         if (!writer.save_next(content.c_str(), content.length()))
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;
         }
         uinput.clear();
@@ -116,7 +116,7 @@ namespace runcpp
 
         if (!writer.save_next(content.c_str(), content.length()))
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;
         }
         uinput.clear();
@@ -138,7 +138,7 @@ namespace runcpp
 
         if (!writer.save_next(content.c_str(), content.length()))
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved.\n");
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;
         }
         uinput.clear();

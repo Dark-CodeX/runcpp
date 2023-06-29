@@ -639,11 +639,18 @@ namespace runcpp
 
     bool parser::perform_parsing(const unsigned int &max_lines)
     {
-        if (this->M_curr_location.is_null() || this->M_curr_location.is_empty() || io::file_exists(this->M_curr_location) == false)
+        if (this->M_curr_location.is_empty())
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' was not found.\n", (this->M_curr_location.is_empty() ? (this->M_curr_location.is_null() ? "(null)" : this->M_curr_location.c_str()) : this->M_curr_location.c_str()));
+            std::fprintf(stderr, "\033[1;91merr:\033[0m empty file location was given\n");
             return false;
         }
+
+        if (!io::file_exists(this->M_curr_location))
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' was not found: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
+            return false;
+        }
+
         openutils::chunkio_lines_reader<char> reader(this->M_curr_location.c_str(), max_lines);
 
         std::pair<char *&, std::size_t> chunk = reader.read_next();

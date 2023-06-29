@@ -13,7 +13,7 @@ namespace runcpp
         std::FILE *fptr = std::fopen(out.c_str(), "wb");
         if (!fptr)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file '%s' for writing.\n", out.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file '%s' for writing: %s\n", out.c_str(), std::strerror(errno));
             return false;
         }
         for (const auto &[key, val] : this->M_map)
@@ -32,7 +32,7 @@ namespace runcpp
             }
             if (std::fwrite(cont.c_str(), sizeof(char), cont.length(), fptr) != cont.length())
             {
-                std::fprintf(stderr, "\033[1;91merr:\033[0m could not save file at '%s'\n", out.c_str());
+                std::fprintf(stderr, "\033[1;91merr:\033[0m could not save file at '%s': %s\n", out.c_str(), std::strerror(errno));
                 std::fclose(fptr);
                 return false;
             }
@@ -46,7 +46,7 @@ namespace runcpp
         std::FILE *fptr = std::fopen(location.c_str(), "wb");
         if (!fptr)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file '%s' for writing.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file '%s' for writing: %s\n", location.c_str(), std::strerror(errno));
             return false;
         }
 
@@ -92,14 +92,14 @@ namespace runcpp
         std::FILE *fptr = std::fopen(location.c_str(), "rb");
         if (!fptr)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file '%s' for reading.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file '%s' for reading: %s\n", location.c_str(), std::strerror(errno));
             return false;
         }
 
         bool is_binary_64;
         if (std::fread(&is_binary_64, sizeof(is_binary_64), 1, fptr) != 1)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
             std::fclose(fptr);
             return false;
         }
@@ -120,13 +120,13 @@ namespace runcpp
         std::size_t desc_len;
         if (std::fread(&desc_len, sizeof(desc_len), 1, fptr) != 1)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
             std::fclose(fptr);
             return false;
         }
         if (desc_len != 46)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
             std::fclose(fptr);
             return false;
         }
@@ -134,7 +134,7 @@ namespace runcpp
         std::fread(desc.get(), sizeof(char), desc_len, fptr);
         if (desc != "generated using runcpp, don't change manually")
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
             std::fclose(fptr);
             return false;
         }
@@ -142,7 +142,7 @@ namespace runcpp
         std::size_t umap_len;
         if (std::fread(&umap_len, sizeof(umap_len), 1, fptr) != 1)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+            std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
             std::fclose(fptr);
             return false;
         }
@@ -155,14 +155,14 @@ namespace runcpp
             std::size_t __key;
             if (std::fread(&__key, sizeof(__key), 1, fptr) != 1)
             {
-                std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
                 std::fclose(fptr);
                 return false;
             }
             std::size_t outer_vec_len;
             if (std::fread(&outer_vec_len, sizeof(outer_vec_len), 1, fptr) != 1)
             {
-                std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
                 std::fclose(fptr);
                 return false;
             }
@@ -174,7 +174,7 @@ namespace runcpp
                 std::size_t inner_vec_len;
                 if (std::fread(&inner_vec_len, sizeof(inner_vec_len), 1, fptr) != 1)
                 {
-                    std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
                     std::fclose(fptr);
                     return false;
                 }
@@ -186,7 +186,7 @@ namespace runcpp
                     std::size_t str_len;
                     if (std::fread(&str_len, sizeof(str_len), 1, fptr) != 1)
                     {
-                        std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
                         std::fclose(fptr);
                         return false;
                     }
@@ -194,7 +194,7 @@ namespace runcpp
                     openutils::sstring str('\0', str_len);
                     if (std::fread(str.get(), sizeof(char), str_len, fptr) != str_len)
                     {
-                        std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') is modified file by external agent.\n", location.c_str());
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m given binary file ('%s') was modified file by external agent.\n", location.c_str());
                         std::fclose(fptr);
                         return false;
                     }
