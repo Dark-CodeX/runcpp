@@ -20,10 +20,14 @@ endif
         debug_args = ['-std=c++2a', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
     endif
 
+[setup]:
+    make_dir = ['mkdir', '-p', './bin']
+
 import "./runcpp/compile.rc"
 
 # here we are using `all`, which means every command is executed like a separate process
 [all]:
+    setup()
     release()
     if os != 'windows'
         debug()
