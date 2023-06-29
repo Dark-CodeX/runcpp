@@ -2,8 +2,13 @@
     src = ['./runcpp/src/caller/caller.cc', './runcpp/src/io/io.cc', './runcpp/src/os/os.cc', './runcpp/src/parser/command_generator.cc', './runcpp/src/parser/draw_error.cc', './runcpp/src/parser/import_helper.cc', './runcpp/src/parser/miscellaneous.cc', './runcpp/src/parser/serialize_deserialize_merge.cc', './runcpp/src/parser/helper_functions.cc', './runcpp/src/parser/parser.cc', './runcpp/src/main/main.cc']
 
 [output]:
-    release_output = ['-o', './bin/runcpp']
-    debug_output = ['-o', './bin/runcpp_debug']
+    if os == 'windows'
+        release_output = ['/Fo./bin/', '/Fe./bin/runcpp']
+    else
+        release_output = ['-o', './bin/runcpp']
+        debug_output = ['-o', './bin/runcpp_debug']
+    endif
+    
 
 [release]:
     compiler()
@@ -11,13 +16,15 @@
     sources()
     output()[0]
 
-[debug]:
-    compiler()
-    arguments()[1]
-    sources()
-    output()[1]
+if os != 'windows'
+    [debug]:
+        compiler()
+        arguments()[1]
+        sources()
+        output()[1]
+endif
 
-if os == 'linux'
+if os != 'windows'
     [install]:
         cmds = ['sudo', 'mv', './bin/runcpp', '/usr/bin/'] # this will need sudo previlages to move or install optimized output file
 
