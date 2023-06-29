@@ -10,13 +10,13 @@
 void exit_handler(int signal)
 {
     std::fprintf(stderr, "\n\033[1;91merr:\033[0m aborting all tasks and exiting with error code %d.\n", signal);
-    std::exit(EXIT_FAILURE);
+    std::exit(signal);
 }
 
 void segfault_handler(int signal)
 {
     std::fprintf(stderr, "\n\033[1;91merr:\033[0m invalid or un-allocated memory access with error code %d, report this error on https://github.com/Dark-CodeX/runcpp/issues\n", signal);
-    std::exit(EXIT_FAILURE);
+    std::exit(signal);
 }
 
 int main(int argc, const char **argv)
