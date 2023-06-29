@@ -3,6 +3,7 @@ if os == 'windows'
 else
     depends('clang++')
     depends('mv')
+    depends('mkdir')
 endif
 
 [compiler]:
