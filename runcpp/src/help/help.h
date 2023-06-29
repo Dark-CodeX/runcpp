@@ -42,14 +42,14 @@ static const char *runcpp_help = "Usage: [options] [targets]\n"
                                  "This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. You may obtain a copy of this license at https://www.gnu.org/licenses/gpl-3.0.en.html.";
 
 static const char *runcpp_libs = "Copyright 2023 Tushar Chaurasia\n"
-                                 "    1. [sstring v" OPENUTILS_sstring_version "]      (https://github.com/Dark-CodeX/sstring.git)        Tushar Chaurasia\n"
-                                 "    2. [vector v" OPENUTILS_vector_t_version "]       (https://github.com/Dark-CodeX/vector.git)         Tushar Chaurasia\n"
-                                 "    3. [date-time v" OPENUTILS_date_time_version "]    (https://github.com/Dark-CodeX/date-time.git)      Tushar Chaurasia\n"
-                                 "    4. [chunkio v" OPENUTILS_chunkio_version "]      (https://github.com/Dark-CodeX/chunkio.git)        Tushar Chaurasia\n"
-                                 "    5. [heap-pair v" OPENUTILS_heap_pair_version "]    (https://github.com/Dark-CodeX/heap-pair.git)      Tushar Chaurasia\n"
+                                 "    1. [sstring v" OPENUTILS_sstring_version "]      (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
+                                 "    2. [vector v" OPENUTILS_vector_t_version "]       (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
+                                 "    3. [date-time v" OPENUTILS_date_time_version "]    (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
+                                 "    4. [chunkio v" OPENUTILS_chunkio_version "]      (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
+                                 "    5. [heap-pair v" OPENUTILS_heap_pair_version "]    (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
                                  "\nLicense:\n"
                                  "This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. You may obtain a copy of this license at https://www.gnu.org/licenses/gpl-3.0.en.html.";
 
-static const char *runcpp_version = "v1.0";
+static const char *runcpp_version = "v1.0.0";
 
 #endif
