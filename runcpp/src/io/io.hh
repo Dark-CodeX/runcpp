@@ -20,6 +20,12 @@ namespace runcpp
          * @return false if file DOES NOT exists
          */
         [[nodiscard]] static bool file_exists(const openutils::sstring &loc);
+
+        /**
+         * @return true if file exists;
+         * @return false if file DOES NOT exists
+         */
+        [[nodiscard]] static bool directory_exists(const openutils::sstring &loc);
     };
 }
 #endif

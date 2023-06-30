@@ -21,4 +21,20 @@ namespace runcpp
         return (stat(loc.c_str(), &buffer) == 0);
 #endif
     }
+
+    bool io::directory_exists(const openutils::sstring &loc)
+    {
+        if (loc.is_null())
+            return false;
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+        struct _stat buffer = {};
+        if (_stat(loc.c_str(), &buffer) == 0 && S_ISDIR(buffer.st_mode))
+            return true;
+#else
+        struct stat buffer = {};
+        if (stat(loc.c_str(), &buffer) == 0 && S_ISDIR(buffer.st_mode))
+            return true;
+#endif
+        return false;
+    }
 }
