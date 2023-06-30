@@ -14,7 +14,7 @@ Overall, runcpp is a powerful and sophisticated tool that can streamline your bu
 - [X] Comments
 - [X] Import another file
 - [X] Better syntax and logical error detection
-- [X] Cross-plaform
+- [X] Cross-platform
 - [X] Optimized and fast
 - [X] Memory safe
 - [X] Target calling
@@ -22,7 +22,7 @@ Overall, runcpp is a powerful and sophisticated tool that can streamline your bu
 - [X] Run and parse other program's output using `shell`
 - [X] Dependency checker using `depends`
 - [X] Compiles on `g++`, `clang++`, `mingw` and `msvc`
-- [X] Custom writen lexer and parser
+- [X] Custom written lexer and parser
 - [X] Serialization and deserialization for faster execution of commands
 - [X] If-else statements
 - [ ] GUI Client
