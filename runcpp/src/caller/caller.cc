@@ -160,7 +160,6 @@ namespace runcpp
             if (io::file_exists(temp_loc))
                 return temp_loc;
         }
-        std::fprintf(stderr, "\033[1;91merr:\033[0m dependency '%s' was not found.\n", executable_name.c_str());
         return nullptr;
     }
 }
