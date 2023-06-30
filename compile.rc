@@ -6,6 +6,25 @@ else
     depends('mkdir')
 endif
 
+# check if all source files are present
+depends('./runcpp/src/caller/caller.hh')
+depends('./runcpp/src/caller/caller.cc')
+depends('./runcpp/src/command_line/command_line.hh')
+depends('./runcpp/src/help/help.h')
+depends('./runcpp/src/io/io.cc')
+depends('./runcpp/src/io/io.hh')
+depends('./runcpp/src/main/main.cc')
+depends('./runcpp/src/os/os.cc')
+depends('./runcpp/src/os/os.hh')
+depends('./runcpp/src/parser/command_generator.cc')
+depends('./runcpp/src/parser/helper_functions.cc')
+depends('./runcpp/src/parser/import_helper.cc')
+depends('./runcpp/src/parser/miscellaneous.cc')
+depends('./runcpp/src/parser/parser.cc')
+depends('./runcpp/src/parser/parser.hh')
+depends('./runcpp/src/parser/serialize_deserialize_merge.cc')
+depends('./runcpp/src/parser/used_keywords.h')
+
 [compiler]:
     if os == 'windows'
         compiler = 'cl.exe'
@@ -24,6 +43,7 @@ endif
 [setup]:
     if os != 'windows'
         make_dir = ['mkdir', '-p', './bin']
+        depends('./bin')
     endif
 
 import "./runcpp/compile.rc"
