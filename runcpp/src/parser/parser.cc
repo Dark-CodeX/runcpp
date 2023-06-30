@@ -225,7 +225,7 @@ namespace runcpp
                         if (var_name == "depends")
                         {
                             // checks if an app is installed or not
-                            openutils::sstring app_name = nullptr;
+                            openutils::sstring dependent = nullptr;
                             if (lexer[j].first() != "'")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
@@ -234,14 +234,14 @@ namespace runcpp
                             j++; // skip '
                             while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
                             {
-                                app_name += lexer[j++].first();
+                                dependent += lexer[j++].first();
                                 if (j == lexer.length() - 1)
                                 {
                                     parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
                                     return false;
                                 }
                             }
-                            if (app_name.is_null() || app_name.is_empty())
+                            if (dependent.is_null() || dependent.is_empty())
                             {
                                 parser::draw_error(ps.M_curr_location, "dependency program name was empty or (null)", "", ps.M_curr_line, j, lexer);
                                 return false;
@@ -261,16 +261,35 @@ namespace runcpp
                                 return false;
                             }
                             // now syntax is correct
-                            // now check if app is installed or not
+                            // now check if app, file, directory is installed or not
                             // if app is installed print its location, else throw error
-                            openutils::sstring app_location = get_command_path_if_exists(app_name);
+                            openutils::sstring app_location = get_command_path_if_exists(dependent);
                             if (app_location.is_null())
                             {
-                                // error msg is already printed
-                                return false;
+                                if (io::directory_exists(dependent))
+                                {
+                                    std::printf("Found dependency directory at \033[1;92m'%s'\033[0m\n", dependent.c_str());
+                                    break;
+                                }
+                                else
+                                {
+                                    if (io::file_exists(dependent))
+                                    {
+                                        std::printf("Found dependency file at \033[1;92m'%s'\033[0m\n", dependent.c_str());
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        std::fprintf(stderr, "\033[1;91merr:\033[0m dependency '%s' was not found.\n", dependent.c_str());
+                                        return false;
+                                    }
+                                }
                             }
-                            std::printf("Found '%s' at \033[1;92m'%s'\033[0m\n", app_name.c_str(), app_location.c_str());
-                            break;
+                            else
+                            {
+                                std::printf("Found dependency '%s' at \033[1;92m'%s'\033[0m\n", dependent.c_str(), app_location.c_str());
+                                break;
+                            }
                         }
                         openutils::sstring shell_command = nullptr;
                         if (var_name == "shell")
