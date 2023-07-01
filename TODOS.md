@@ -1,4 +1,5 @@
 - Make support for inner if's
 - Make separate functions for repetitive tasks such as parse quotes or parse array like structure
+- Make single quotes optional for numbers
 - Add multi-line support for syntax
 - Make a GUI client using electron.js which will be cross-platform.
