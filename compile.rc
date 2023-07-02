@@ -42,7 +42,8 @@ depends('./runcpp/src/parser/used_keywords.h')
 
 [setup]:
     if os != 'windows'
-        make_dir = ['mkdir', '-p', './bin']
+        make_dir = ['mkdir', '-p', './bin'] # this command will 100% work
+    else
         depends('./bin')
     endif
 
