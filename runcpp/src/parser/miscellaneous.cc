@@ -58,6 +58,7 @@ namespace runcpp
     {
         this->M_adding_vector.erase();
         this->M_curr_location.clear();
+        this->M_target_vector.erase();
         this->M_lable.clear();
     }
 
