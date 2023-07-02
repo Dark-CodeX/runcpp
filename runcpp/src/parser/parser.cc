@@ -38,10 +38,24 @@ namespace runcpp
                     if (!ps.M_adding_vector.is_null() && !ps.M_adding_vector.is_empty() && !ps.M_lable.is_null() && !ps.M_lable.is_empty())
                     {
                         if (!ps.M_lable.is_digit())
+                        {
                             ps.M_map[ps.M_lable.hash()].operator=(std::move(ps.M_adding_vector));
+                            if (ps.store_target_names)
+                                ps.M_target_vector.add(ps.M_lable);
+                        }
                         else
                         {
                             // treating all digit lable as hash itself
+                            if (ps.store_target_names)
+                            {
+                                std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
+                                return false;
+                            }
+                            if (ps.M_lable.length() > std::numeric_limits<std::size_t>::digits10)
+                            {
+                                std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", ps.M_lable.c_str());
+                                return false;
+                            }
                             std::size_t hash_temp = std::stoul(ps.M_lable.c_str());
                             ps.M_map[hash_temp].operator=(std::move(ps.M_adding_vector));
                         }
@@ -67,11 +81,29 @@ namespace runcpp
                         j++;
                     }
                     // now at this point where were no errors
-                    if (ps.M_map.contains(ps.M_lable.hash()))
+                    if (ps.M_lable.is_digit())
                     {
-                        // avoid duplicate targets
-                        parser::draw_error(ps.M_curr_location, "target", ps.M_lable.wrap("'") + " is already defined", ps.M_curr_line, j - 1, lexer);
-                        return false;
+                        if (ps.M_lable.length() > std::numeric_limits<std::size_t>::digits10)
+                        {
+                            parser::draw_error(ps.M_curr_location, "integer overflow", lexer[j].first().wrap("'"), ps.M_curr_line, j - 1, lexer);
+                            return false;
+                        }
+                        std::size_t hash_temp = std::stoul(ps.M_lable.c_str());
+                        if (ps.M_map.contains(hash_temp))
+                        {
+                            // avoid duplicate targets
+                            parser::draw_error(ps.M_curr_location, "target with hash", ps.M_lable.wrap("'") + " is already defined", ps.M_curr_line, j - 1, lexer);
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (ps.M_map.contains(ps.M_lable.hash()))
+                        {
+                            // avoid duplicate targets
+                            parser::draw_error(ps.M_curr_location, "target", ps.M_lable.wrap("'") + " is already defined", ps.M_curr_line, j - 1, lexer);
+                            return false;
+                        }
                     }
                     if (parser::is_used_keyword(ps.M_lable.hash())) // true means target is a used name
                     {
@@ -623,10 +655,24 @@ namespace runcpp
                     if (!ps.M_adding_vector.is_null() && !ps.M_adding_vector.is_empty() && !ps.M_lable.is_null() && !ps.M_lable.is_empty())
                     {
                         if (!ps.M_lable.is_digit())
+                        {
                             ps.M_map[ps.M_lable.hash()].operator=(std::move(ps.M_adding_vector));
+                            if (ps.store_target_names)
+                                ps.M_target_vector.add(ps.M_lable);
+                        }
                         else
                         {
                             // treating all digit lable as hash itself
+                            if (ps.store_target_names)
+                            {
+                                std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
+                                return false;
+                            }
+                            if (ps.M_lable.length() > std::numeric_limits<std::size_t>::digits10)
+                            {
+                                std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", ps.M_lable.c_str());
+                                return false;
+                            }
                             std::size_t hash_temp = std::stoul(ps.M_lable.c_str());
                             ps.M_map[hash_temp].operator=(std::move(ps.M_adding_vector));
                         }
@@ -646,7 +692,7 @@ namespace runcpp
         return true; // parsed without any errors
     }
 
-    parser::parser(const openutils::sstring &location)
+    parser::parser(const openutils::sstring &location, bool store_target)
     {
         this->M_curr_location = location;
         this->M_curr_line = 0;
@@ -654,6 +700,8 @@ namespace runcpp
         this->M_was_if_true = false;
         this->M_was_else_true = false;
         this->M_block = parser::BLOCK_TYPE::NONE_BLOCK;
+
+        this->store_target_names = store_target;
     }
 
     bool parser::perform_parsing(const unsigned int &max_lines)
@@ -695,10 +743,24 @@ namespace runcpp
         if (!this->M_adding_vector.is_null() && !this->M_adding_vector.is_empty() && !this->M_lable.is_null() && !this->M_lable.is_empty())
         {
             if (!this->M_lable.is_digit())
+            {
                 this->M_map[this->M_lable.hash()].operator=(std::move(this->M_adding_vector));
+                if (this->store_target_names)
+                    this->M_target_vector.add(this->M_lable);
+            }
             else
             {
                 // treating all digit lable as hash itself
+                if (this->store_target_names)
+                {
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", this->M_lable.c_str());
+                    return false;
+                }
+                if (this->M_lable.length() > std::numeric_limits<std::size_t>::digits10)
+                {
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", this->M_lable.c_str());
+                    return false;
+                }
                 std::size_t hash_temp = std::stoul(this->M_lable.c_str());
                 this->M_map[hash_temp].operator=(std::move(this->M_adding_vector));
             }
