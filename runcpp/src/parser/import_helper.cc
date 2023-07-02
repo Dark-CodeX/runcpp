@@ -52,11 +52,13 @@ namespace runcpp
                 // by using above way
                 // 1. we first transfer ps.map to temp_parser, so that it can parse target calls from the parent file
                 // 2. Now, for performance we are using std::move
-                parser temp_parser(import_location);
+                parser temp_parser(import_location, ps.store_target_names);
                 temp_parser.M_map.operator=(std::move(ps.M_map));
                 if (!temp_parser.perform_parsing(lines_to_read))
                     return false;
                 ps.M_map.operator=(std::move(temp_parser.M_map));
+                if(ps.store_target_names)
+                    ps.M_target_vector.add(std::move(temp_parser.M_target_vector));
                 return true;
             }
             else
