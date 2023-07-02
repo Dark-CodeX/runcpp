@@ -31,10 +31,13 @@ namespace runcpp
         // This variable stores the parsed data, here I am using `std::size_t` instead of `openutils::sstring` for KEY, to improve performance and reduce memory usage
         std::unordered_map<std::size_t, openutils::vector_t<openutils::vector_t<openutils::sstring>>> M_map;
 
-        openutils::sstring M_lable;                                                   // target's name
+        openutils::vector_t<openutils::sstring> M_target_vector;                      // this variable stores target's name only IF '--print-gui-client' flag is used
+        openutils::sstring M_lable;                                                   // current target's name
         openutils::vector_t<openutils::vector_t<openutils::sstring>> M_adding_vector; // this vector stores the list of (value of a variable) in a target
 
         std::size_t M_curr_line; // current line
+
+        bool store_target_names; // decideds whether 'M_target_vector' will store names or not
 
         bool M_was_if_true;   // was condition of if true and does code under this block will execute
         bool M_was_else_true; // if true means if's condition was false, hence run only else block's code
@@ -63,7 +66,7 @@ namespace runcpp
         static void skip_whitespaces_and_tabs(const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
 
         [[nodiscard]] static bool validate_line_ending(const parser &ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
-        
+
         [[nodiscard]] static bool import_helper(parser &ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const unsigned int &lines_to_read);
 
         [[nodiscard]] static bool helper_parsing(parser &ps, const openutils::sstring &content, const unsigned int &lines_to_read);
@@ -76,7 +79,7 @@ namespace runcpp
 
     public: // real functions
         parser() = default;
-        parser(const openutils::sstring &location);
+        parser(const openutils::sstring &location, bool store_target = false);
         [[nodiscard]] bool perform_parsing(const unsigned int &max_lines);
         [[nodiscard]] openutils::vector_t<openutils::sstring> generate_command(const openutils::sstring &__key) const;
         [[nodiscard]] const openutils::vector_t<openutils::vector_t<openutils::sstring>> &generate_commands_all() const;
@@ -86,6 +89,8 @@ namespace runcpp
         void clear_memory();
 
         void print() const;
+
+        void print_for_gui_client() const;
 
         [[nodiscard]] bool merge(const openutils::sstring &out) const;
 
