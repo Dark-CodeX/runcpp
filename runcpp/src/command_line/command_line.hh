@@ -289,6 +289,20 @@ namespace runcpp
                     return command_line::run_command(a3, targets, true);
                 }
             }
+            else if (a2 == "--print-gui-client")
+            {
+                if (argc == 3)
+                {
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
+                    return false;
+                }
+                openutils::sstring a3 = argv[3]; // file location
+                parser ps(a3, true);
+                if(!ps.perform_parsing(10))
+                    return false;
+                ps.print_for_gui_client();
+                return true;
+            }
             else
             {
                 // treating a2 as file location
