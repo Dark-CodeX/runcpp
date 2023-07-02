@@ -78,4 +78,31 @@ namespace runcpp
             std::printf("\n"); // prints new line
         }
     }
+
+    void parser::print_for_gui_client() const
+    {
+        std::size_t k;
+        for (const auto &[key, val] : this->M_map)
+        {
+            for (std::size_t i = 0; i < this->M_target_vector.length(); i++)
+            {
+                if (this->M_target_vector[i].hash() == key)
+                {
+                    k = i;
+                    break;
+                }
+            }
+            std::printf("%s %zu\n", this->M_target_vector[k].c_str(), key);
+            for (std::size_t i = 0; i < val.length(); i++)
+            {
+                std::printf("[ ");
+                for (std::size_t j = 0; j < val[i].length(); j++)
+                {
+                    std::printf("%s%s", val[i][j].c_str(), (j < val[i].length() - 1 ? ", " : ""));
+                }
+                std::puts(" ]");
+            }
+            std::printf("\n"); // prints new line
+        }
+    }
 }
