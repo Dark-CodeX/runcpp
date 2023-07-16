@@ -298,7 +298,7 @@ namespace runcpp
                 }
                 openutils::sstring a3 = argv[3]; // file location
                 parser ps(a3, true);
-                if(!ps.perform_parsing(10))
+                if (!ps.perform_parsing(10))
                     return false;
                 ps.print_for_gui_client();
                 return true;
@@ -346,10 +346,28 @@ namespace runcpp
             }
             openutils::sstring a4 = argv[4]; // outfile file location
             // start real job
-            parser ps(a2);
+            parser ps(a2, (argc == 6 ? true : false));
             if (!ps.perform_parsing(10))
                 return false;
-            return parser::serialize(ps, a4);
+            openutils::sstring a5;
+            if (argc == 6)
+                a5 = argv[5];
+            if (a5.is_null())
+            {
+                return parser::serialize(ps, a4);
+            }
+            else if (a5 == "--print-gui-client")
+            {
+                if (!parser::serialize(ps, a4))
+                    return false;
+                ps.print_for_gui_client();
+                return true;
+            }
+            else
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m invalid flag passed '%s', try using '--help'\n", a5.c_str());
+                return false;
+            }
         }
         else if (a1 == "--deserialize" || a1 == "-d")
         {
