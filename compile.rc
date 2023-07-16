@@ -1,7 +1,7 @@
 if os == 'windows'
     depends('cl.exe') # *.exe is important
 else
-    depends('clang++')
+    depends('g++')
     depends('mv')
     depends('mkdir')
 endif
@@ -29,15 +29,15 @@ depends('./runcpp/src/parser/used_keywords.h')
     if os == 'windows'
         compiler = 'cl.exe'
     else
-        compiler = 'clang++'
+        compiler = 'g++'
     endif
 
 [arguments]:
     if os == 'windows'
         release_args = ['/std:c++latest', '/O2', '/DNDEBUG', '/EHsc']
     else
-        release_args = ['-std=c++2a', '-O3', '-DNDEBUG', '-march=native', '-mtune=native', '-masm=intel', '-flto']
-        debug_args = ['-std=c++2a', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
+        release_args = ['-std=c++20', '-O3', '-DNDEBUG', '-march=native', '-mtune=native', '-masm=intel', '-flto']
+        debug_args = ['-std=c++20', '-g', '-ggdb3', '-Wall', '-Wextra', '-Wuninitialized', '-Wstrict-aliasing', '-Wshadow', '-pedantic']
     endif
 
 [setup]:
