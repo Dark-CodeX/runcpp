@@ -110,22 +110,29 @@ namespace runcpp
                 }
                 temp_vec.add(temp_cmd);
                 if (lexer[j].second() == openutils::lexer_token::WHITESPACE)
+                {
                     parser::skip_whitespaces_and_tabs(lexer, j);
+                }
                 if (lexer[j].first() == "]")
                 {
-                    j++;
+                    j++; // skip ]
                     break;
                 }
                 else if (lexer[j].first() == ",")
                 {
-                    j++;
+                    j++; // skip ,
+                    parser::skip_whitespaces_and_tabs(lexer, j);
+                    if (lexer[j].second() == openutils::lexer_token::NULL_END)
+                    {
+                        parser::draw_error(ps.M_curr_location, "expected", quote_type, ps.M_curr_line, j, lexer);
+                        return openutils::vector_t<openutils::sstring>();
+                    }
                 }
                 else
                 {
                     parser::draw_error(ps.M_curr_location, "expected", "',' or ']'", ps.M_curr_line, j, lexer);
                     return openutils::vector_t<openutils::sstring>();
                 }
-                parser::skip_whitespaces_and_tabs(lexer, j);
             }
             else
             {
