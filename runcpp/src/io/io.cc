@@ -27,9 +27,13 @@ namespace runcpp
         if (loc.is_null())
             return false;
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
-        struct _stat buffer = {};
-        if (_stat(loc.c_str(), &buffer) == 0 && S_ISDIR(buffer.st_mode))
+        DWORD fileAttributes = GetFileAttributesA(loc.c_str());
+        if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+            return false;
+        else if (fileAttributes & FILE_ATTRIBUTE_DIRECTORY)
             return true;
+        else
+            return false;
 #else
         struct stat buffer = {};
         if (stat(loc.c_str(), &buffer) == 0 && S_ISDIR(buffer.st_mode))

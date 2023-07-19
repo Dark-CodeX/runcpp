@@ -10,6 +10,10 @@
 #include <openutils/sstring/sstring.hh>
 #include <sys/stat.h>
 
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+#include <Windows.h>
+#endif
+
 namespace runcpp
 {
     class io
