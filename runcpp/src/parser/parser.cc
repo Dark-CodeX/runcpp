@@ -179,49 +179,11 @@ namespace runcpp
                         }
                         else if (lexer[j].first() == "[")
                         {
-                            j++; // skip [
-                            parser::skip_whitespaces_and_tabs(lexer, j);
                             temp_vec.erase();
-                            while (lexer[j].first() != "]" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                            temp_vec = std::move(parser::validate_array(ps, "'", lexer, j));
+                            if (temp_vec.is_null())
                             {
-                                openutils::sstring temp_cmd;
-                                if (lexer[j].first() == "'")
-                                {
-                                    j++; // skip '
-                                    while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
-                                    {
-                                        temp_cmd += lexer[j++].first();
-                                        if (j == lexer.length() - 1)
-                                        {
-                                            parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
-                                            return false;
-                                        }
-                                    }
-                                    temp_vec.add(temp_cmd);
-                                    j++; // skip '
-                                    if (lexer[j].first() == " ")
-                                        parser::skip_whitespaces_and_tabs(lexer, j);
-                                    if (lexer[j].first() == "]")
-                                    {
-                                        j++;
-                                        break;
-                                    }
-                                    else if (lexer[j].first() == ",")
-                                    {
-                                        j++;
-                                    }
-                                    else
-                                    {
-                                        parser::draw_error(ps.M_curr_location, "expected", "' or ']'", ps.M_curr_line, j, lexer);
-                                        return false;
-                                    }
-                                    parser::skip_whitespaces_and_tabs(lexer, j);
-                                }
-                                else
-                                {
-                                    parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
-                                    return false;
-                                }
+                                return false;
                             }
                             parser::skip_whitespaces_and_tabs(lexer, j);
                             parser::skip_comment(lexer, j);
@@ -318,7 +280,7 @@ namespace runcpp
                                 parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
                                 return false;
                             }
-                            shell_command = parser::validate_quotes(ps, "'", lexer, j);
+                            shell_command = std::move(parser::validate_quotes(ps, "'", lexer, j));
                             if (shell_command.is_null())
                             {
                                 return false;
@@ -532,7 +494,7 @@ namespace runcpp
 
                     if (lexer[j].first() == "'")
                     {
-                        RHS_var = parser::validate_quotes(ps, "'", lexer, j);
+                        RHS_var = std::move(parser::validate_quotes(ps, "'", lexer, j));
                         if (RHS_var.is_null())
                         {
                             return false;
