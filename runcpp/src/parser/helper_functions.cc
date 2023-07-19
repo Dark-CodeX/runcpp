@@ -91,4 +91,48 @@ namespace runcpp
         j++; // skip quote
         return temp;
     }
+
+    openutils::vector_t<openutils::sstring> parser::validate_array(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j)
+    {
+        openutils::vector_t<openutils::sstring> temp_vec;
+        j++; // skip [
+        parser::skip_whitespaces_and_tabs(lexer, j);
+
+        while (lexer[j].first() != "]" && lexer[j].second() != openutils::lexer_token::NULL_END)
+        {
+            openutils::sstring temp_cmd;
+            if (lexer[j].first() == "'")
+            {
+                temp_cmd = std::move(parser::validate_quotes(ps, quote_type, lexer, j));
+                if (temp_cmd.is_null())
+                {
+                    return openutils::vector_t<openutils::sstring>();
+                }
+                temp_vec.add(temp_cmd);
+                if (lexer[j].second() == openutils::lexer_token::WHITESPACE)
+                    parser::skip_whitespaces_and_tabs(lexer, j);
+                if (lexer[j].first() == "]")
+                {
+                    j++;
+                    break;
+                }
+                else if (lexer[j].first() == ",")
+                {
+                    j++;
+                }
+                else
+                {
+                    parser::draw_error(ps.M_curr_location, "expected", quote_type + " or ']'", ps.M_curr_line, j, lexer);
+                    return openutils::vector_t<openutils::sstring>();
+                }
+                parser::skip_whitespaces_and_tabs(lexer, j);
+            }
+            else
+            {
+                parser::draw_error(ps.M_curr_location, "expected", quote_type, ps.M_curr_line, j, lexer);
+                return openutils::vector_t<openutils::sstring>();
+            }
+        }
+        return temp_vec;
+    }
 }
