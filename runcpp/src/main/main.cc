@@ -13,7 +13,7 @@ void exit_handler(int signal)
     std::exit(signal);
 }
 
-void segfault_handler(int signal)
+void segfault_handler(int signal) /* treating segfault different because it should never happen in any case */
 {
     std::fprintf(stderr, "\n\033[1;91merr:\033[0m invalid or un-allocated memory access with error code %d, report this error on https://github.com/Dark-CodeX/runcpp/issues\n", signal);
     std::exit(signal);
