@@ -76,6 +76,8 @@ namespace runcpp
 
         [[nodiscard]] static openutils::sstring validate_quotes(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
 
+        [[nodiscard]] static openutils::vector_t<openutils::sstring> validate_array(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
+
     public: // deleted functions
         parser(const parser &) = delete;
 
