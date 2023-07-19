@@ -163,21 +163,13 @@ namespace runcpp
                         // now check if there is ' or [
                         if (lexer[j].first() == "'")
                         {
-                            openutils::sstring temp_cmd;
-                            j++; // skip '
                             temp_vec.erase();
-
-                            while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                            openutils::sstring temp_cmd = parser::validate_quotes(ps, "'", lexer, j);
+                            if (temp_cmd.is_null())
                             {
-                                temp_cmd += lexer[j++].first();
-                                if (j == lexer.length() - 1)
-                                {
-                                    parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
-                                    return false;
-                                }
+                                return false;
                             }
                             temp_vec.add(temp_cmd);
-                            j++; // skip '
                             parser::skip_whitespaces_and_tabs(lexer, j);
                             parser::skip_comment(lexer, j);
                             if (!parser::validate_line_ending(ps, lexer, j))
@@ -257,28 +249,21 @@ namespace runcpp
                         if (var_name == "depends")
                         {
                             // checks if an app is installed or not
-                            openutils::sstring dependent = nullptr;
                             if (lexer[j].first() != "'")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
                                 return false;
                             }
-                            j++; // skip '
-                            while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                            openutils::sstring dependent = parser::validate_quotes(ps, "'", lexer, j);
+                            if (dependent.is_null())
                             {
-                                dependent += lexer[j++].first();
-                                if (j == lexer.length() - 1)
-                                {
-                                    parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
-                                    return false;
-                                }
-                            }
-                            if (dependent.is_null() || dependent.is_empty())
-                            {
-                                parser::draw_error(ps.M_curr_location, "dependency program name was empty or (null)", "", ps.M_curr_line, j, lexer);
                                 return false;
                             }
-                            j++; // skip '
+                            if (dependent.is_empty())
+                            {
+                                parser::draw_error(ps.M_curr_location, "dependency program name or path was empty or (null)", "", ps.M_curr_line, j - 1, lexer);
+                                return false;
+                            }
                             parser::skip_whitespaces_and_tabs(lexer, j);
                             if (lexer[j].first() != ")")
                             {
@@ -333,22 +318,16 @@ namespace runcpp
                                 parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
                                 return false;
                             }
-                            j++; // skip '
-                            while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                            shell_command = parser::validate_quotes(ps, "'", lexer, j);
+                            if (shell_command.is_null())
                             {
-                                shell_command += lexer[j++].first();
-                                if (j == lexer.length() - 1)
-                                {
-                                    parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
-                                    return false;
-                                }
-                            }
-                            if (shell_command.is_null() || shell_command.is_empty())
-                            {
-                                parser::draw_error(ps.M_curr_location, "shell command was empty or (null)", "", ps.M_curr_line, j, lexer);
                                 return false;
                             }
-                            j++; // skip '
+                            if (shell_command.is_empty())
+                            {
+                                parser::draw_error(ps.M_curr_location, "shell command was empty or (null)", "", ps.M_curr_line, j - 1, lexer);
+                                return false;
+                            }
                             parser::skip_whitespaces_and_tabs(lexer, j);
                         }
                         if (lexer[j].first() != ")")
@@ -553,26 +532,20 @@ namespace runcpp
 
                     if (lexer[j].first() == "'")
                     {
-                        j++; // skip '
-                        while (lexer[j].first() != "'" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                        RHS_var = parser::validate_quotes(ps, "'", lexer, j);
+                        if (RHS_var.is_null())
                         {
-                            RHS_var += lexer[j++].first();
-                            if (j == lexer.length() - 1)
-                            {
-                                parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
-                                return false;
-                            }
+                            return false;
                         }
-                        j++; // skip '
                     }
                     else
                     {
                         parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
                         return false;
                     }
-                    if (RHS_var.is_null() || RHS_var.is_empty())
+                    if (RHS_var.is_empty())
                     {
-                        parser::draw_error(ps.M_curr_location, "expected", "RHS", ps.M_curr_line, j, lexer);
+                        parser::draw_error(ps.M_curr_location, "expected", "RHS", ps.M_curr_line, j - 1, lexer);
                         return false;
                     }
                     parser::skip_whitespaces_and_tabs(lexer, j);

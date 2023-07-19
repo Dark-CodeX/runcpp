@@ -18,28 +18,20 @@ namespace runcpp
             parser::skip_whitespaces_and_tabs(lexer, j);
             if (lexer[j].first() == "\"")
             {
-                j++; // skip "
-                openutils::sstring import_location;
-
-                while (lexer[j].first() != "\"" && lexer[j].second() != openutils::lexer_token::NULL_END)
+                openutils::sstring import_location = parser::validate_quotes(ps, "\"", lexer, j);
+                if (import_location.is_null())
                 {
-                    import_location += lexer[j++].first();
-                    if (j == lexer.length() - 1)
-                    {
-                        parser::draw_error(ps.M_curr_location, "expected", "\"", ps.M_curr_line, j, lexer);
-                        return false;
-                    }
+                    return false;
                 }
-                j++; // skip "
                 parser::skip_whitespaces_and_tabs(lexer, j);
                 parser::skip_comment(lexer, j);
                 if (!parser::validate_line_ending(ps, lexer, j))
                 {
                     return false;
                 }
-                if (import_location.is_null() || import_location.is_empty())
+                if (import_location.is_empty())
                 {
-                    parser::draw_error(ps.M_curr_location, "file's location", "was (null) or empty", ps.M_curr_line, j, lexer);
+                    parser::draw_error(ps.M_curr_location, "file's location", "was (null) or empty", ps.M_curr_line, j - 1, lexer);
                     return false;
                 }
                 if (!io::file_exists(import_location))
@@ -57,7 +49,7 @@ namespace runcpp
                 if (!temp_parser.perform_parsing(lines_to_read))
                     return false;
                 ps.M_map.operator=(std::move(temp_parser.M_map));
-                if(ps.store_target_names)
+                if (ps.store_target_names)
                     ps.M_target_vector.add(std::move(temp_parser.M_target_vector));
                 return true;
             }
