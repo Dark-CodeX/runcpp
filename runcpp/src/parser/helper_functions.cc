@@ -74,4 +74,21 @@ namespace runcpp
         }
         return lhs == rhs;
     }
+
+    openutils::sstring parser::validate_quotes(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j)
+    {
+        openutils::sstring temp = "";
+        j++; // skip quote
+        while (lexer[j].first() != quote_type && lexer[j].second() != openutils::lexer_token::NULL_END)
+        {
+            temp += lexer[j++].first();
+            if (j == lexer.length() - 1)
+            {
+                parser::draw_error(ps.M_curr_location, "expected", quote_type, ps.M_curr_line, j, lexer);
+                return nullptr;
+            }
+        }
+        j++; // skip quote
+        return temp;
+    }
 }
