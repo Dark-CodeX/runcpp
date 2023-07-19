@@ -55,4 +55,23 @@ namespace runcpp
         }
         return true;
     }
+
+    bool parser::evaluate_ifs(const openutils::vector_t<openutils::sstring> &lhs, const openutils::vector_t<openutils::sstring> &rhs)
+    {
+        if (lhs.length() == 1 && rhs.length() == 1)
+        {
+            // some constant comparssion
+            const openutils::sstring &ele_lhs_0 = lhs[0];
+            const openutils::sstring &ele_rhs_0 = rhs[0];
+            if (ele_lhs_0 == "os")
+            {
+                return ele_rhs_0 == os::get_os();
+            }
+            else if (ele_lhs_0 == "os_arch")
+            {
+                return ele_rhs_0 == openutils::sstring::to_sstring(os::get_app_arch());
+            }
+        }
+        return lhs == rhs;
+    }
 }
