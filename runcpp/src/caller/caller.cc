@@ -116,8 +116,14 @@ namespace runcpp
             std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", ext_code);
             return openutils::vector_t<openutils::sstring>();
         }
-
-        return output.to_argv();
+        auto return_value = output.to_argv();
+        for (std::size_t i = 0; i < return_value.length(); i++)
+        {
+            // exclude new line or empty strings
+            if (return_value[i] == "\n" || return_value[i] == "\r" || return_value[i] == "\r\n" || return_value[i] == "" || return_value[i].is_null())
+                return_value.remove(i);
+        }
+        return return_value;
     }
 
     openutils::sstring get_command_path_if_exists(const openutils::sstring &executable_name)
