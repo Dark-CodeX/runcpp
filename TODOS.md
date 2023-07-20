@@ -1,3 +1,2 @@
 - Make support for inner if's
-- Make single quotes optional for numbers
 - Add multi-line support for syntax
