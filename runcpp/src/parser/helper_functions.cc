@@ -140,6 +140,8 @@ namespace runcpp
                 return openutils::vector_t<openutils::sstring>();
             }
         }
+        if (temp_vec.is_null() || temp_vec.is_empty()) // maybe []
+            parser::draw_error(ps.M_curr_location, "empty array", "expected data", ps.M_curr_line, j, lexer);
         return temp_vec;
     }
 }
