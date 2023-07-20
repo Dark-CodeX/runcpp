@@ -1,2 +1,3 @@
 - Make support for inner if's
+- Make if's more usable
 - Add multi-line support for syntax
