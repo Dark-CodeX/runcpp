@@ -242,6 +242,11 @@ namespace runcpp
             std::puts(runcpp_libs);
             return true;
         }
+        else if (a1 == "--info" || a1 == "-I")
+        {
+            std::puts(runcpp_info);
+            return true;
+        }
         else if (a1 == "--version" || a1 == "-v")
         {
             std::printf("%s: %s\n", argv[0], runcpp_version);
