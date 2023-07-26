@@ -32,8 +32,8 @@ namespace runcpp
                 return false;
             }
         }
-        openutils::chunkio_writer<char> writer("./compile.rc");
-        if (writer.file_created() == false)
+        std::FILE *fptr = std::fopen("./compile.rc", "wb");
+        if (!fptr)
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file './compile.rc' for writing: %s\n", std::strerror(errno));
             return false;
@@ -45,7 +45,7 @@ namespace runcpp
             uinput = "g++";
         content = openutils::sstring("[compile]:\n    compiler = '") + uinput + openutils::sstring("'\n");
 
-        if (!writer.save_next(content.c_str(), content.length()))
+        if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;
@@ -66,7 +66,7 @@ namespace runcpp
         }
         content += "]\n";
 
-        if (!writer.save_next(content.c_str(), content.length()))
+        if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;
@@ -87,7 +87,7 @@ namespace runcpp
         }
         content += "]\n";
 
-        if (!writer.save_next(content.c_str(), content.length()))
+        if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;
@@ -109,7 +109,7 @@ namespace runcpp
         }
         content += "]\n\n[all]:\n    compile()";
 
-        if (!writer.save_next(content.c_str(), content.length()))
+        if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
             std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             return false;

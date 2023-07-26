@@ -9,7 +9,6 @@
 
 #include <openutils/sstring/sstring.hh>
 #include <openutils/vector/vector.hh>
-#include <openutils/chunkio/chunkio_writer.hh>
 #include <ctime>
 
 #include "../caller/caller.hh"
