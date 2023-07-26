@@ -9,7 +9,6 @@
 
 #include <openutils/sstring/sstring.hh>
 #include <openutils/vector/vector.hh>
-#include <openutils/chunkio/chunkio_lines_reader.hh>
 #include <unordered_map>
 #include <cerrno>
 #if defined _MSC_VER
