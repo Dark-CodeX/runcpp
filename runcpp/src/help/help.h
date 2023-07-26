@@ -10,7 +10,8 @@
 static const char *runcpp_help = "Usage: [options] [targets]\n"
                                  "Options:\n"
                                  "    --help, -h                Display this help message.\n"
-                                 "    --libs, -l                Show the list of used libraries.\n"
+                                 "    --libs, -l                Display the list of used libraries.\n"
+                                 "    --info, -I                Display the time of compilation and name of compiler.\n"
                                  "    --version, -v             Display the version of the app.\n"
                                  "    --generate, -gen          Generate a configuration file by taking user input.\n"
                                  "    --print, -p               Print the parsed output.\n"
@@ -51,5 +52,21 @@ static const char *runcpp_libs = "Copyright 2023 Tushar Chaurasia\n"
                                  "This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. You may obtain a copy of this license at https://www.gnu.org/licenses/gpl-3.0.en.html.";
 
 static const char *runcpp_version = "v1.0.0";
+
+#define helper_pre_processor_num_to_str(num) \
+    #num
+
+#define PREPROCESSOR_NUM_TO_STR(num) \
+    helper_pre_processor_num_to_str(num)
+
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+static const char *runcpp_info = "runcpp: compiled on MSVC v" PREPROCESSOR_NUM_TO_STR(_MSC_FULL_VER) " at " __DATE__ " " __TIME__;
+#else
+#if defined __clang__
+static const char *runcpp_info = "runcpp: compiled on Clang v" PREPROCESSOR_NUM_TO_STR(__clang_major__) "." PREPROCESSOR_NUM_TO_STR(__clang_minor__) "." PREPROCESSOR_NUM_TO_STR(__clang_patchlevel__) " at " __DATE__ " " __TIME__;
+#else
+static const char *runcpp_info = "runcpp: compiled on GCC v" PREPROCESSOR_NUM_TO_STR(__GNUC__) "." PREPROCESSOR_NUM_TO_STR(__GNUC_MINOR__) "." PREPROCESSOR_NUM_TO_STR(__GNUC_PATCHLEVEL__) " at " __DATE__ " " __TIME__;
+#endif
+#endif
 
 #endif
