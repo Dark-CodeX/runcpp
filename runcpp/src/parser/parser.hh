@@ -55,28 +55,28 @@ namespace runcpp
         BLOCK_TYPE M_block; // indicates which block is code under (for config file)
 
     private: // private static functions
-        static void draw_error(const openutils::sstring &loc, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::vector_t<openutils::heap_pair<openutils::sstring, openutils::lexer_token>> &lexer);
+        static void draw_error(const openutils::sstring &loc, const openutils::sstring &err_msg, const openutils::sstring &expected, std::size_t line_no, std::size_t curr_lexer, const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer);
 
         [[nodiscard]] static openutils::vector_t<openutils::sstring> convert_2d_vec_to_1d(const openutils::vector_t<openutils::vector_t<openutils::sstring>> &data);
 
         [[nodiscard]] static bool is_used_keyword(const std::size_t &__keyword_hash);
 
     private: // private static helper functions
-        static void skip_comment(const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
+        static void skip_comment(const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer, std::size_t &j);
 
-        static void skip_whitespaces_and_tabs(const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
+        static void skip_whitespaces_and_tabs(const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer, std::size_t &j);
 
-        [[nodiscard]] static bool validate_line_ending(const parser &ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
+        [[nodiscard]] static bool validate_line_ending(const parser &ps, const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer, std::size_t &j);
 
-        [[nodiscard]] static bool import_helper(parser &ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const unsigned int &lines_to_read);
+        [[nodiscard]] static bool import_helper(parser &ps, const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer, const unsigned int &lines_to_read);
 
         [[nodiscard]] static bool helper_parsing(parser &ps, const openutils::sstring &content, const unsigned int &lines_to_read);
 
         [[nodiscard]] static bool evaluate_ifs(const openutils::vector_t<openutils::sstring> &lhs, const openutils::vector_t<openutils::sstring> &rhs);
 
-        [[nodiscard]] static openutils::sstring validate_quotes(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
+        [[nodiscard]] static openutils::sstring validate_quotes(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer, std::size_t &j);
 
-        [[nodiscard]] static openutils::vector_t<openutils::sstring> validate_array(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, std::size_t &j);
+        [[nodiscard]] static openutils::vector_t<openutils::sstring> validate_array(parser &ps, const openutils::sstring &quote_type, const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer, std::size_t &j);
 
     public: // deleted functions
         parser(const parser &) = delete;

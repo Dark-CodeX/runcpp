@@ -49,7 +49,6 @@ static const char *runcpp_libs = "Copyright 2023 Tushar Chaurasia\n"
                                  "    2. [vector v" OPENUTILS_vector_t_version "]       (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
                                  "    3. [date-time v" OPENUTILS_date_time_version "]    (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
                                  "    4. [chunkio v" OPENUTILS_chunkio_version "]      (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
-                                 "    5. [heap-pair v" OPENUTILS_heap_pair_version "]    (https://github.com/Dark-CodeX/openutils.git)         Tushar Chaurasia\n"
                                  "\nLicense:\n"
                                  "This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. You may obtain a copy of this license at https://www.gnu.org/licenses/gpl-3.0.en.html.";
 

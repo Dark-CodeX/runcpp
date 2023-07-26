@@ -13,19 +13,19 @@ namespace runcpp
         openutils::vector_t<openutils::sstring> split = content.split("\n");
         for (std::size_t i_split = 0; i_split < split.length(); i_split++, ps.M_curr_line++)
         {
-            openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> lexer = split[i_split].lexer();
+            openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> lexer = split[i_split].lexer();
             std::size_t j = 0;
             parser::skip_whitespaces_and_tabs(lexer, j);
-            while (lexer[j].second() != openutils::lexer_token::NULL_END)
+            while (lexer[j].second != openutils::sstring_lexer_token::NULL_END)
             {
-                if (lexer[j].first() == "\r")
+                if (lexer[j].first == "\r")
                 {
                     if (!parser::validate_line_ending(ps, lexer, j))
                     {
                         return false;
                     }
                 }
-                else if (lexer[j].first() == "[")
+                else if (lexer[j].first == "[")
                 {
                     if (ps.M_block != parser::BLOCK_TYPE::NONE_BLOCK) // means this block code config file is under if-else
                     {
@@ -63,21 +63,21 @@ namespace runcpp
                     // ps.M_adding_vector's data has been moved, no need to erose it
                     ps.M_lable.clear();
 
-                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                    while (lexer[j].second != openutils::sstring_lexer_token::NULL_END)
                     {
-                        if (lexer[j].second() == openutils::lexer_token::WHITESPACE)
+                        if (lexer[j].second == openutils::sstring_lexer_token::WHITESPACE)
                         {
                             parser::draw_error(ps.M_curr_location, "unexpected", "' '", ps.M_curr_line, j, lexer);
                             return false;
                         }
-                        else if (lexer[j].first() == "]") // ends
+                        else if (lexer[j].first == "]") // ends
                             break;
                         else if (j >= lexer.length() - 1)
                         {
                             parser::draw_error(ps.M_curr_location, "expected", "']'", ps.M_curr_line, j, lexer);
                             return false;
                         }
-                        ps.M_lable += lexer[j].first();
+                        ps.M_lable += lexer[j].first;
                         j++;
                     }
                     // now at this point where were no errors
@@ -85,7 +85,7 @@ namespace runcpp
                     {
                         if (ps.M_lable.length() > std::numeric_limits<std::size_t>::digits10)
                         {
-                            parser::draw_error(ps.M_curr_location, "integer overflow", lexer[j].first().wrap("'"), ps.M_curr_line, j - 1, lexer);
+                            parser::draw_error(ps.M_curr_location, "integer overflow", lexer[j].first.wrap("'"), ps.M_curr_line, j - 1, lexer);
                             return false;
                         }
                         std::size_t hash_temp = std::stoul(ps.M_lable.c_str());
@@ -116,7 +116,7 @@ namespace runcpp
                         parser::draw_error(ps.M_curr_location, "expected", "':'", ps.M_curr_line, j, lexer);
                         return false;
                     }
-                    if (lexer[j].first() != ":")
+                    if (lexer[j].first != ":")
                     {
                         parser::draw_error(ps.M_curr_location, "expected", "':'", ps.M_curr_line, j, lexer);
                         return false;
@@ -129,7 +129,7 @@ namespace runcpp
                         return false;
                     }
                 }
-                else if (lexer[j].first() != "if" && lexer[j].first() != "else" && lexer[j].first() != "endif" && lexer[j].first() != "#" && lexer[j].first() != "import")
+                else if (lexer[j].first != "if" && lexer[j].first != "else" && lexer[j].first != "endif" && lexer[j].first != "#" && lexer[j].first != "import")
                 {
                     if (ps.M_block != parser::BLOCK_TYPE::NONE_BLOCK) // means this block code config file is under if-else
                     {
@@ -139,10 +139,10 @@ namespace runcpp
                             break;
                     }
                     openutils::sstring var_name;
-                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                    while (lexer[j].second != openutils::sstring_lexer_token::NULL_END)
                     {
-                        var_name += lexer[j++].first(); // storing variable name, just for target calling
-                        if (lexer[j].second() == openutils::lexer_token::WHITESPACE || lexer[j].first() == "=" || lexer[j].first() == "(")
+                        var_name += lexer[j++].first; // storing variable name, just for target calling
+                        if (lexer[j].second == openutils::sstring_lexer_token::WHITESPACE || lexer[j].first == "=" || lexer[j].first == "(")
                             break;
                     }
                     if (var_name != "depends") // managing some special cases
@@ -154,14 +154,14 @@ namespace runcpp
                         }
                     }
                     parser::skip_whitespaces_and_tabs(lexer, j);
-                    if (lexer[j].first() == "=")
+                    if (lexer[j].first == "=")
                     {
                         j++; // skip =
                         parser::skip_whitespaces_and_tabs(lexer, j);
 
                         openutils::vector_t<openutils::sstring> temp_vec;
                         // now check if there is ' or [
-                        if (lexer[j].first() == "'")
+                        if (lexer[j].first == "'")
                         {
                             temp_vec.erase();
                             openutils::sstring temp_cmd = parser::validate_quotes(ps, "'", lexer, j);
@@ -177,7 +177,7 @@ namespace runcpp
                                 return false;
                             }
                         }
-                        else if (lexer[j].first() == "[")
+                        else if (lexer[j].first == "[")
                         {
                             temp_vec.erase();
                             temp_vec = std::move(parser::validate_array(ps, "'", lexer, j));
@@ -199,7 +199,7 @@ namespace runcpp
                         }
                         ps.M_adding_vector.add(std::move(temp_vec));
                     }
-                    else if (lexer[j].first() == "(")
+                    else if (lexer[j].first == "(")
                     {
                         if (var_name != "shell" && var_name != "depends" && !ps.M_map.contains(var_name.hash()))
                         {
@@ -211,7 +211,7 @@ namespace runcpp
                         if (var_name == "depends")
                         {
                             // checks if an app is installed or not
-                            if (lexer[j].first() != "'")
+                            if (lexer[j].first != "'")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
                                 return false;
@@ -227,7 +227,7 @@ namespace runcpp
                                 return false;
                             }
                             parser::skip_whitespaces_and_tabs(lexer, j);
-                            if (lexer[j].first() != ")")
+                            if (lexer[j].first != ")")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "')'", ps.M_curr_line, j, lexer);
                                 return false;
@@ -275,7 +275,7 @@ namespace runcpp
                         {
                             // we got a command to directly run and add its output (stdout) to ps.M_adding_vector
                             // this feature is helpful when there's a situation like `pkgconf --cflags --libs <name>`
-                            if (lexer[j].first() != "'")
+                            if (lexer[j].first != "'")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "'", ps.M_curr_line, j, lexer);
                                 return false;
@@ -292,7 +292,7 @@ namespace runcpp
                             }
                             parser::skip_whitespaces_and_tabs(lexer, j);
                         }
-                        if (lexer[j].first() != ")")
+                        if (lexer[j].first != ")")
                         {
                             parser::draw_error(ps.M_curr_location, "expected", "')'", ps.M_curr_line, j, lexer);
                             return false;
@@ -300,50 +300,50 @@ namespace runcpp
                         j++; // skip )
                         parser::skip_whitespaces_and_tabs(lexer, j);
                         std::size_t select_index_outer = -1, select_index_inner = -1, pos_sio, pos_sii;
-                        if (lexer[j].first() == "[")
+                        if (lexer[j].first == "[")
                         {
                             j++; // skip [
                             parser::skip_whitespaces_and_tabs(lexer, j);
-                            if (lexer[j].second() != openutils::lexer_token::INTEGER)
+                            if (lexer[j].second != openutils::sstring_lexer_token::INTEGER)
                             {
-                                parser::draw_error(ps.M_curr_location, "expected an positive integer", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
+                                parser::draw_error(ps.M_curr_location, "expected an positive integer", lexer[j].first.wrap("'"), ps.M_curr_line, j, lexer);
                                 return false;
                             }
                             pos_sio = j;
-                            if (lexer[j].first().length() > std::numeric_limits<std::size_t>::digits10)
+                            if (lexer[j].first.length() > std::numeric_limits<std::size_t>::digits10)
                             {
-                                parser::draw_error(ps.M_curr_location, "integer overflow", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
+                                parser::draw_error(ps.M_curr_location, "integer overflow", lexer[j].first.wrap("'"), ps.M_curr_line, j, lexer);
                                 return false;
                             }
-                            select_index_outer = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
-                            j++;                                                       // skip the index
+                            select_index_outer = std::stoul(lexer[j].first.c_str()); // error will never happen because of above if statement
+                            j++;                                                     // skip the index
                             parser::skip_whitespaces_and_tabs(lexer, j);
-                            if (lexer[j].first() != "]")
+                            if (lexer[j].first != "]")
                             {
                                 parser::draw_error(ps.M_curr_location, "expected", "']'", ps.M_curr_line, j, lexer);
                                 return false;
                             }
                             j++; // skip ]
                             parser::skip_whitespaces_and_tabs(lexer, j);
-                            if (lexer[j].first() == "[")
+                            if (lexer[j].first == "[")
                             {
                                 j++; // skip [
                                 parser::skip_whitespaces_and_tabs(lexer, j);
-                                if (lexer[j].second() != openutils::lexer_token::INTEGER)
+                                if (lexer[j].second != openutils::sstring_lexer_token::INTEGER)
                                 {
-                                    parser::draw_error(ps.M_curr_location, "expected an positive integer", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
+                                    parser::draw_error(ps.M_curr_location, "expected an positive integer", lexer[j].first.wrap("'"), ps.M_curr_line, j, lexer);
                                     return false;
                                 }
                                 pos_sii = j;
-                                if (lexer[j].first().length() > std::numeric_limits<std::size_t>::digits10)
+                                if (lexer[j].first.length() > std::numeric_limits<std::size_t>::digits10)
                                 {
-                                    parser::draw_error(ps.M_curr_location, "integer overflow", lexer[j].first().wrap("'"), ps.M_curr_line, j, lexer);
+                                    parser::draw_error(ps.M_curr_location, "integer overflow", lexer[j].first.wrap("'"), ps.M_curr_line, j, lexer);
                                     return false;
                                 }
-                                select_index_inner = std::stoul(lexer[j].first().c_str()); // error will never happen because of above if statement
-                                j++;                                                       // skip the index
+                                select_index_inner = std::stoul(lexer[j].first.c_str()); // error will never happen because of above if statement
+                                j++;                                                     // skip the index
                                 parser::skip_whitespaces_and_tabs(lexer, j);
-                                if (lexer[j].first() != "]")
+                                if (lexer[j].first != "]")
                                 {
                                     parser::draw_error(ps.M_curr_location, "expected", "']'", ps.M_curr_line, j, lexer);
                                     return false;
@@ -441,17 +441,17 @@ namespace runcpp
                         return false;
                     }
                 }
-                else if (lexer[j].first() == "if")
+                else if (lexer[j].first == "if")
                 {
                     // here was there too many bools to handle, so to avoid using them by passing every variable we are using pointer to the parser object.
                     // i.e., ps to turn on/off the bools
                     j++; // skip if
                     parser::skip_whitespaces_and_tabs(lexer, j);
                     openutils::sstring LHS_var;
-                    while (lexer[j].second() != openutils::lexer_token::NULL_END)
+                    while (lexer[j].second != openutils::sstring_lexer_token::NULL_END)
                     {
-                        LHS_var += lexer[j++].first();
-                        if (lexer[j].second() == openutils::lexer_token::WHITESPACE || lexer[j].first() == "=" || lexer[j].first() == "!")
+                        LHS_var += lexer[j++].first;
+                        if (lexer[j].second == openutils::sstring_lexer_token::WHITESPACE || lexer[j].first == "=" || lexer[j].first == "!")
                             break;
                     }
                     if (LHS_var.is_null() || LHS_var.is_empty())
@@ -461,10 +461,10 @@ namespace runcpp
                     }
                     parser::skip_whitespaces_and_tabs(lexer, j);
                     bool is_equal_equal;
-                    if (lexer[j].first() == "=")
+                    if (lexer[j].first == "=")
                     {
                         j++; // skip =
-                        if (lexer[j].first() != "=")
+                        if (lexer[j].first != "=")
                         {
                             parser::draw_error(ps.M_curr_location, "expected", "'='", ps.M_curr_line, j, lexer);
                             return false;
@@ -472,10 +472,10 @@ namespace runcpp
                         j++; // skip =
                         is_equal_equal = true;
                     }
-                    else if (lexer[j].first() == "!")
+                    else if (lexer[j].first == "!")
                     {
                         j++; // skip !
-                        if (lexer[j].first() != "=")
+                        if (lexer[j].first != "=")
                         {
                             parser::draw_error(ps.M_curr_location, "expected", "'='", ps.M_curr_line, j, lexer);
                             return false;
@@ -492,7 +492,7 @@ namespace runcpp
 
                     openutils::sstring RHS_var;
 
-                    if (lexer[j].first() == "'")
+                    if (lexer[j].first == "'")
                     {
                         RHS_var = std::move(parser::validate_quotes(ps, "'", lexer, j));
                         if (RHS_var.is_null())
@@ -520,7 +520,7 @@ namespace runcpp
                     ps.M_was_if_true = (is_equal_equal == true ? parser::evaluate_ifs({LHS_var}, {RHS_var}) : !parser::evaluate_ifs({LHS_var}, {RHS_var}));
                     ps.M_block = parser::BLOCK_TYPE::IF_BLOCK;
                 }
-                else if (lexer[j].first() == "else")
+                else if (lexer[j].first == "else")
                 {
                     if (ps.M_block == parser::BLOCK_TYPE::NONE_BLOCK)
                     {
@@ -552,7 +552,7 @@ namespace runcpp
                     }
                     ps.M_block = parser::BLOCK_TYPE::ELSE_BLOCK;
                 }
-                else if (lexer[j].first() == "endif")
+                else if (lexer[j].first == "endif")
                 {
                     if (ps.M_block != parser::BLOCK_TYPE::NONE_BLOCK)
                     {
@@ -573,12 +573,12 @@ namespace runcpp
                         return false;
                     }
                 }
-                else if (lexer[j].first() == "#")
+                else if (lexer[j].first == "#")
                 {
                     // got a comment at starting of a line now, whole line is ignored
                     break; // skip that line
                 }
-                else if (lexer[j].first() == "import")
+                else if (lexer[j].first == "import")
                 {
                     if (ps.M_block != parser::BLOCK_TYPE::NONE_BLOCK) // means this block code config file is under if-else
                     {

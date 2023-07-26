@@ -8,15 +8,15 @@
 
 namespace runcpp
 {
-    bool parser::import_helper(parser &ps, const openutils::vector_t<openutils::heap_pair<openutils::sstring, enum openutils::lexer_token>> &lexer, const unsigned int &lines_to_read)
+    bool parser::import_helper(parser &ps, const openutils::vector_t<std::pair<openutils::sstring, openutils::sstring_lexer_token>> &lexer, const unsigned int &lines_to_read)
     {
         std::size_t j = 0;
         // whitespaces are trimmed
-        while (lexer[j].second() != openutils::lexer_token::NULL_END)
+        while (lexer[j].second != openutils::sstring_lexer_token::NULL_END)
         {
             j++; // skip import keyword
             parser::skip_whitespaces_and_tabs(lexer, j);
-            if (lexer[j].first() == "\"")
+            if (lexer[j].first == "\"")
             {
                 openutils::sstring import_location = parser::validate_quotes(ps, "\"", lexer, j);
                 if (import_location.is_null())
