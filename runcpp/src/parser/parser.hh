@@ -44,11 +44,11 @@ namespace runcpp
 
         bool M_was_else_true; // if true means if's condition was false, hence run only else block's code
 
-        enum BLOCK_TYPE
+        enum class BLOCK_TYPE : unsigned char
         {
-            NONE_BLOCK = 0,
-            IF_BLOCK = 1,
-            ELSE_BLOCK = 2
+            NONE_BLOCK,
+            IF_BLOCK,
+            ELSE_BLOCK
         };
 
         BLOCK_TYPE M_block; // indicates which block is code under (for config file)

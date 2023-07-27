@@ -653,27 +653,27 @@ namespace runcpp
             return false;
         }
 
-        openutils::chunkio_lines_reader<char> reader(this->M_curr_location.c_str(), max_lines);
-
-        std::pair<char *&, std::size_t> chunk = reader.read_next();
-
-        openutils::sstring temp_content;
-        while (chunk.first)
+        io_reader reader(max_lines);
+        if (!reader.open_file(this->M_curr_location))
         {
-            if (reader.is_file_binary())
-            {
-                std::fprintf(stderr, "\033[1;91merr:\033[0m given file '%s' was binary, which cannot be parsed, try using '-d' flag.\n", this->M_curr_location.c_str());
-                return false;
-            }
-            temp_content.clear();
-            temp_content.get() = chunk.first;         // transferring ownership of c-string
-            temp_content.change_length(chunk.second); // changing length
-            reader.make_nullptr();                    // we have transferred reader's ownership to temp_content
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be opened for reading: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
+            return false;
+        }
 
-            if (!this->helper_parsing(*this, temp_content, max_lines))
+        openutils::sstring &file_lines = reader.read_next();
+
+        while (!file_lines.is_null())
+        {
+            // if (reader.is_file_binary())
+            // {
+            //     std::fprintf(stderr, "\033[1;91merr:\033[0m given file '%s' was binary, which cannot be parsed, try using '-d' flag.\n", this->M_curr_location.c_str());
+            //     return false;
+            // }             // we have transferred reader's ownership to temp_content
+
+            if (!this->helper_parsing(*this, file_lines, max_lines))
                 return false;
             this->M_curr_line--;
-            chunk = reader.read_next();
+            file_lines = reader.read_next();
         }
         if (!this->M_adding_vector.is_null() && !this->M_adding_vector.is_empty() && !this->M_lable.is_null() && !this->M_lable.is_empty())
         {
