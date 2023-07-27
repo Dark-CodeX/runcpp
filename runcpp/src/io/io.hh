@@ -48,8 +48,8 @@ namespace runcpp
 
     public:
         io_reader(const std::size_t &lines_to_read);
-        bool open_file(const openutils::sstring &loc);
-        openutils::sstring &read_next();
+        [[nodiscard]] bool open_file(const openutils::sstring &loc);
+        [[nodiscard]] openutils::sstring &read_next();
         ~io_reader();
     };
 }

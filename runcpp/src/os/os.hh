@@ -12,8 +12,8 @@ namespace runcpp
     class os
     {
     public:
-        static const char *get_os(void);
-        static unsigned int get_app_arch(void);
+        [[nodiscard]] static const char *get_os(void);
+        [[nodiscard]] static unsigned int get_app_arch(void);
     };
 }
 
