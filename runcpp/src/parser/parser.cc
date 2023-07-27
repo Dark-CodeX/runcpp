@@ -664,12 +664,6 @@ namespace runcpp
 
         while (!file_lines.is_null())
         {
-            // if (reader.is_file_binary())
-            // {
-            //     std::fprintf(stderr, "\033[1;91merr:\033[0m given file '%s' was binary, which cannot be parsed, try using '-d' flag.\n", this->M_curr_location.c_str());
-            //     return false;
-            // }             // we have transferred reader's ownership to temp_content
-
             if (!this->helper_parsing(*this, file_lines, max_lines))
                 return false;
             this->M_curr_line--;
