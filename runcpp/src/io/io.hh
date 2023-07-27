@@ -18,7 +18,7 @@ namespace runcpp
 {
     class io
     {
-    public:
+    public: // static functions
         /**
          * @return true if file exists;
          * @return false if file DOES NOT exists
@@ -30,6 +30,27 @@ namespace runcpp
          * @return false if file DOES NOT exists
          */
         [[nodiscard]] static bool directory_exists(const openutils::sstring &loc);
+    };
+
+    class io_reader
+    {
+    private:
+        std::FILE *M_fptr;
+        openutils::sstring M_content;
+        std::size_t M_lines_to_read;
+
+    public: // deleted functions
+        io_reader() = delete;
+        io_reader(const io_reader &) = delete;
+        io_reader(io_reader &&) noexcept = delete;
+        io_reader &operator=(const io_reader &) = delete;
+        io_reader &operator=(io_reader &&) noexcept = delete;
+
+    public:
+        io_reader(const std::size_t &lines_to_read);
+        bool open_file(const openutils::sstring &loc);
+        openutils::sstring &read_next();
+        ~io_reader();
     };
 }
 #endif
