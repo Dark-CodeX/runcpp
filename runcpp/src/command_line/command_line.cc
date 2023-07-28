@@ -205,6 +205,16 @@ namespace runcpp
         struct std::tm *ct = std::localtime(&t);
 
         openutils::sstring str;
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+        str.set_formatted(128, "%d/%d/%d %d:%d:%d %s",
+                          ct->tm_year + 1900,
+                          ct->tm_mon + 1,
+                          ct->tm_mday,
+                          ((ct->tm_hour + 11) % 12 + 1),
+                          ct->tm_min,
+                          ct->tm_sec,
+                          ((ct->tm_hour >= 12) ? "PM" : "AM"));
+#else
         str.set_formatted(128, "%d/%d/%d %d:%d:%d %s %s",
                           ct->tm_year + 1900,
                           ct->tm_mon + 1,
@@ -214,6 +224,7 @@ namespace runcpp
                           ct->tm_sec,
                           ((ct->tm_hour >= 12) ? "PM" : "AM"),
                           ct->tm_zone);
+#endif
         return str;
     }
 
