@@ -51,34 +51,70 @@ namespace runcpp
         }
 
         bool is_app_arch_64 = (os::get_app_arch() == 64 ? true : false);
-        std::fwrite(&is_app_arch_64, sizeof(is_app_arch_64), 1, fptr);
+        if (std::fwrite(&is_app_arch_64, sizeof(is_app_arch_64), 1, fptr) != 1)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+            return false;
+        }
 
         std::size_t desc_len = 46;
-        std::fwrite(&desc_len, sizeof(desc_len), 1, fptr);
+        if (std::fwrite(&desc_len, sizeof(desc_len), 1, fptr) != 1)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+            return false;
+        }
         const char *desc = "generated using runcpp, don't change manually";
-        std::fwrite(desc, sizeof(char), desc_len, fptr);
+        if (std::fwrite(desc, sizeof(char), desc_len, fptr) != desc_len)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+            return false;
+        }
 
         std::size_t umap_len = p.M_map.size();
-        std::fwrite(&umap_len, sizeof(umap_len), 1, fptr);
+        if (std::fwrite(&umap_len, sizeof(umap_len), 1, fptr) != 1)
+        {
+            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+            return false;
+        }
 
         for (const auto &[key, val] : p.M_map)
         {
             std::size_t __key = key;
-            std::fwrite(&__key, sizeof(__key), 1, fptr);
+            if (std::fwrite(&__key, sizeof(__key), 1, fptr) != 1)
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+                return false;
+            }
 
             std::size_t outer_vec_len = val.length();
-            std::fwrite(&outer_vec_len, sizeof(outer_vec_len), 1, fptr);
+            if (std::fwrite(&outer_vec_len, sizeof(outer_vec_len), 1, fptr) != 1)
+            {
+                std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+                return false;
+            }
 
             for (std::size_t i = 0; i < val.length(); i++)
             {
                 std::size_t inner_vec_len = val[i].length();
-                std::fwrite(&inner_vec_len, sizeof(inner_vec_len), 1, fptr);
+                if (std::fwrite(&inner_vec_len, sizeof(inner_vec_len), 1, fptr) != 1)
+                {
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+                    return false;
+                }
 
                 for (std::size_t j = 0; j < val[i].length(); j++)
                 {
                     std::size_t str_len = val[i][j].length();
-                    std::fwrite(&str_len, sizeof(str_len), 1, fptr);
-                    std::fwrite(val[i][j].c_str(), sizeof(char), str_len, fptr);
+                    if (std::fwrite(&str_len, sizeof(str_len), 1, fptr) != 1)
+                    {
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+                        return false;
+                    }
+                    if (std::fwrite(val[i][j].c_str(), sizeof(char), str_len, fptr) != str_len)
+                    {
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be saved: %s\n", location.c_str(), std::strerror(errno));
+                        return false;
+                    }
                 }
             }
         }
