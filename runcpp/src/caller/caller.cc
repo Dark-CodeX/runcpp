@@ -42,6 +42,13 @@ namespace runcpp
 #else
     caller::caller(const openutils::vector_t<openutils::sstring> &arg)
     {
+        if (arg.length() > 1)
+        {
+            if (arg[0] == "sudo")
+            {
+                std::fprintf(stderr, "\033[1;93mwarning:\033[0m entering superuser mode.\n");
+            }
+        }
         this->args = openutils::vector_t<char *>(arg.length() + 1);
         for (std::size_t i = 0; i < arg.length(); i++)
             this->args.add(const_cast<char *>(arg[i].c_str()));
