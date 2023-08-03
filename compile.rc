@@ -7,6 +7,8 @@ else
 endif
 
 # check if all source files are present
+depends('./runcpp/src/colorize/colorize.hh')
+depends('./runcpp/src/colorize/colorize.cc')
 depends('./runcpp/src/caller/caller.hh')
 depends('./runcpp/src/caller/caller.cc')
 depends('./runcpp/src/command_line/command_line.hh')

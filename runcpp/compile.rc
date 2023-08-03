@@ -1,5 +1,5 @@
 [sources]:
-    src = ['./runcpp/src/caller/caller.cc', './runcpp/src/command_line/command_line.cc', './runcpp/src/io/io.cc', './runcpp/src/os/os.cc', './runcpp/src/parser/command_generator.cc', './runcpp/src/parser/import_helper.cc', './runcpp/src/parser/miscellaneous.cc', './runcpp/src/parser/serialize_deserialize_merge.cc', './runcpp/src/parser/helper_functions.cc', './runcpp/src/parser/parser.cc', './runcpp/src/main/main.cc']
+    src = ['./runcpp/src/colorize/colorize.cc', './runcpp/src/caller/caller.cc', './runcpp/src/command_line/command_line.cc', './runcpp/src/io/io.cc', './runcpp/src/os/os.cc', './runcpp/src/parser/command_generator.cc', './runcpp/src/parser/import_helper.cc', './runcpp/src/parser/miscellaneous.cc', './runcpp/src/parser/serialize_deserialize_merge.cc', './runcpp/src/parser/helper_functions.cc', './runcpp/src/parser/parser.cc', './runcpp/src/main/main.cc']
 
 [output]:
     if os == 'windows'
