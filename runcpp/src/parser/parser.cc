@@ -48,12 +48,18 @@ namespace runcpp
                             // treating all digit lable as hash itself
                             if (ps.store_target_names)
                             {
-                                std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
+                                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                                    std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
+                                else
+                                    std::fprintf(stderr, "err: cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
                                 return false;
                             }
                             if (ps.M_lable.length() > std::numeric_limits<std::size_t>::digits10)
                             {
-                                std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", ps.M_lable.c_str());
+                                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                                    std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", ps.M_lable.c_str());
+                                else
+                                    std::fprintf(stderr, "err: integer overflow by '%s'\n", ps.M_lable.c_str());
                                 return false;
                             }
                             std::size_t hash_temp = std::stoul(ps.M_lable.c_str());
@@ -247,26 +253,38 @@ namespace runcpp
                             {
                                 if (io::directory_exists(dependent))
                                 {
-                                    std::printf("Found dependency directory at \033[1;92m'%s'\033[0m\n", dependent.c_str());
+                                    if (colorize::should_colorize(colorize::STDPTR::OUT))
+                                        std::printf("Found dependency directory at \033[1;92m'%s'\033[0m\n", dependent.c_str());
+                                    else
+                                        std::printf("Found dependency directory at '%s'\n", dependent.c_str());
                                     break;
                                 }
                                 else
                                 {
                                     if (io::file_exists(dependent))
                                     {
-                                        std::printf("Found dependency file at \033[1;92m'%s'\033[0m\n", dependent.c_str());
+                                        if (colorize::should_colorize(colorize::STDPTR::OUT))
+                                            std::printf("Found dependency file at \033[1;92m'%s'\033[0m\n", dependent.c_str());
+                                        else
+                                            std::printf("Found dependency file at '%s'\n", dependent.c_str());
                                         break;
                                     }
                                     else
                                     {
-                                        std::fprintf(stderr, "\033[1;91merr:\033[0m dependency '%s' was not found.\n", dependent.c_str());
+                                        if (colorize::should_colorize(colorize::STDPTR::ERR))
+                                            std::fprintf(stderr, "\033[1;91merr:\033[0m dependency '%s' was not found.\n", dependent.c_str());
+                                        else
+                                            std::fprintf(stderr, "err: dependency '%s' was not found.\n", dependent.c_str());
                                         return false;
                                     }
                                 }
                             }
                             else
                             {
-                                std::printf("Found dependency '%s' at \033[1;92m'%s'\033[0m\n", dependent.c_str(), app_location.c_str());
+                                if (colorize::should_colorize(colorize::STDPTR::OUT))
+                                    std::printf("Found dependency '%s' at \033[1;92m'%s'\033[0m\n", dependent.c_str(), app_location.c_str());
+                                else
+                                    std::printf("Found dependency '%s' at '%s'\n", dependent.c_str(), app_location.c_str());
                                 break;
                             }
                         }
@@ -600,12 +618,18 @@ namespace runcpp
                             // treating all digit lable as hash itself
                             if (ps.store_target_names)
                             {
-                                std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
+                                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                                    std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
+                                else
+                                    std::fprintf(stderr, "err: cannot use hashed target name '%s' with '--print-gui-client' flag.\n", ps.M_lable.c_str());
                                 return false;
                             }
                             if (ps.M_lable.length() > std::numeric_limits<std::size_t>::digits10)
                             {
-                                std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", ps.M_lable.c_str());
+                                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                                    std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", ps.M_lable.c_str());
+                                else
+                                    std::fprintf(stderr, "err: integer overflow by '%s'\n", ps.M_lable.c_str());
                                 return false;
                             }
                             std::size_t hash_temp = std::stoul(ps.M_lable.c_str());
@@ -643,20 +667,29 @@ namespace runcpp
     {
         if (this->M_curr_location.is_empty())
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m empty file location was given\n");
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::fprintf(stderr, "\033[1;91merr:\033[0m empty file location was given\n");
+            else
+                std::fprintf(stderr, "err: empty file location was given\n");
             return false;
         }
 
         if (!io::file_exists(this->M_curr_location))
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' was not found: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' was not found: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
+            else
+                std::fprintf(stderr, "err: file '%s' was not found: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
             return false;
         }
 
         io_reader reader(max_lines);
         if (!reader.open_file(this->M_curr_location))
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be opened for reading: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::fprintf(stderr, "\033[1;91merr:\033[0m file '%s' could not be opened for reading: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
+            else
+                std::fprintf(stderr, "err: file '%s' could not be opened for reading: %s\n", this->M_curr_location.c_str(), std::strerror(errno));
             return false;
         }
 
@@ -682,12 +715,18 @@ namespace runcpp
                 // treating all digit lable as hash itself
                 if (this->store_target_names)
                 {
-                    std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", this->M_lable.c_str());
+                    if (colorize::should_colorize(colorize::STDPTR::ERR))
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m cannot use hashed target name '%s' with '--print-gui-client' flag.\n", this->M_lable.c_str());
+                    else
+                        std::fprintf(stderr, "err: cannot use hashed target name '%s' with '--print-gui-client' flag.\n", this->M_lable.c_str());
                     return false;
                 }
                 if (this->M_lable.length() > std::numeric_limits<std::size_t>::digits10)
                 {
-                    std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", this->M_lable.c_str());
+                    if (colorize::should_colorize(colorize::STDPTR::ERR))
+                        std::fprintf(stderr, "\033[1;91merr:\033[0m integer overflow by '%s'\n", this->M_lable.c_str());
+                    else
+                        std::fprintf(stderr, "err: integer overflow by '%s'\n", this->M_lable.c_str());
                     return false;
                 }
                 std::size_t hash_temp = std::stoul(this->M_lable.c_str());
@@ -696,7 +735,10 @@ namespace runcpp
         }
         if (this->M_block != parser::BLOCK_TYPE::NONE_BLOCK)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m expected 'endif' at EOF\n");
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::fprintf(stderr, "\033[1;91merr:\033[0m expected 'endif' at EOF\n");
+            else
+                std::fprintf(stderr, "err: expected 'endif' at EOF\n");
             return false;
         }
         // at this point we can erase useless memory

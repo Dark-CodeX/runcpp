@@ -25,7 +25,10 @@ namespace runcpp
 
         if (!CreateProcess(nullptr, (LPTSTR)(this->cmds.c_str()), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &this->si, &this->pi))
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m CreateProcess failed and returned error code %lu.\r\n", GetLastError());
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::fprintf(stderr, "\033[1;91merr:\033[0m CreateProcess failed and returned error code %lu.\r\n", GetLastError());
+            else
+                std::fprintf(stderr, "err: CreateProcess failed and returned error code %lu.\r\n", GetLastError());
             std::exit(EXIT_FAILURE);
         }
 
@@ -46,7 +49,10 @@ namespace runcpp
         {
             if (arg[0] == "sudo")
             {
-                std::fprintf(stderr, "\033[1;93mwarning:\033[0m entering superuser mode.\n");
+                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                    std::fprintf(stderr, "\033[1;93mwarning:\033[0m entering superuser mode.\n");
+                else
+                    std::fprintf(stderr, "warning: entering superuser mode.\n");
             }
         }
         this->args = openutils::vector_t<char *>(arg.length() + 1);
@@ -60,13 +66,19 @@ namespace runcpp
         this->pid = fork();
         if (this->pid == -1)
         {
-            std::perror("\033[1;91merr:\033[0m fork");
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::perror("\033[1;91merr:\033[0m fork");
+            else
+                std::perror("err: fork");
             std::exit(EXIT_FAILURE);
         }
         else if (this->pid == 0)
         {
             execvp(this->args.raw_data()[0], this->args.raw_data());
-            std::perror("\033[1;91merr:\033[0m execvp");
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::perror("\033[1;91merr:\033[0m execvp");
+            else
+                std::perror("err: execvp");
             std::exit(EXIT_FAILURE);
         }
         else
@@ -75,11 +87,17 @@ namespace runcpp
             waitpid(this->pid, &status, 0);
             if (WIFEXITED(status) && WEXITSTATUS(status) != EXIT_SUCCESS)
             {
-                std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", WEXITSTATUS(status));
+                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", WEXITSTATUS(status));
+                else
+                    std::fprintf(stderr, "err: child process exited with status %d\n", WEXITSTATUS(status));
             }
             else if (WIFSIGNALED(status))
             {
-                std::fprintf(stderr, "\033[1;91merr:\033[0m child process terminated by signal %d\n", WTERMSIG(status));
+                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                    std::fprintf(stderr, "\033[1;91merr:\033[0m child process terminated by signal %d\n", WTERMSIG(status));
+                else
+                    std::fprintf(stderr, "err: child process terminated by signal %d\n", WTERMSIG(status));
             }
         }
     }
@@ -101,7 +119,10 @@ namespace runcpp
 
         if (!fptr)
         {
-            std::perror("\033[1;91merr:\033[0m popen");
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::perror("\033[1;91merr:\033[0m popen");
+            else
+                std::perror("err: popen");
             return openutils::vector_t<openutils::sstring>();
         }
 
@@ -120,7 +141,10 @@ namespace runcpp
 
         if (ext_code != EXIT_SUCCESS)
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", ext_code);
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", ext_code);
+            else
+                std::fprintf(stderr, "err: child process exited with status %d\n", ext_code);
             return openutils::vector_t<openutils::sstring>();
         }
         auto return_value = output.to_argv();
@@ -144,7 +168,10 @@ namespace runcpp
 #endif
         if (all_paths.is_null())
         {
-            std::fprintf(stderr, "\033[1;91merr:\033[0m environment variable 'PATH' was not found.\n");
+            if (colorize::should_colorize(colorize::STDPTR::ERR))
+                std::fprintf(stderr, "\033[1;91merr:\033[0m environment variable 'PATH' was not found.\n");
+            else
+                std::fprintf(stderr, "err: environment variable 'PATH' was not found.\n");
             return nullptr;
         }
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__

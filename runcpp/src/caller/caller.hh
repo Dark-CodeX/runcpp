@@ -18,6 +18,7 @@
 #endif
 
 #include "../io/io.hh"
+#include "../colorize/colorize.hh"
 
 namespace runcpp
 {

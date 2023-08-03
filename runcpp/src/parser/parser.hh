@@ -19,6 +19,7 @@
 #include "../os/os.hh"
 #include "./used_keywords.h"
 #include "../caller/caller.hh"
+#include "../colorize/colorize.hh"
 
 namespace runcpp
 {
