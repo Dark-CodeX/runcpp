@@ -23,8 +23,8 @@ namespace runcpp
     public:
         enum class STDPTR : unsigned char
         {
-            OUT,
-            ERR
+            STANDARD_OUT,
+            STANDARD_ERR
         };
         [[nodiscard]] static bool should_colorize(const STDPTR &fl);
     };

@@ -13,7 +13,7 @@ namespace runcpp
         std::size_t col = 0;
         for (std::size_t r = 0; r < curr_lexer; r++)
             col += lexer[r].first.length();
-        if (colorize::should_colorize(colorize::STDPTR::ERR))
+        if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
             std::fprintf(stderr, "\033[1;97m%s:%zu:%zu:\033[0m \033[1;91merr:\033[0m %s %s\n", loc.c_str(), line_no + 1, col + 1, err_msg.c_str(), expected.c_str());
         else
             std::fprintf(stderr, "%s:%zu:%zu: err: %s %s\n", loc.c_str(), line_no + 1, col + 1, err_msg.c_str(), expected.c_str());
@@ -22,7 +22,7 @@ namespace runcpp
         {
             if (r == curr_lexer && r != lexer.length() - 1)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91m%s\033[0m", lexer[r].first.c_str());
                 else
                     std::fprintf(stderr, "%s", lexer[r].first.c_str());
@@ -30,7 +30,7 @@ namespace runcpp
             else
                 std::fprintf(stderr, "%s", lexer[r].first.c_str());
         }
-        if (colorize::should_colorize(colorize::STDPTR::ERR))
+        if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
             std::fprintf(stderr, "\n%s\033[1;91m^\033[0m\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));
         else
             std::fprintf(stderr, "\n%s^\n", (col == 0 ? "" : openutils::sstring('~', col).c_str()));

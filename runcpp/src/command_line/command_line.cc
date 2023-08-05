@@ -22,7 +22,7 @@ namespace runcpp
                 openutils::sstring overw_file = "";
                 if (!overw_file.save("./compile.rc"))
                 {
-                    if (colorize::should_colorize(colorize::STDPTR::ERR))
+                    if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                         std::fprintf(stderr, "\033[1;91merr:\033[0m could not overwrite the file './compile.rc': %s\n", std::strerror(errno));
                     else
                         std::fprintf(stderr, "err: could not overwrite the file './compile.rc': %s\n", std::strerror(errno));
@@ -31,7 +31,7 @@ namespace runcpp
             }
             else
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m invalid choice '%s'\n", overwrite__.c_str());
                 else
                     std::fprintf(stderr, "err: invalid choice '%s'\n", overwrite__.c_str());
@@ -41,7 +41,7 @@ namespace runcpp
         std::FILE *fptr = std::fopen("./compile.rc", "wb");
         if (!fptr)
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m could not open file './compile.rc' for writing: %s\n", std::strerror(errno));
             else
                 std::fprintf(stderr, "err: could not open file './compile.rc' for writing: %s\n", std::strerror(errno));
@@ -56,7 +56,7 @@ namespace runcpp
 
         if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             else
                 std::fprintf(stderr, "err: file './compile.rc' could not be saved: %s\n", std::strerror(errno));
@@ -80,7 +80,7 @@ namespace runcpp
 
         if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             else
                 std::fprintf(stderr, "err: file './compile.rc' could not be saved: %s\n", std::strerror(errno));
@@ -104,7 +104,7 @@ namespace runcpp
 
         if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             else
                 std::fprintf(stderr, "err: file './compile.rc' could not be saved: %s\n", std::strerror(errno));
@@ -129,7 +129,7 @@ namespace runcpp
 
         if (std::fwrite(content.c_str(), sizeof(char), content.length(), fptr) != content.length())
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m file './compile.rc' could not be saved: %s\n", std::strerror(errno));
             else
                 std::fprintf(stderr, "err: file './compile.rc' could not be saved: %s\n", std::strerror(errno));
@@ -153,7 +153,7 @@ namespace runcpp
         {
             if (!ps.contains_key(args[i]))
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m target '%s' was not found.\n", args[i].c_str());
                 else
                     std::fprintf(stderr, "err: target '%s' was not found.\n", args[i].c_str());
@@ -162,7 +162,7 @@ namespace runcpp
             if (args[i] != "all")
             {
                 openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
-                if (colorize::should_colorize(colorize::STDPTR::OUT))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_OUT))
                     std::printf("\033[1;94m%s:\033[0m\n", command_line::get_date_time().c_str());
                 else
                     std::printf("%s:\n", command_line::get_date_time().c_str());
@@ -176,7 +176,7 @@ namespace runcpp
                 const openutils::vector_t<openutils::vector_t<openutils::sstring>> &cmds = ps.generate_commands_all();
                 for (std::size_t k = 0; k < cmds.length(); k++)
                 {
-                    if (colorize::should_colorize(colorize::STDPTR::OUT))
+                    if (colorize::should_colorize(colorize::STDPTR::STANDARD_OUT))
                         std::printf("\033[1;94m%s:\033[0m\n", command_line::get_date_time().c_str());
                     else
                         std::printf("%s:\n", command_line::get_date_time().c_str());
@@ -201,7 +201,7 @@ namespace runcpp
         {
             if (!ps.contains_key(args[i]))
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m target '%s' was not found.\n", args[i].c_str());
                 else
                     std::fprintf(stderr, "err: target '%s' was not found.\n", args[i].c_str());
@@ -210,7 +210,7 @@ namespace runcpp
             if (args[i] != "all")
             {
                 openutils::vector_t<openutils::sstring> cmds = ps.generate_command(args[i]);
-                if (colorize::should_colorize(colorize::STDPTR::OUT))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_OUT))
                     std::printf("\033[1;94m%s:\033[0m\n", command_line::get_date_time().c_str());
                 else
                     std::printf("%s:\n", command_line::get_date_time().c_str());
@@ -224,7 +224,7 @@ namespace runcpp
                 const openutils::vector_t<openutils::vector_t<openutils::sstring>> &cmds = ps.generate_commands_all();
                 for (std::size_t k = 0; k < cmds.length(); k++)
                 {
-                    if (colorize::should_colorize(colorize::STDPTR::OUT))
+                    if (colorize::should_colorize(colorize::STDPTR::STANDARD_OUT))
                         std::printf("\033[1;94m%s:\033[0m\n", command_line::get_date_time().c_str());
                     else
                         std::printf("%s:\n", command_line::get_date_time().c_str());
@@ -277,7 +277,7 @@ namespace runcpp
             }
             else
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m no arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: no arguments were passed, try using '--help'\n");
@@ -313,7 +313,7 @@ namespace runcpp
         {
             if (argc == 2)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -324,7 +324,7 @@ namespace runcpp
             {
                 if (argc == 3)
                 {
-                    if (colorize::should_colorize(colorize::STDPTR::ERR))
+                    if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                         std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                     else
                         std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -348,7 +348,7 @@ namespace runcpp
             {
                 if (argc == 3)
                 {
-                    if (colorize::should_colorize(colorize::STDPTR::ERR))
+                    if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                         std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                     else
                         std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -382,7 +382,7 @@ namespace runcpp
         {
             if (argc == 2)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -391,7 +391,7 @@ namespace runcpp
             openutils::sstring a2 = argv[2]; // config file location
             if (argc == 3)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -400,7 +400,7 @@ namespace runcpp
             openutils::sstring a3 = argv[3]; // -o flag
             if (a3 != "-o")
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m expected '-o', instead got '%s'\n", a3.c_str());
                 else
                     std::fprintf(stderr, "err: expected '-o', instead got '%s'\n", a3.c_str());
@@ -408,7 +408,7 @@ namespace runcpp
             }
             if (argc == 4)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -435,7 +435,7 @@ namespace runcpp
             }
             else
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m invalid flag passed '%s', try using '--help'\n", a5.c_str());
                 else
                     std::fprintf(stderr, "err: invalid flag passed '%s', try using '--help'\n", a5.c_str());
@@ -446,7 +446,7 @@ namespace runcpp
         {
             if (argc == 2)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -457,7 +457,7 @@ namespace runcpp
             {
                 if (argc == 3)
                 {
-                    if (colorize::should_colorize(colorize::STDPTR::ERR))
+                    if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                         std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                     else
                         std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -514,7 +514,7 @@ namespace runcpp
         {
             if (argc == 2)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -523,7 +523,7 @@ namespace runcpp
             openutils::sstring a2 = argv[2]; // config file location
             if (argc == 3)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");
@@ -532,7 +532,7 @@ namespace runcpp
             openutils::sstring a3 = argv[3]; // -o flag
             if (a3 != "-o")
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m expected '-o', instead got '%s'\n", a3.c_str());
                 else
                     std::fprintf(stderr, "err: expected '-o', instead got '%s'\n", a3.c_str());
@@ -540,7 +540,7 @@ namespace runcpp
             }
             if (argc == 4)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m not enough arguments were passed, try using '--help'\n");
                 else
                     std::fprintf(stderr, "err: not enough arguments were passed, try using '--help'\n");

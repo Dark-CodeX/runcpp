@@ -10,7 +10,7 @@
 
 void exit_handler(int signal)
 {
-    if (runcpp::colorize::should_colorize(runcpp::colorize::STDPTR::ERR))
+    if (runcpp::colorize::should_colorize(runcpp::colorize::STDPTR::STANDARD_ERR))
         std::fprintf(stderr, "\n\033[1;91merr:\033[0m aborting all tasks and exiting with error code %d.\n", signal);
     else
         std::fprintf(stderr, "\nerr: aborting all tasks and exiting with error code %d.\n", signal);
@@ -19,7 +19,7 @@ void exit_handler(int signal)
 
 void segfault_handler(int signal) /* treating segfault different because it should never happen in any case */
 {
-    if (runcpp::colorize::should_colorize(runcpp::colorize::STDPTR::ERR))
+    if (runcpp::colorize::should_colorize(runcpp::colorize::STDPTR::STANDARD_ERR))
         std::fprintf(stderr, "\n\033[1;91merr:\033[0m invalid or un-allocated memory access with error code %d, report this error on https://github.com/Dark-CodeX/runcpp/issues\n", signal);
     else
         std::fprintf(stderr, "\nerr: invalid or un-allocated memory access with error code %d, report this error on https://github.com/Dark-CodeX/runcpp/issues\n", signal);

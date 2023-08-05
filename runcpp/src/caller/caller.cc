@@ -25,7 +25,7 @@ namespace runcpp
 
         if (!CreateProcess(nullptr, (LPTSTR)(this->cmds.c_str()), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &this->si, &this->pi))
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m CreateProcess failed and returned error code %lu.\r\n", GetLastError());
             else
                 std::fprintf(stderr, "err: CreateProcess failed and returned error code %lu.\r\n", GetLastError());
@@ -49,7 +49,7 @@ namespace runcpp
         {
             if (arg[0] == "sudo")
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;93mwarning:\033[0m entering superuser mode.\n");
                 else
                     std::fprintf(stderr, "warning: entering superuser mode.\n");
@@ -66,7 +66,7 @@ namespace runcpp
         this->pid = fork();
         if (this->pid == -1)
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::perror("\033[1;91merr:\033[0m fork");
             else
                 std::perror("err: fork");
@@ -75,7 +75,7 @@ namespace runcpp
         else if (this->pid == 0)
         {
             execvp(this->args.raw_data()[0], this->args.raw_data());
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::perror("\033[1;91merr:\033[0m execvp");
             else
                 std::perror("err: execvp");
@@ -87,14 +87,14 @@ namespace runcpp
             waitpid(this->pid, &status, 0);
             if (WIFEXITED(status) && WEXITSTATUS(status) != EXIT_SUCCESS)
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", WEXITSTATUS(status));
                 else
                     std::fprintf(stderr, "err: child process exited with status %d\n", WEXITSTATUS(status));
             }
             else if (WIFSIGNALED(status))
             {
-                if (colorize::should_colorize(colorize::STDPTR::ERR))
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                     std::fprintf(stderr, "\033[1;91merr:\033[0m child process terminated by signal %d\n", WTERMSIG(status));
                 else
                     std::fprintf(stderr, "err: child process terminated by signal %d\n", WTERMSIG(status));
@@ -119,7 +119,7 @@ namespace runcpp
 
         if (!fptr)
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::perror("\033[1;91merr:\033[0m popen");
             else
                 std::perror("err: popen");
@@ -141,7 +141,7 @@ namespace runcpp
 
         if (ext_code != EXIT_SUCCESS)
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m child process exited with status %d\n", ext_code);
             else
                 std::fprintf(stderr, "err: child process exited with status %d\n", ext_code);
@@ -168,7 +168,7 @@ namespace runcpp
 #endif
         if (all_paths.is_null())
         {
-            if (colorize::should_colorize(colorize::STDPTR::ERR))
+            if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
                 std::fprintf(stderr, "\033[1;91merr:\033[0m environment variable 'PATH' was not found.\n");
             else
                 std::fprintf(stderr, "err: environment variable 'PATH' was not found.\n");

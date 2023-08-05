@@ -14,11 +14,11 @@ namespace runcpp
         HANDLE h;
         DWORD m;
 
-        h = GetStdHandle((fl == colorize::STDPTR::OUT ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE));
+        h = GetStdHandle((fl == colorize::STDPTR::STANDARD_OUT ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE));
         return (h != INVALID_HANDLE_VALUE) && (h != NULL) && GetConsoleMode(h, &m);
 #else
         char const *t = std::getenv("TERM");
-        return t && std::strcmp(t, "dumb") != 0 && isatty((fl == colorize::STDPTR::OUT ? STDOUT_FILENO : STDERR_FILENO));
+        return t && std::strcmp(t, "dumb") != 0 && isatty((fl == colorize::STDPTR::STANDARD_OUT ? STDOUT_FILENO : STDERR_FILENO));
 #endif
     }
 }
