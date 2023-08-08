@@ -21,4 +21,26 @@ namespace runcpp
         return t && std::strcmp(t, "dumb") != 0 && isatty((fl == colorize::STDPTR::STANDARD_OUT ? STDOUT_FILENO : STDERR_FILENO));
 #endif
     }
+
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+    void colorize::make_it_colored()
+    {
+        if (should_colorize(STDPTR::STANDARD_OUT))
+        {
+            HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+            DWORD dwMode = 0;
+            GetConsoleMode(hOut, &dwMode);
+            dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+            SetConsoleMode(hOut, dwMode);
+        }
+        if (should_colorize(STDPTR::STANDARD_ERR))
+        {
+            HANDLE hOut = GetStdHandle(STD_ERROR_HANDLE);
+            DWORD dwMode = 0;
+            GetConsoleMode(hOut, &dwMode);
+            dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+            SetConsoleMode(hOut, dwMode);
+        }
+    }
+#endif
 }

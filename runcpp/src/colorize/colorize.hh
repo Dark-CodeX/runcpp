@@ -27,6 +27,9 @@ namespace runcpp
             STANDARD_ERR
         };
         [[nodiscard]] static bool should_colorize(const STDPTR &fl);
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+        static void make_it_colored();
+#endif
     };
 }
 
