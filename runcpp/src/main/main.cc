@@ -37,6 +37,10 @@ int main(int argc, const char **argv)
 #endif
     signal(SIGSEGV, segfault_handler);
 
+#if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+    runcpp::colorize::make_it_colored();
+#endif
+
     if (argc == 1)
     {
         if (!runcpp::command_line::parse_command_line(argc, argv))
