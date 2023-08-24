@@ -54,6 +54,13 @@ namespace runcpp
                 else
                     std::fprintf(stderr, "warning: entering superuser mode.\n");
             }
+            else if (arg[0] == "runcpp" || arg[0] == "runcpp.exe")
+            {
+                if (colorize::should_colorize(colorize::STDPTR::STANDARD_ERR))
+                    std::fprintf(stderr, "\033[1;93mwarning:\033[0m executing 'runcpp', MAY cause infinite loop.\n");
+                else
+                    std::fprintf(stderr, "warning: executing 'runcpp', MAY cause infinite loop.\n");
+            }
         }
         this->args = openutils::vector_t<char *>(arg.length() + 1);
         for (std::size_t i = 0; i < arg.length(); i++)
